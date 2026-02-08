@@ -240,6 +240,52 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 
 ---
 
+## 📅 최근 업데이트
+
+### 2026-02-08 (토) 업데이트 내역
+
+#### ✅ 완료된 작업
+1. **Supabase CLI 설치 및 타입 시스템 구축**
+   - Supabase CLI 설치 (`supabase` devDependency 추가)
+   - TypeScript 타입 정의 자동 생성 (`src/types/supabase.ts`)
+   - Database 타입을 Supabase 클라이언트에 주입하여 완벽한 타입 안정성 확보
+
+2. **Supabase SSR 유틸리티 설정**
+   - `@supabase/ssr` 기반의 서버/클라이언트/미들웨어 유틸리티 완성
+   - Next.js 15의 async `cookies()` 처리 적용
+   - 세션 자동 갱신 미들웨어 구현
+
+3. **프로젝트 리스트 페이지 구현**
+   - `/projects` 라우트 생성 및 기본 레이아웃 완성
+   - Supabase `projects` 테이블과 DB 연동 성공
+   - 카드 그리드 레이아웃, 기술 스택 배지, Empty State UI 구현
+   - 반응형 디자인 적용 (모바일/태블릿/데스크탑)
+
+4. **에러 처리 강화**
+   - 에러 바운더리 컴포넌트 추가 (`src/app/error.tsx`)
+   - try-catch 블록으로 런타임 오류 처리
+   - 무한 새로고침 문제 해결
+
+5. **프로젝트 구조 최적화**
+   - `app/` 폴더를 `src/app/`으로 통합
+   - 불필요한 파일 정리 (test 페이지, 구 lib 폴더 등)
+   - Tailwind CSS 경로 설정 수정 (`src/app` 경로 추가)
+
+6. **문서화**
+   - README.md 전면 개편 (프로젝트 구조, 사용법, 트러블슈팅)
+   - SUPABASE_CLI_SETUP.md 가이드 작성
+   - 코드 주석 한글화
+
+7. **GitHub 배포**
+   - GitHub Private Repository 초도 배포 완료
+
+#### 🎯 다음 작업 예정
+- 프로젝트 상세 페이지 구현
+- 프로젝트 CRUD 기능 (생성/수정/삭제)
+- 사용자 인증 시스템 (로그인/회원가입)
+
+---
+
 ## 🔧 트러블슈팅
 
 ### 무한 새로고침 문제
