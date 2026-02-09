@@ -1,13 +1,32 @@
 import Link from 'next/link'
 import { FolderKanban, ArrowRight } from 'lucide-react'
+import { createClient } from '@/src/utils/supabase/server'
+import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 
 /**
  * 홈페이지
  * 
  * 프로젝트의 메인 랜딩 페이지입니다.
  * 프로젝트 리스트로 이동할 수 있는 버튼을 제공합니다.
+ * 로그인 유저에게 우측 하단에 플로팅 메뉴가 표시됩니다.
  */
-export default function Home() {
+export default async function Home() {
+  // 로그인 상태 및 권한 확인 (서버 컴포넌트에서 안전하게 체크)
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  let userRole = 'guest'
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+    userRole = profile?.role || 'user'
+  }
+
+  const isLoggedIn = !!user
+  const isAdmin = userRole === 'admin'
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8">
       <div className="max-w-4xl w-full text-center space-y-8">
@@ -51,6 +70,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+      {/* 로그인 유저: 우측 하단 플로팅 메뉴 (로그아웃 + 관리자는 대시보드) */}
+      {isLoggedIn && <FloatingUserButton isAdmin={isAdmin} />}
     </main>
   );
 }
