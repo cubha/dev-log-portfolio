@@ -2,15 +2,19 @@ import { createClient } from '@/src/utils/supabase/server'
 import { Database } from '@/src/types/supabase'
 import { FolderKanban } from 'lucide-react'
 import { BackButton } from '@/src/components/common/BackButton'
-import { ProjectCard } from '@/src/components/projects/ProjectCard'
+import { ProjectList } from '@/src/components/projects/ProjectList'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
+import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
 import Link from 'next/link'
 
 /**
- * 프로젝트 리스트 페이지
+ * 프로젝트 리스트 페이지 (공개 페이지)
  * 
  * Supabase의 projects 테이블에서 모든 프로젝트를 가져와
  * 모던한 카드 레이아웃으로 표시합니다.
+ * 
+ * - 비로그인 방문자도 모든 프로젝트를 볼 수 있습니다.
+ * - 관리자(admin)로 로그인한 경우에만 "프로젝트 추가하기" 버튼이 표시됩니다.
  * 
  * Supabase CLI로 생성된 타입을 활용하여 완벽한 타입 안정성을 제공합니다.
  */
@@ -49,6 +53,8 @@ export default async function ProjectsPage() {
     // 단일 return 문으로 통합된 레이아웃
     return (
       <div className="container mx-auto px-4 py-8">
+        {/* 서버에서 확인한 권한 정보를 Jotai atom에 동기화 */}
+        <AuthStateInitializer isAdmin={isAdmin} />
         <BackButton />
         {errorMessage ? (
           <ErrorState message={errorMessage} />
@@ -133,29 +139,4 @@ function EmptyState({ isAdmin }: { isAdmin: boolean }) {
   )
 }
 
-/**
- * 프로젝트 리스트 컴포넌트
- * 
- * 프로젝트 헤더와 그리드 레이아웃을 포함합니다.
- */
-function ProjectList({ projects }: { projects: Database['public']['Tables']['projects']['Row'][] }) {
-  return (
-    <>
-      {/* 페이지 헤더 */}
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold text-gray-900 mb-3">프로젝트</h1>
-        <p className="text-gray-600 text-lg">
-          제가 작업한 프로젝트들을 소개합니다. ({projects.length}개)
-        </p>
-      </div>
-
-      {/* 프로젝트 그리드 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
-    </>
-  )
-}
 

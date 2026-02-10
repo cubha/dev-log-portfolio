@@ -54,22 +54,21 @@ export async function updateSession(request: NextRequest) {
   // --------------------------------------------------
   // 3. 비로그인 상태 처리 (정방향 가드)
   //    - /login 페이지는 예외 (무한 리다이렉트 방지)
-  //    - 메인 페이지(/)와 공개 페이지(/projects 등)는 비로그인도 허용
-  //    - /admin 경로는 무조건 /login으로 리다이렉트
+  //    - /admin 경로에 비로그인 접근 시 /login으로 리다이렉트
   // --------------------------------------------------
   if (!user) {
-    // /admin 경로에 비로그인 접근 → 로그인으로
-    if (pathname.startsWith('/admin')) {
-      console.log(`🚫 [Auth Guard] Path: ${pathname} | Role: 없음 | Status: 거부 → /login`)
-      const loginUrl = new URL('/login', request.url)
-      loginUrl.searchParams.set('error', 'no_session')
-      loginUrl.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(loginUrl)
+    // /login은 예외 (로그인 페이지 자체는 접근 허용)
+    if (pathname === '/login') {
+      console.log(`🌍 [Auth Guard] Path: ${pathname} | Role: 없음 | Status: 승인 (로그인 페이지)`)
+      return supabaseResponse
     }
 
-    // 공개 페이지는 비로그인도 통과
-    console.log(`🌍 [Auth Guard] Path: ${pathname} | Role: 없음 | Status: 승인 (공개 페이지)`)
-    return supabaseResponse
+    // /admin 경로에 비로그인 접근 → 로그인으로
+    console.log(`🚫 [Auth Guard] Path: ${pathname} | Role: 없음 | Status: 거부 → /login`)
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('error', 'no_session')
+    loginUrl.searchParams.set('redirect', pathname)
+    return NextResponse.redirect(loginUrl)
   }
 
   // --------------------------------------------------
@@ -85,30 +84,26 @@ export async function updateSession(request: NextRequest) {
   // 4. 로그인 유저의 role 확인 — profiles 테이블에서 조회
   //    (JWT만으로는 role을 알 수 없으므로 DB에서 직접 확인)
   // --------------------------------------------------
-  let userRole = 'user' // 기본값
-
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single()
 
-  if (profile?.role) {
-    userRole = profile.role
-  }
+  const userRole = profile?.role || 'user'
 
   // --------------------------------------------------
-  // 5. 권한 검사 — admin 경로 보호
-  //    role이 'admin'이 아닌 유저가 /admin 접근 시 메인으로 차단
+  // 5. 권한 검사 — 관리자 <--> 나머지 분리
+  //    - 관리자(admin): /admin/* 경로 접근 허용
+  //    - 관리자 외(일반 유저, 기타): /admin/* 접근 시 메인(/)으로 리다이렉트
   // --------------------------------------------------
-  if (pathname.startsWith('/admin') && userRole !== 'admin') {
+  if (userRole === 'admin') {
+    // 관리자: 모든 /admin/* 경로 접근 허용
+    console.log(`✅ [Auth Guard] Path: ${pathname} | Role: admin | Status: 승인`)
+    return supabaseResponse
+  } else {
+    // 관리자 외: /admin/* 경로 접근 차단 → 메인으로 리다이렉트
     console.log(`⛔ [Auth Guard] Path: ${pathname} | Role: ${userRole} | Status: 거부 → /`)
     return NextResponse.redirect(new URL('/', request.url))
   }
-
-  // --------------------------------------------------
-  // 6. 모든 검증 통과 — 요청 승인
-  // --------------------------------------------------
-  console.log(`✅ [Auth Guard] Path: ${pathname} | Role: ${userRole} | Status: 승인`)
-  return supabaseResponse
 }

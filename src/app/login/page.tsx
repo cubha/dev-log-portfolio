@@ -70,7 +70,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">로그인</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">관리자 로그인</h1>
           <p className="text-gray-600">포트폴리오 관리 패널에 접속하세요</p>
         </div>
 

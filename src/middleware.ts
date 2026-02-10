@@ -6,12 +6,12 @@ import { updateSession } from '@/src/utils/supabase/middleware'
  *
  * Supabase Auth의 JWT 세션을 기반으로 인증 및 권한을 검증합니다.
  *
- * 검증 흐름:
- *   1. supabase.auth.getUser()로 JWT 서버 검증 (위변조 불가)
- *   2. profiles 테이블에서 실제 role 조회
- *   3. 정방향 가드: 비로그인 시 /admin 경로 차단 → /login
- *   4. 역방향 가드: 로그인 상태에서 /login 접근 → / (중복 로그인 방지)
- *   5. role이 'admin'이 아니면 /admin 경로 차단 → /
+ * 보안 정책:
+ *   - 루트(/)와 /projects는 공개 페이지로 미들웨어 검사 제외
+ *   - /admin/:path* 및 /login 경로 감시하여 관리자 영역 보호
+ *   - 비로그인 시 /admin 접근 → /login 리다이렉트
+ *   - 로그인 상태에서 /login 접근 → / 리다이렉트 (역방향 가드)
+ *   - role이 'admin'이 아닌 유저의 /admin 접근 → / 차단
  *
  * 모든 보안 로직은 src/utils/supabase/middleware.ts에 위임합니다.
  */
@@ -23,14 +23,14 @@ export async function middleware(request: NextRequest) {
 /**
  * 미들웨어 감시 대상 경로
  *
- * /admin 하위 경로를 명시적으로 포함하여 감시를 놓치지 않습니다.
- * 정적 파일, 이미지, 시스템 경로는 제외하여 성능을 최적화합니다.
+ * /admin 하위 경로와 /login 경로를 감시합니다.
+ * 루트(/)와 /projects는 공개 페이지로 미들웨어 검사를 건너뜁니다.
  */
 export const config = {
   matcher: [
-    // /admin 하위 모든 경로 (명시적 감시)
+    // /admin 하위 모든 경로 감시
     '/admin/:path*',
-    // 나머지 동적 경로 (정적 파일 제외)
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // /login 경로 감시 (역방향 가드용)
+    '/login',
   ],
 }
