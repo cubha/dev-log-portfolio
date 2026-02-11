@@ -360,11 +360,54 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
    - Framer Motion: 고급 애니메이션 및 제스처 처리
    - Jotai: 경량 전역 상태 관리 (필터 상태)
 
+8. **이미지 업로드 기능 구현 (Supabase Storage 연동)**
+   - 클라이언트 Supabase 인스턴스 생성 (`src/utils/supabase/client.ts`):
+     - `@supabase/ssr`의 `createBrowserClient`로 브라우저 환경에서 Storage API 사용
+   - 이미지 업로드/삭제 유틸리티 함수 (`src/utils/storage/uploadImage.ts`):
+     - `uploadImage()`: 파일을 `project-images` 버킷에 업로드하고 Public URL 반환
+     - 타임스탬프 기반 고유 파일명 생성 (`Date.now() + '-' + sanitized_filename`)
+     - `deleteImage()`: Public URL에서 파일 경로 추출 후 Storage에서 삭제
+   - 프로젝트 등록/수정 폼 업로드 UI (`src/app/admin/projects/page.tsx`):
+     - 파일 선택 input + 미리보기 기능
+     - 이미지 타입/크기 검증 (이미지만 허용, 최대 5MB)
+     - 미리보기 이미지에 hover 시 X 버튼으로 제거 가능
+     - 수정 모드에서 기존 `thumbnail_url` 자동 로드 및 미리보기
+     - `handleSubmit` 시 새 이미지가 선택되었으면 업로드 후 URL을 DB에 저장
+     - 기존 URL 유지 로직 (이미지 미선택 시 기존 값 보존)
+   - Next.js 이미지 최적화 설정 (`next.config.js`):
+     - `images.remotePatterns`에 Supabase Storage 호스트 (`*.supabase.co`) 추가
+     - `next/image`가 외부 이미지를 안전하게 로드할 수 있도록 설정
+
+9. **Drag & Drop 이미지 업로드 추가**
+   - 파일 처리 로직 공통화:
+     - 기존 `handleFileSelect`의 검증/미리보기 코드를 `processSelectedFile(file)` 함수로 분리
+     - 클릭 업로드와 드롭 업로드가 동일한 검증 흐름 사용
+   - 드래그 상태 관리 추가:
+     - `isDragging` state로 드롭존 강조 스타일 제어
+     - `onDragEnter`, `onDragOver`, `onDragLeave`, `onDrop` 이벤트 핸들러 구현
+     - `preventDefault()`로 브라우저 기본 파일 열기 동작 차단
+   - 드롭존 UI 구성:
+     - 이미지 선택 영역을 드롭존 컨테이너로 확장
+     - 드래그 중 `border-blue-500`, `bg-blue-50`로 시각적 피드백
+     - "또는 이 영역으로 이미지를 드래그해서 놓아주세요" 안내 문구 추가
+     - 기존 클릭 업로드 방식과 완전히 공존
+
+10. **버그 수정 및 UX 개선**
+    - `next/image` 외부 호스트 에러 해결:
+      - 문제: Supabase Storage URL이 `next.config.js`에 미등록되어 이미지 로드 실패
+      - 해결: `remotePatterns`에 와일드카드 패턴 (`*.supabase.co`) 추가
+    - 이미지 제거 후 재선택 불가 버그 수정:
+      - 문제: X 버튼으로 이미지 제거 후 동일 파일 재선택 시 `onChange` 이벤트 미발생
+      - 원인: 브라우저는 `<input type="file">`의 `value`가 동일하면 이벤트를 무시
+      - 해결: `handleRemoveImage`에서 `fileInput.value = ''`로 input 초기화
+
 #### 🎯 주요 개선 사항
 - **사용자 경험**: 그리드 → 슬라이더로 전환하여 더 몰입감 있는 프로젝트 탐색
 - **시각적 피드백**: 피크 효과와 부드러운 애니메이션으로 프리미엄 느낌
 - **직관적 네비게이션**: 화살표 없이도 피크 카드 클릭만으로 자연스러운 이동
 - **일관된 디자인**: 모든 카드가 동일한 높이로 깔끔한 레이아웃 유지
+- **완전한 이미지 관리**: Supabase Storage 연동으로 이미지 업로드/삭제/미리보기 기능 완성
+- **향상된 업로드 UX**: 클릭 + Drag & Drop 동시 지원으로 더 편리한 파일 선택
 
 ### 2026-02-09 (월) 업데이트 내역
 
