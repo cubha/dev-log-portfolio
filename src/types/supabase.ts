@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      about_profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          intro_text: string
+          main_copy: string
+          profile_image_url: string | null
+          story_json: Json
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          intro_text: string
+          main_copy: string
+          profile_image_url?: string | null
+          story_json?: Json
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          intro_text?: string
+          main_copy?: string
+          profile_image_url?: string | null
+          story_json?: Json
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profile: {
+        Row: {
+          id: string
+          introduction: string | null
+          main_copy: string | null
+          profile_image_url: string | null
+          story_json: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          introduction?: string | null
+          main_copy?: string | null
+          profile_image_url?: string | null
+          story_json?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          introduction?: string | null
+          main_copy?: string | null
+          profile_image_url?: string | null
+          story_json?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -50,45 +113,57 @@ export type Database = {
       projects: {
         Row: {
           category: string | null
+          company_name: string | null
           created_at: string | null
           description: string | null
+          detailed_tasks: string[] | null
           end_date: string | null
           github_url: string | null
           id: number
           is_featured: boolean | null
           is_ongoing: boolean | null
           link_url: string | null
+          project_role: string | null
           start_date: string | null
+          team_size: number | null
           tech_stack: string[] | null
           thumbnail_url: string | null
           title: string
         }
         Insert: {
           category?: string | null
+          company_name?: string | null
           created_at?: string | null
           description?: string | null
+          detailed_tasks?: string[] | null
           end_date?: string | null
           github_url?: string | null
           id?: number
           is_featured?: boolean | null
           is_ongoing?: boolean | null
           link_url?: string | null
+          project_role?: string | null
           start_date?: string | null
+          team_size?: number | null
           tech_stack?: string[] | null
           thumbnail_url?: string | null
           title: string
         }
         Update: {
           category?: string | null
+          company_name?: string | null
           created_at?: string | null
           description?: string | null
+          detailed_tasks?: string[] | null
           end_date?: string | null
           github_url?: string | null
           id?: number
           is_featured?: boolean | null
           is_ongoing?: boolean | null
           link_url?: string | null
+          project_role?: string | null
           start_date?: string | null
+          team_size?: number | null
           tech_stack?: string[] | null
           thumbnail_url?: string | null
           title?: string

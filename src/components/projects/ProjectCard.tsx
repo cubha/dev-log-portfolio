@@ -3,15 +3,19 @@
 import { Database } from '@/src/types/supabase'
 import { FolderKanban, ExternalLink, Github, Calendar } from 'lucide-react'
 import Image from 'next/image'
-import { useAtomValue } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { isAdminAtom } from '@/src/store/authAtom'
+import { selectedProjectAtom } from '@/src/store/projectAtom'
 import { ProjectCardActions } from './ProjectCardActions'
+import { motion } from 'framer-motion'
 
 // Supabase에서 생성된 타입을 사용하여 프로젝트 타입 추출
 type Project = Database['public']['Tables']['projects']['Row']
 
 interface ProjectCardProps {
   project: Project
+  isActive?: boolean // 중앙에 위치한 활성 카드인지 여부
+  onCardClick?: () => void // 피크 카드 클릭 시 슬라이더 이동 핸들러
 }
 
 /**
@@ -20,12 +24,43 @@ interface ProjectCardProps {
  * 개별 프로젝트를 카드 형태로 표시합니다.
  * 썸네일, 제목, 설명, 기술 스택, 링크 등을 포함합니다.
  * 관리자 권한은 Jotai atom을 통해 전역으로 관리됩니다.
+ * 
+ * - isActive가 true인 경우: 탭 시 상세 모달 표시 (드래그는 제외)
+ * - isActive가 false이고 onCardClick이 있는 경우: 탭 시 슬라이더 이동
+ * 
+ * Framer Motion의 onTap 이벤트를 사용하여 드래그와 클릭을 명확히 구분합니다.
  */
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCardProps) {
   const isAdmin = useAtomValue(isAdminAtom)
+  const setSelectedProject = useSetAtom(selectedProjectAtom)
+
+  const handleCardTap = (event: MouseEvent | TouchEvent | PointerEvent) => {
+    // 링크나 버튼 클릭은 이벤트 전파 중단 (별도 처리)
+    const target = event.target as HTMLElement
+    if (target.closest('a') || target.closest('button')) {
+      return
+    }
+
+    // 중앙 활성 카드인 경우: 모달 열기
+    if (isActive) {
+      setSelectedProject(project)
+    }
+    // 피크 카드인 경우: 슬라이더 이동
+    else if (onCardClick) {
+      onCardClick()
+    }
+  }
 
   return (
-    <article className="h-[400px] flex flex-col group bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-blue-500 hover:shadow-lg transition-[color,border-color,box-shadow] duration-300 relative">
+    <motion.article
+      onTap={handleCardTap}
+      whileHover={isActive || onCardClick ? { scale: 1.02 } : {}}
+      whileTap={isActive || onCardClick ? { scale: 0.98 } : {}}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className={`h-[400px] flex flex-col group bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-blue-500 hover:shadow-lg transition-[color,border-color,box-shadow] duration-300 relative ${
+        isActive || onCardClick ? 'cursor-pointer' : ''
+      }`}
+    >
       {/* 관리자 전용 설정 버튼 */}
       {isAdmin && (
         <div className="absolute top-3 right-3 z-10">
@@ -134,7 +169,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
         </div>
       </div>
-    </article>
+    </motion.article>
   )
 }
 

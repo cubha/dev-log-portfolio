@@ -5,19 +5,24 @@ import { createClient } from '@/src/utils/supabase/client'
  *
  * @param file - 업로드할 이미지 파일
  * @param bucket - Storage 버킷 이름 (기본값: 'project-images')
+ * @param path - 버킷 내 저장 경로 (예: 'profile/', 'thumbnails/') (기본값: '')
  * @returns Public URL 문자열
  * @throws 업로드 실패 시 에러
  */
 export async function uploadImage(
   file: File,
-  bucket: string = 'project-images'
+  bucket: string = 'project-images',
+  path: string = ''
 ): Promise<string> {
   const supabase = createClient()
 
   // 파일명 생성: 타임스탬프 + 원본 파일명으로 중복 방지
   const timestamp = Date.now()
   const fileExt = file.name.split('.').pop()
-  const fileName = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+  const baseFileName = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+  
+  // 경로가 있으면 경로를 포함한 전체 파일명 생성
+  const fileName = path ? `${path}${baseFileName}` : baseFileName
 
   // Supabase Storage에 업로드
   const { data, error } = await supabase.storage
@@ -53,8 +58,8 @@ export async function deleteImage(
   const supabase = createClient()
 
   // URL에서 파일 경로 추출
-  // 예: https://xxx.supabase.co/storage/v1/object/public/project-images/filename.jpg
-  // → filename.jpg
+  // 예: https://xxx.supabase.co/storage/v1/object/public/project-images/profile/filename.jpg
+  // → profile/filename.jpg
   const urlParts = url.split(`/${bucket}/`)
   if (urlParts.length < 2) {
     throw new Error('잘못된 이미지 URL 형식입니다.')

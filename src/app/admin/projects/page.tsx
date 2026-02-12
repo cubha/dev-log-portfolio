@@ -42,6 +42,10 @@ export default function ProjectFormPage() {
     category: editingProject?.category || '',
     is_featured: editingProject?.is_featured || false,
     is_ongoing: editingProject?.is_ongoing || false,
+    company_name: editingProject?.company_name || '',
+    project_role: editingProject?.project_role || '',
+    team_size: editingProject?.team_size ?? 0,
+    detailed_tasks: editingProject?.detailed_tasks || [],
   })
 
   // editingProjectAtom이 변경되면 폼 데이터 업데이트
@@ -59,6 +63,10 @@ export default function ProjectFormPage() {
         category: editingProject.category || '',
         is_featured: editingProject.is_featured || false,
         is_ongoing: editingProject.is_ongoing || false,
+        company_name: editingProject.company_name || '',
+        project_role: editingProject.project_role || '',
+        team_size: editingProject.team_size ?? 0,
+        detailed_tasks: editingProject.detailed_tasks || [],
       })
       // 수정 모드일 때 기존 이미지를 미리보기로 표시
       setPreviewUrl(editingProject.thumbnail_url || null)
@@ -113,6 +121,10 @@ export default function ProjectFormPage() {
       formDataToSend.append('category', formData.category)
       formDataToSend.append('is_featured', formData.is_featured ? 'on' : '')
       formDataToSend.append('is_ongoing', formData.is_ongoing ? 'on' : '')
+      formDataToSend.append('company_name', formData.company_name)
+      formDataToSend.append('project_role', formData.project_role)
+      formDataToSend.append('team_size', formData.team_size.toString())
+      formDataToSend.append('detailed_tasks', formData.detailed_tasks.join('|||'))
 
       if (isEditMode && editingProject) {
         // 수정 모드
@@ -231,6 +243,30 @@ export default function ProjectFormPage() {
     if (fileInput) fileInput.value = ''
   }
 
+  // 상세 업무 추가 핸들러
+  const handleAddTask = () => {
+    setFormData(prev => ({
+      ...prev,
+      detailed_tasks: [...prev.detailed_tasks, ''],
+    }))
+  }
+
+  // 상세 업무 삭제 핸들러
+  const handleRemoveTask = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      detailed_tasks: prev.detailed_tasks.filter((_, i) => i !== index),
+    }))
+  }
+
+  // 상세 업무 변경 핸들러
+  const handleTaskChange = (index: number, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      detailed_tasks: prev.detailed_tasks.map((task, i) => (i === index ? value : task)),
+    }))
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* 페이지 헤더 */}
@@ -321,7 +357,7 @@ export default function ProjectFormPage() {
           {/* 설명 */}
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-              프로젝트 설명
+              프로젝트 설명 (주요 업무)
             </label>
             <textarea
               id="description"
@@ -329,9 +365,67 @@ export default function ProjectFormPage() {
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              placeholder="프로젝트에 대한 간략한 소개를 작성하세요"
+              placeholder="프로젝트에 대한 간략한 소개 및 주요 업무를 작성하세요"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
             />
+          </div>
+
+          {/* 회사명 & 담당 역할 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-2">
+                회사명 / 소속
+              </label>
+              <input
+                type="text"
+                id="company_name"
+                name="company_name"
+                value={formData.company_name}
+                onChange={handleChange}
+                placeholder="예: LG CNS, 프리랜서"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
+            <div>
+              <label htmlFor="project_role" className="block text-sm font-medium text-gray-700 mb-2">
+                담당 역할
+              </label>
+              <input
+                type="text"
+                id="project_role"
+                name="project_role"
+                value={formData.project_role}
+                onChange={handleChange}
+                placeholder="예: 풀스택 개발자, 프론트엔드 리드"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
+          </div>
+
+          {/* 참여 인원 */}
+          <div>
+            <label htmlFor="team_size" className="block text-sm font-medium text-gray-700 mb-2">
+              참여 인원
+            </label>
+            <input
+              type="number"
+              id="team_size"
+              name="team_size"
+              value={formData.team_size}
+              onChange={handleChange}
+              min="0"
+              placeholder="숫자 입력 또는 드롭다운에서 범위 선택"
+              list="team-size-options"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+            <datalist id="team-size-options">
+              <option value="0">O (0~9명)</option>
+              <option value="10">OO (10~99명)</option>
+              <option value="100">OOO (100명 이상)</option>
+            </datalist>
+            <p className="mt-1 text-xs text-gray-500">
+              직접 입력하거나 드롭다운에서 범위를 선택하세요. (O=0~9명, OO=10~99명, OOO=100명 이상)
+            </p>
           </div>
 
           {/* 기간 */}
@@ -346,7 +440,16 @@ export default function ProjectFormPage() {
                 id="start_date"
                 name="start_date"
                 value={formData.start_date}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const newStartDate = e.target.value
+                  // 시작일이 종료일보다 늦은지 검사
+                  if (formData.end_date && newStartDate && newStartDate > formData.end_date) {
+                    setError('시작 날짜는 종료 날짜보다 늦을 수 없습니다.')
+                    return
+                  }
+                  setError(null)
+                  handleChange(e)
+                }}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
@@ -387,7 +490,16 @@ export default function ProjectFormPage() {
                 id="end_date"
                 name="end_date"
                 value={formData.end_date}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const newEndDate = e.target.value
+                  // 종료일이 시작일보다 빠른지 검사
+                  if (formData.start_date && newEndDate && newEndDate < formData.start_date) {
+                    setError('종료 날짜는 시작 날짜보다 빠를 수 없습니다.')
+                    return
+                  }
+                  setError(null)
+                  handleChange(e)
+                }}
                 min={formData.start_date || undefined}
                 disabled={formData.is_ongoing}
                 required={!formData.is_ongoing}
@@ -408,6 +520,51 @@ export default function ProjectFormPage() {
                 setFormData(prev => ({ ...prev, tech_stack: techStack }))
               }
             />
+          </div>
+
+          {/* 상세 업무 내용 (Dynamic List) */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Code className="w-4 h-4 inline mr-1" />
+              상세 업무 내용
+            </label>
+            <div className="space-y-3">
+              {formData.detailed_tasks.map((task, index) => (
+                <div key={index} className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      value={task}
+                      onChange={(e) => handleTaskChange(index, e.target.value)}
+                      placeholder={`업무 ${index + 1}: 예) REST API 설계 및 구현`}
+                      className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 font-bold text-sm">
+                      &gt;&gt;
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTask(index)}
+                    className="px-4 py-3 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+                    title="업무 삭제"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={handleAddTask}
+                className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+              >
+                <Upload className="w-5 h-5" />
+                <span className="font-medium">상세 업무 추가</span>
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-gray-500">
+              프로젝트에서 수행한 구체적인 업무 내용을 항목별로 추가하세요.
+            </p>
           </div>
 
           {/* 링크 */}

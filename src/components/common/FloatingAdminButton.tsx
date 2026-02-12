@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { LogOut, X, LayoutDashboard, User } from 'lucide-react'
+import { LogOut, X, LayoutDashboard, User, Edit } from 'lucide-react'
 import { logoutUser } from '@/src/utils/auth/logout'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 
 /**
@@ -18,6 +19,7 @@ import Link from 'next/link'
 export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const pathname = usePathname()
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
@@ -28,21 +30,35 @@ export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
     }
   }
 
+  // About 페이지인지 확인
+  const isAboutPage = pathname === '/about'
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
       {/* 펼쳐지는 메뉴 */}
       {isOpen && (
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
-          {/* 관리자 전용: 대시보드 바로가기 */}
+          {/* 관리자 전용 메뉴 */}
           {isAdmin && (
             <>
-              <Link
-                href="/admin/dashboard"
-                className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <LayoutDashboard className="w-4 h-4 text-blue-600" />
-                <span className="font-medium">대시보드</span>
-              </Link>
+              {/* About 페이지에서는 프로필 편집 */}
+              {isAboutPage ? (
+                <Link
+                  href="/admin/profile"
+                  className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <Edit className="w-4 h-4 text-purple-600" />
+                  <span className="font-medium">프로필 편집</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/admin/dashboard"
+                  className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-blue-600" />
+                  <span className="font-medium">대시보드</span>
+                </Link>
+              )}
               <hr className="border-gray-100" />
             </>
           )}

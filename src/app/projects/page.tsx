@@ -5,6 +5,7 @@ import { BackButton } from '@/src/components/common/BackButton'
 import { ProjectList } from '@/src/components/projects/ProjectList'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
+import { AboutLink } from '@/src/components/home/AboutLink'
 import Link from 'next/link'
 
 /**
@@ -73,7 +74,7 @@ export default async function ProjectsPage() {
     const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류'
 
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pt-24">
         <BackButton />
         <ErrorState message={errorMessage} />
       </div>

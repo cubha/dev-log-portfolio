@@ -7,6 +7,7 @@ import { useAtom, useAtomValue } from 'jotai'
 import { isAdminAtom } from '@/src/store/authAtom'
 import { projectFilterAtom, FILTER_OPTIONS, type ProjectFilter } from '@/src/store/filterAtom'
 import { ProjectCard } from './ProjectCard'
+import { ProjectDetailModal } from './ProjectDetailModal'
 import Link from 'next/link'
 import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion'
 
@@ -89,6 +90,9 @@ export function ProjectList({ projects }: { projects: Project[] }) {
 
   return (
     <>
+      {/* 프로젝트 상세 모달 */}
+      <ProjectDetailModal />
+
       {/* 페이지 헤더 */}
       <div className="mb-10">
         <div className="flex items-center justify-between mb-3">
@@ -120,7 +124,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
       {filteredProjects.length === 0 ? (
         <EmptyFilterState activeFilter={activeFilter} />
       ) : (
-        <div className="relative overflow-x-hidden">
+        <div className="relative overflow-x-clip">
           {/* 슬라이더 뷰포트 - 중앙 정렬 및 양옆 피크 노출 */}
           <div
             ref={containerRef}
@@ -145,6 +149,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
                 right: 0,
               }}
               dragElastic={0.1}
+              dragMomentum={false}
               dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
               onDragEnd={(_, info) => {
                 const offset = info.offset.x
@@ -211,15 +216,18 @@ export function ProjectList({ projects }: { projects: Project[] }) {
                           damping: 25,
                         },
                       }}
-                      onClick={isPeekCard ? handlePeekClick : undefined}
-                      className={`${isPeekCard ? 'cursor-pointer hover:opacity-50' : ''}`}
                       style={{
                         width: `${CARD_WIDTH}px`,
                         height: `${CARD_HEIGHT}px`,
                         flexShrink: 0,
+                        pointerEvents: isInMainView || isPeekCard ? 'auto' : 'none',
                       }}
                     >
-                      <ProjectCard project={project} />
+                      <ProjectCard 
+                        project={project} 
+                        isActive={isInMainView}
+                        onCardClick={isPeekCard ? handlePeekClick : undefined}
+                      />
                     </motion.div>
                   )
                 })}

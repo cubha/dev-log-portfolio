@@ -1,13 +1,14 @@
 import Link from 'next/link'
-import { FolderKanban, ArrowRight } from 'lucide-react'
+import { FolderKanban, ArrowRight, Zap, Code2, Database, Palette, Sparkles } from 'lucide-react'
 import { createClient } from '@/src/utils/supabase/server'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
+import { AboutLink } from '@/src/components/home/AboutLink'
 
 /**
  * 홈페이지
  * 
  * 프로젝트의 메인 랜딩 페이지입니다.
- * 프로젝트 리스트로 이동할 수 있는 버튼을 제공합니다.
+ * 프로젝트 리스트 및 About 페이지로 이동할 수 있는 버튼을 제공합니다.
  * 로그인 유저에게 우측 하단에 플로팅 메뉴가 표시됩니다.
  */
 export default async function Home() {
@@ -28,8 +29,8 @@ export default async function Home() {
   const isLoggedIn = !!user
   const isAdmin = userRole === 'admin'
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
-      <div className="max-w-4xl w-full text-center space-y-8">
+    <main className="flex min-h-screen flex-col items-center justify-center p-8 pt-24">
+      <div className="max-w-screen-xl w-full text-center space-y-8">
         {/* 메인 타이틀 */}
         <div className="space-y-4">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
@@ -43,8 +44,9 @@ export default async function Home() {
           </p>
         </div>
 
-        {/* 프로젝트 보기 버튼 */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+        {/* CTA 버튼 */}
+        <div className="flex justify-center items-center pt-8">
+          {/* 프로젝트 보기 버튼 */}
           <Link
             href="/projects"
             className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
@@ -55,18 +57,31 @@ export default async function Home() {
           </Link>
         </div>
 
+        {/* About 링크 */}
+        <AboutLink />
+
         {/* 기술 스택 표시 */}
         <div className="pt-16">
           <p className="text-sm text-gray-500 mb-4">사용 기술</p>
           <div className="flex flex-wrap justify-center gap-3">
-            {['Next.js 15', 'TypeScript', 'Supabase', 'Tailwind CSS'].map((tech) => (
-              <span
-                key={tech}
-                className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg border border-gray-200"
-              >
-                {tech}
-              </span>
-            ))}
+            {[
+              { name: 'Next.js 15', icon: Zap },
+              { name: 'TypeScript', icon: Code2 },
+              { name: 'Supabase', icon: Database },
+              { name: 'Tailwind CSS', icon: Palette },
+              { name: 'Framer Motion', icon: Sparkles },
+            ].map((tech) => {
+              const Icon = tech.icon
+              return (
+                <span
+                  key={tech.name}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all"
+                >
+                  <Icon className="w-4 h-4 text-blue-600" />
+                  {tech.name}
+                </span>
+              )
+            })}
           </div>
         </div>
       </div>
