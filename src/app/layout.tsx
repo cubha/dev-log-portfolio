@@ -26,7 +26,7 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <JotaiProvider>
-          <Header />
+          {/* <Header /> */}
           {children}
         </JotaiProvider>
       </body>
