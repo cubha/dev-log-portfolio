@@ -41,45 +41,43 @@ export default async function AboutPage() {
       .single()
 
     if (!error && data) {
-      profileData = data as AboutProfile
+      profileData = data as unknown as AboutProfile
     }
   } catch (error) {
     console.error('프로필 조회 오류:', error)
   }
 
   return (
-    <main className="container mx-auto px-4 py-8 pt-24">
+    <main className="max-w-4xl mx-auto px-4 py-8">
       <BackButton />
+      
+      {/* 동적 콘텐츠 */}
+      <AboutContent profile={profileData} />
 
-      <div className="max-w-4xl mx-auto">
-        {/* 동적 콘텐츠 */}
-        <AboutContent profile={profileData} />
-
-        {/* 관리자 안내 - 프로필이 없을 때만 표시 */}
-        {isAdmin && !profileData && (
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mt-8">
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0">
-                <span className="text-2xl">✏️</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-blue-900 mb-2">
-                  프로필을 작성해보세요!
-                </h3>
-                <p className="text-blue-800 mb-4">
-                  관리자 페이지에서 프로필 정보를 입력하면 이 페이지에 표시됩니다.
-                </p>
-                <Link
-                  href="/admin/profile"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <span>프로필 편집하기</span>
-                </Link>
-              </div>
+      {/* 관리자 안내 - 프로필이 없을 때만 표시 */}
+      {isAdmin && !profileData && (
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mt-8">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <span className="text-2xl">✏️</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-blue-900 mb-2">
+                프로필을 작성해보세요!
+              </h3>
+              <p className="text-blue-800 mb-4">
+                관리자 페이지에서 프로필 정보를 입력하면 이 페이지에 표시됩니다.
+              </p>
+              <Link
+                href="/admin/profile"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <span>프로필 편집하기</span>
+              </Link>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* 로그인 유저: 플로팅 메뉴 */}
       {userRole !== 'guest' && <FloatingUserButton isAdmin={isAdmin} />}

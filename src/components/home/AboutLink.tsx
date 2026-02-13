@@ -15,7 +15,7 @@ export function AboutLink() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
-      className="text-center py-8"
+      className="text-center pt-8"
     >
       <Link href="/about" className="group inline-flex items-center gap-2">
         <motion.div

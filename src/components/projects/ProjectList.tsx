@@ -14,13 +14,13 @@ import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion'
 type Project = Database['public']['Tables']['projects']['Row']
 
 // 슬라이더 설정 상수
-const CARD_WIDTH = 350 // 각 카드의 너비 (px)
-const CARD_HEIGHT = 400 // 각 카드의 높이 (px)
-const CARD_GAP = 20 // 카드 간 간격 (px)
+const CARD_WIDTH = 240 // 각 카드의 너비 (px)
+const CARD_HEIGHT = 300 // 각 카드의 높이 (px)
+const CARD_GAP = 16 // 카드 간 간격 (px)
 const CARDS_PER_VIEW = 3 // 한 화면에 보이는 중앙 카드 수
-const PEEK_RATIO = 0.18 // 양옆 피크 카드 노출 비율
-const PEEK_OPACITY = 0.3 // 피크 카드 투명도
-const PEEK_SCALE = 0.9 // 피크 카드 크기
+const PEEK_RATIO = 0.2 // 양옆 피크 카드 노출 비율
+const PEEK_OPACITY = 0.4 // 피크 카드 투명도
+const PEEK_SCALE = 0.92 // 피크 카드 크기
 
 /**
  * 프로젝트 리스트 컴포넌트 (클라이언트 컴포넌트)
@@ -94,22 +94,22 @@ export function ProjectList({ projects }: { projects: Project[] }) {
       <ProjectDetailModal />
 
       {/* 페이지 헤더 */}
-      <div className="mb-10">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="text-4xl font-bold text-gray-900">프로젝트</h1>
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-3xl font-bold text-gray-900">프로젝트</h1>
           {/* 관리자 전용: 새 프로젝트 추가 버튼 */}
           {isAdmin && (
             <Link
               href="/admin/projects"
-              className="group flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm hover:shadow-md"
+              className="group flex items-center gap-2 px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm hover:shadow-md"
               title="새 프로젝트 추가"
             >
-              <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200" />
-              <span className="text-sm font-medium hidden sm:inline">새 프로젝트</span>
+              <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
+              <span className="text-xs font-medium hidden sm:inline">새 프로젝트</span>
             </Link>
           )}
         </div>
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-600 text-sm">
           제가 작업한 프로젝트들을 소개합니다.
         </p>
       </div>

@@ -3,6 +3,7 @@ import { FolderKanban, ArrowRight, Zap, Code2, Database, Palette, Sparkles } fro
 import { createClient } from '@/src/utils/supabase/server'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AboutLink } from '@/src/components/home/AboutLink'
+import { ContactLink } from '@/src/components/home/ContactLink'
 
 /**
  * 홈페이지
@@ -29,17 +30,17 @@ export default async function Home() {
   const isLoggedIn = !!user
   const isAdmin = userRole === 'admin'
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 pt-24">
-      <div className="max-w-screen-xl w-full text-center space-y-8">
+    <main className="flex min-h-screen flex-col items-center justify-center p-8">
+      <div className="max-w-4xl w-full text-center space-y-8">
         {/* 메인 타이틀 */}
-        <div className="space-y-4">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+        <div className="space-y-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             Dev Log Portfolio
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600">
+          <p className="text-base md:text-lg text-gray-600">
             개발 블로그 포트폴리오 프로젝트
           </p>
-          <p className="text-base text-gray-500 max-w-2xl mx-auto">
+          <p className="text-sm text-gray-500 max-w-2xl mx-auto">
             Next.js 15와 Supabase로 구축한 포트폴리오 관리 시스템입니다.
           </p>
         </div>
@@ -59,6 +60,9 @@ export default async function Home() {
 
         {/* About 링크 */}
         <AboutLink />
+        
+        {/* Contact 링크 */}
+        <ContactLink />
 
         {/* 기술 스택 표시 */}
         <div className="pt-16">

@@ -34,8 +34,12 @@ dev-log-portfolio/
 │   │   ├── layout.tsx                # 루트 레이아웃
 │   │   ├── page.tsx                  # 홈페이지 (/)
 │   │   ├── error.tsx                 # 에러 바운더리
+│   │   ├── about/
+│   │   │   └── page.tsx              # About 페이지 (/about)
 │   │   ├── projects/
 │   │   │   └── page.tsx              # 프로젝트 리스트 (/projects)
+│   │   ├── contact/
+│   │   │   └── page.tsx              # Contact 페이지 (/contact)
 │   │   └── admin/                    # 🔐 관리자 영역
 │   │       ├── layout.tsx            # 관리자 전용 레이아웃 (헤더+사이드바)
 │   │       ├── login/
@@ -49,6 +53,11 @@ dev-log-portfolio/
 │   │   │   └── FloatingAdminButton.tsx # 플로팅 유저 메뉴 (로그아웃 등)
 │   │   ├── admin/
 │   │   │   └── LogoutButton.tsx      # 로그아웃 버튼 (variant 지원)
+│   │   ├── contact/
+│   │   │   ├── ContactInfo.tsx       # 연락처 정보 카드
+│   │   │   ├── InquiryForm.tsx       # 문의 작성 폼
+│   │   │   ├── InquiryList.tsx       # 문의 목록 컨테이너
+│   │   │   └── InquiryCard.tsx       # 문의 아이템 (Accordion UI)
 │   │   ├── projects/
 │   │   │   ├── ProjectCard.tsx       # 프로젝트 카드 UI
 │   │   │   ├── ProjectList.tsx       # 프로젝트 리스트 (슬라이더 + 필터)
@@ -61,9 +70,15 @@ dev-log-portfolio/
 │   │   │   ├── server.ts             # 서버 컴포넌트용 Supabase 클라이언트
 │   │   │   ├── client.ts             # 클라이언트 컴포넌트용 Supabase 클라이언트
 │   │   │   └── middleware.ts         # JWT 검증 + 권한 검사 로직
-│   │   └── auth/
-│   │       ├── login.ts              # 서버 액션: 로그인 처리
-│   │       └── logout.ts             # 서버 액션: 로그아웃 처리
+│   │   ├── auth/
+│   │   │   ├── login.ts              # 서버 액션: 로그인 처리
+│   │   │   └── logout.ts             # 서버 액션: 로그아웃 처리
+│   │   ├── inquiries/
+│   │   │   ├── create.ts             # 문의 생성 (SHA-256 해싱)
+│   │   │   ├── verify.ts             # 비밀번호 검증
+│   │   │   └── delete.ts             # 문의 삭제
+│   │   └── storage/
+│   │       └── uploadImage.ts        # 이미지 업로드/삭제 (Supabase Storage)
 │   │
 │   ├── types/                        # 📝 TypeScript 타입 정의
 │   │   ├── supabase.ts               # Supabase CLI로 생성된 DB 타입
@@ -76,7 +91,10 @@ dev-log-portfolio/
 │   └── middleware.ts                 # 🔒 전역 미들웨어 (경로 보호 엔트리)
 │
 ├── supabase/                         # 🗄️ Supabase 관련 파일
-│   └── schema.sql                    # 데이터베이스 스키마
+│   ├── schema.sql                    # 데이터베이스 스키마
+│   └── migrations/
+│       ├── 20260213_create_inquiries.sql  # 문의 테이블 생성
+│       └── 20260214_alter_inquiries_add_columns.sql # 답변 컬럼 추가
 │
 ├── .env.local                        # 🔐 환경 변수 (Git에서 제외됨)
 └── package.json                      # 📦 의존성 관리
@@ -152,6 +170,12 @@ Supabase의 테이블 구조와 완벽하게 동기화된 타입입니다.
 #### `skills` - 기술 스택
 - 기술명, 카테고리 (frontend/backend/database/tool/language)
 - 아이콘 URL
+
+#### `inquiries` - 문의 내역
+- 제목, 내용, 비밀번호 해시 (SHA-256)
+- 공개 여부 (`is_public`)
+- 관리자 답변 (`reply`, `replied_at`)
+- 작성일, 수정일
 
 ---
 
@@ -263,6 +287,18 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
   - [x] '메인으로' 네비게이션 버튼
   - [x] 플로팅 유저 메뉴 (로그아웃, 대시보드 바로가기)
   - [x] 관리자에게만 '프로젝트 추가' 버튼 노출
+  - [x] 전체 페이지 Container 폭 통일 (max-w-4xl)
+  - [x] 미니멀리즘 디자인 (70% 사이즈 축소, 정보 밀도 증가)
+- [x] Contact 페이지 (문의 시스템)
+  - [x] 2-Column 레이아웃 (Contact Info + 문의 작성)
+  - [x] Blue-Purple 그라데이션 디자인 시스템
+  - [x] Supabase inquiries 테이블 연동
+  - [x] 문의 작성 (SHA-256 비밀번호 해싱)
+  - [x] 공개/비공개 토글 기능
+  - [x] Accordion UI 문의 목록
+  - [x] 비밀번호 보호 (비공개 문의)
+  - [x] 문의 삭제 기능
+  - [x] 답변 상태 표시 (답변완료/대기중)
 
 ### 🚧 개발 예정
 
@@ -306,6 +342,106 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 ---
 
 ## 📅 최근 업데이트
+
+## 🚀 2026-02-14 업데이트 내역
+
+### 1. Contact 페이지 전면 리뉴얼 (트렌디 디자인 시스템)
+*   **Silver SH 톤앤매너 기반 디자인**: 깔끔한 화이트 베이스에 Blue-Purple 그라데이션 포인트 컬러를 적용한 세련된 무드 연출
+*   **2-Column 레이아웃 구조**:
+    *   상단 섹션: Contact Info (좌측) + 문의 작성 폼 (우측)
+    *   하단 섹션: 문의내역 리스트 (전체 너비)
+*   **그라데이션 포인트 적용**:
+    *   아이콘, 타이틀 바, 제출 버튼에 Blue-Purple 그라데이션 적용
+    *   호버 시 부드러운 글로우 효과
+    *   공개/비공개 토글 스위치에 그라데이션 적용
+
+### 2. 문의 시스템 Full Stack 구현
+*   **Supabase `inquiries` 테이블 연동**:
+    *   제목, 내용, 비밀번호, 공개 여부, 답변 상태 관리
+    *   SHA-256 기반 비밀번호 해싱
+    *   `reply`, `replied_at` 컬럼 추가 (관리자 답변 기능 준비)
+*   **비밀번호 보호 기능**:
+    *   비공개 문의 클릭 시 비밀번호 모달 표시
+    *   자물쇠 아이콘 및 '비공개' 배지 UI
+    *   서버 사이드 비밀번호 검증 (`verify.ts`)
+*   **Accordion UI 문의 내역**:
+    *   클릭 시 내용이 펼쳐지는 아코디언 방식
+    *   답변 상태 아이콘 (답변완료: 그라데이션 체크, 대기중: 회색 시계)
+    *   문의 삭제 기능 (비밀번호 검증 후)
+
+### 3. 미니멀리즘 디자인 최적화
+*   **정보 밀도 증가 (70% 사이즈 축소)**:
+    *   모든 카드 요소의 패딩, 폰트, 아이콘 사이즈 축소
+    *   Contact Info와 문의 작성 카드 고정 높이 350px 적용
+    *   내부 스크롤 제거, 콘텐츠가 카드 내에 딱 맞게 조정
+*   **불필요한 장식 제거**:
+    *   설명 문구, 지원 텍스트 최소화
+    *   핵심 정보만 표시 (제목, 필수 입력 필드)
+*   **공개 여부 토글 배치 최적화**:
+    *   토글을 카드 타이틀 우측으로 이동
+    *   그라데이션 스위치 디자인 적용
+
+### 4. 전체 페이지 레이아웃 통일
+*   **Container 폭 통일 (`max-w-4xl`)**:
+    *   홈(`/`), About(`/about`), Projects(`/projects`), Contact(`/contact`) 페이지 모두 동일한 컨테이너 폭 적용
+    *   일관된 시각적 경험 제공
+*   **상단 여백 최적화**:
+    *   전체 페이지 콘텐츠를 상단에 더 가깝게 배치
+    *   `pt-24`로 헤더와의 간격 통일
+*   **Title 및 설명 텍스트 사이즈 축소**:
+    *   페이지 타이틀: `text-4xl` → `text-3xl`
+    *   섹션 타이틀: `text-2xl` → `text-xl`
+    *   설명 텍스트: `text-lg` → `text-sm`
+    *   그라데이션 바 높이: `h-6` → `h-5`
+
+### 5. Projects 페이지 카드 사이즈 조정
+*   **Container 축소에 따른 슬라이더 최적화**:
+    *   카드 크기: 350px×400px → 240px×300px
+    *   카드 간격: 20px → 16px
+    *   피크 비율: 18% → 20% (양옆 미리보기 강화)
+*   **카드 내부 요소 축소**:
+    *   썸네일 높이: 160px → 112px
+    *   아이콘 크기: 64px → 40px
+    *   패딩: 20px → 14px
+    *   폰트 사이즈 전반적 축소
+    *   버튼, 배지, 날짜 등 모든 요소 비례 축소
+
+### 6. About 페이지 텍스트 사이즈 조정
+*   **메인 타이틀**: `clamp(1rem, 3vw, 2rem)` → `clamp(0.875rem, 2.5vw, 1.5rem)`
+*   **서브 텍스트**: `text-lg` → `text-sm`
+*   **'About Me' 섹션 타이틀**: `text-3xl` → `text-2xl`
+*   **스토리 카드**:
+    *   타이틀: `text-xl` → `text-base`
+    *   아이콘: `text-2xl` → `text-lg`
+    *   내용: 기본 → `text-sm`
+
+### 7. 버그 수정 및 트러블슈팅
+*   **Supabase 스키마 불일치 해결**:
+    *   코드에서 `password_hash` 사용 → 실제 DB는 `password` 컬럼
+    *   모든 파일에서 컬럼명 통일 (`create.ts`, `delete.ts`, `verify.ts`, `supabase.ts`)
+*   **Linter 오류 수정**:
+    *   InquiryCard.tsx의 절대 경로 import → 상대 경로로 변경
+    *   모든 편집 파일 린트 에러 해결 확인
+
+---
+
+**주요 변경 파일:**
+- `src/app/contact/page.tsx` - Contact 페이지 메인 레이아웃
+- `src/components/contact/ContactInfo.tsx` - 연락처 정보 카드
+- `src/components/contact/InquiryForm.tsx` - 문의 작성 폼
+- `src/components/contact/InquiryList.tsx` - 문의 목록 컨테이너
+- `src/components/contact/InquiryCard.tsx` - 문의 아이템 (Accordion)
+- `src/utils/inquiries/create.ts` - 문의 생성 유틸리티
+- `src/utils/inquiries/verify.ts` - 비밀번호 검증 유틸리티
+- `src/utils/inquiries/delete.ts` - 문의 삭제 유틸리티
+- `src/types/supabase.ts` - Supabase 타입 정의 업데이트
+- `supabase/migrations/20260213_create_inquiries.sql` - inquiries 테이블 생성
+- `src/app/page.tsx` - 홈페이지 레이아웃 조정
+- `src/app/about/page.tsx` - About 페이지 레이아웃 조정
+- `src/app/projects/page.tsx` - Projects 페이지 레이아웃 조정
+- `src/components/projects/ProjectList.tsx` - 프로젝트 슬라이더 상수 조정
+- `src/components/projects/ProjectCard.tsx` - 프로젝트 카드 크기 축소
+- `src/components/about/AboutContent.tsx` - About 페이지 텍스트 크기 조정
 
 ## 🚀 2026-02-13 업데이트 내역
 

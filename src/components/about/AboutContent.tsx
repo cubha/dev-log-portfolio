@@ -162,12 +162,12 @@ export function AboutContent({ profile }: AboutContentProps) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mb-5"
+          className="mb-4"
         >
           <h1 
             className="font-bold text-gray-900 whitespace-nowrap"
             style={{
-              fontSize: 'clamp(1rem, 3vw, 2rem)',
+              fontSize: 'clamp(0.875rem, 2.5vw, 1.5rem)',
               letterSpacing: '-0.02em',
             }}
           >
@@ -180,7 +180,7 @@ export function AboutContent({ profile }: AboutContentProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-lg text-gray-500"
+          className="text-sm text-gray-500"
           style={{
             letterSpacing: '0.15em',
           }}
@@ -196,9 +196,9 @@ export function AboutContent({ profile }: AboutContentProps) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2"
+            className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"
           >
-            <span className="w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></span>
+            <span className="w-1 h-6 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></span>
             About Me
           </motion.h2>
 
@@ -208,13 +208,13 @@ export function AboutContent({ profile }: AboutContentProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-              className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-gradient-to-br from-blue-50 to-purple-50 p-5 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow"
             >
-              <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-                {section.icon && <span className="text-2xl">{section.icon}</span>}
+              <h3 className="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
+                {section.icon && <span className="text-lg">{section.icon}</span>}
                 {section.title}
               </h3>
-              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
                 {section.content}
               </p>
             </motion.div>

@@ -24,6 +24,10 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+  }
 }
 
 /* 커스텀 스크롤바 스타일 (모달용) */

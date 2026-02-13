@@ -53,7 +53,7 @@ export default async function ProjectsPage() {
 
     // 단일 return 문으로 통합된 레이아웃
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-8">
         {/* 서버에서 확인한 권한 정보를 Jotai atom에 동기화 */}
         <AuthStateInitializer isAdmin={isAdmin} />
         <BackButton />
@@ -74,7 +74,7 @@ export default async function ProjectsPage() {
     const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류'
 
     return (
-      <div className="container mx-auto px-4 py-8 pt-24">
+      <div className="max-w-4xl mx-auto px-4 py-8 pt-24">
         <BackButton />
         <ErrorState message={errorMessage} />
       </div>

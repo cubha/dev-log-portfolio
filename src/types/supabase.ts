@@ -47,6 +47,45 @@ export type Database = {
         }
         Relationships: []
       }
+      inquiries: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_public: boolean
+          password: string
+          password_hash: string
+          title: string
+          reply: string | null
+          replied_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          password: string
+          password_hash?: string
+          title: string
+          reply?: string | null
+          replied_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          password?: string
+          password_hash?: string
+          title?: string
+          reply?: string | null
+          replied_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profile: {
         Row: {
           id: string
