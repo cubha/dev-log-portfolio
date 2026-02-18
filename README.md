@@ -343,6 +343,116 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 
 ## 📅 최근 업데이트
 
+## 🚀 2026-02-18 업데이트 내역
+
+### 1. Phase 1: 디자인 시스템 정립
+
+#### 폰트 교체 (Pretendard 적용)
+*   **`globals.css`**: CDN `@import`로 Pretendard 정적 폰트 로드 (`cdn.jsdelivr.net`)
+*   **`layout.tsx`**: `<body className="font-sans antialiased">` 적용 → 전역 폰트 통일
+*   **`tailwind.config.ts`**: `fontFamily.sans`에 Pretendard Variable을 최우선으로 등록 (fallback: `-apple-system` → `Arial`)
+*   기존 `globals.css`의 하드코딩 `font-family: Arial` 완전 제거
+
+#### 브랜드 컬러 시스템 구축
+*   **`tailwind.config.ts`** `theme.extend.colors`에 `brand` 시맨틱 컬러 추가:
+    *   `brand.primary: '#2563EB'` (blue-600)
+    *   `brand.secondary: '#9333EA'` (purple-600)
+*   이제 `from-brand-primary`, `to-brand-secondary`, `text-brand-primary`, `bg-brand-secondary` 등 Tailwind 유틸리티 자동 생성
+
+#### 하드코딩 색상 전면 교체 (15개 파일)
+*   `from-blue-600 to-purple-600` → `from-brand-primary to-brand-secondary`
+*   `text-blue-600` → `text-brand-primary`, `bg-blue-600` → `bg-brand-primary`
+*   주요 파일: `Header.tsx`, `AboutCTA.tsx`, `FloatingAdminButton.tsx`, `ProjectDetailModal.tsx`, `admin/layout.tsx`, `login/page.tsx`, `admin/projects/page.tsx`, `admin/profile/page.tsx` 등 전체
+*   hover 상태(`hover:from-blue-700`) → `hover:opacity-90`으로 일관 처리
+
+---
+
+### 2. UI/UX 폴리싱
+
+#### 테두리 개선
+*   `border-[0.5px]` 제거 → `border border-gray-100 shadow-sm rounded-2xl` 적용 (InquiryCard, InquiryForm, ContactInfo 등)
+
+#### 입력 필드 개선
+*   Input 높이 `h-11` (44px) 표준화
+*   포커스 링: `focus:ring-brand-primary/30 focus:border-brand-primary` 적용
+
+#### Toast 알림 도입 (alert() 전면 교체)
+*   `sonner` 라이브러리 기반 토스트 알림 적용
+*   `layout.tsx`에 `<Toaster richColors position="top-right" />` 전역 등록
+*   12곳의 `alert()` / `window.confirm()` 결과 → `toast.success()` / `toast.error()`로 교체
+    *   `ContactInfo.tsx`, `InquiryForm.tsx`, `InquiryCard.tsx`, `ProjectCardActions.tsx`
+
+---
+
+### 3. 서버 사이드 인증 유틸리티 (DRY 원칙 적용)
+
+*   **신규 파일**: `src/utils/auth/serverAuth.ts`
+*   `getCurrentUserRole()` 함수 구현:
+    1.  `supabase.auth.getUser()` 호출
+    2.  `profiles` 테이블에서 `role` 조회
+    3.  `{ user, role, isAdmin }` 반환
+*   `page.tsx`, `projects/page.tsx`, `about/page.tsx` 총 3개 페이지에서 중복 12줄 인증 코드 → 1줄 대체
+
+---
+
+### 4. Contact Info — DB 연동 및 인라인 에딧 기능
+
+#### 데이터베이스 스키마 추가
+*   **신규 테이블**: `contact_links`
+    *   컬럼: `id`, `label`, `value`, `href`, `icon_key`, `is_copyable`, `sort_order`
+    *   RLS: 공개 읽기 + 관리자만 수정
+*   마이그레이션 파일: `src/utils/db/contact_links_migration.sql`
+*   `src/types/supabase.ts`에 `contact_links` Row/Insert/Update 타입 추가
+*   `src/types/contact.ts` 신규 생성 (`ContactLink`, `ActionResult` 편의 타입)
+
+#### 아이콘 매핑 유틸리티
+*   **신규 파일**: `src/utils/contact/iconMap.ts`
+*   `ICON_MAP`: DB의 `icon_key` 문자열 → `react-icons` 컴포넌트 매핑 (`mail`, `phone`, `location`, `github`)
+*   새 아이콘 추가 시 맵에만 항목 추가
+
+#### 서버 액션
+*   **신규 파일**: `src/actions/contact.ts`
+*   `updateContactLink(id, data)`: 관리자 권한 검증 → DB 업데이트 → `revalidatePath('/contact')`
+
+#### ContactInfo.tsx 완전 리팩토링
+*   **Before**: 하드코딩 데이터, toast 없음
+*   **After**: `initialData: ContactLink[]` + `isAdmin: boolean` props 기반
+*   `useOptimistic` + `useTransition` 낙관적 UI: 저장 버튼 클릭 즉시 화면 반영
+*   관리자 전용 인라인 에딧: 수정 아이콘 클릭 → Ghost Input 전환
+*   `contact/page.tsx`: Server Component에서 `contact_links` fetch + `isAdmin` 전달
+
+#### Contact Info 인라인 에딧 UI 개선 (Layout Shift 해결)
+*   **Ghost Input** 적용 → border-b만 표시, padding 없음 → 기존 텍스트 자리 그대로 차지
+*   **하단 버튼 제거** → 저장/취소 버튼을 헤더 우측 아이콘(`✕` / `✓`)으로 이동
+*   **카드 높이 완전 고정** (`h-[350px]`): 에딧 모드 전환 시 height 변화 0
+*   GitHub(href) 2줄 입력: `text-xs leading-4` 최소 공간으로 높이 증가 억제
+
+---
+
+### 5. 버그 수정
+
+#### TypeScript 타입 불일치 해결 (`InquiryCard.tsx`)
+*   **원인**: Supabase CLI 타입 재생성 후 `inquiries.is_public`이 `boolean | null`로 변경되었으나, `InquiryCardProps`는 `boolean` (non-nullable)로 선언되어 타입 에러 발생
+*   **수정**: `InquiryCardProps.inquiry.is_public`을 `boolean | null`로 변경 → 런타임 동작 영향 없음 (`null`은 falsy 처리)
+
+---
+
+**주요 변경 파일:**
+- `tailwind.config.ts` — 브랜드 컬러 + Pretendard 폰트 설정
+- `src/app/globals.css` — Pretendard CDN, font-family 제거
+- `src/app/layout.tsx` — font-sans 적용, Toaster 등록
+- `src/utils/auth/serverAuth.ts` — 신규: 공통 인증 유틸리티
+- `src/utils/contact/iconMap.ts` — 신규: 아이콘 매핑
+- `src/utils/db/contact_links_migration.sql` — 신규: DB 마이그레이션
+- `src/actions/contact.ts` — 신규: Contact 서버 액션
+- `src/types/contact.ts` — 신규: Contact 편의 타입
+- `src/types/supabase.ts` — contact_links 타입 추가
+- `src/app/contact/page.tsx` — DB fetch + 권한 전달
+- `src/components/contact/ContactInfo.tsx` — 전면 리팩토링 (DB 연동 + 인라인 에딧)
+- `src/components/contact/InquiryCard.tsx` — is_public 타입 수정
+- 전체 15개 파일 — 하드코딩 색상 → brand 변수 교체
+
+
 ## 🚀 2026-02-14 업데이트 내역
 
 ### 1. Contact 페이지 전면 리뉴얼 (트렌디 디자인 시스템)
