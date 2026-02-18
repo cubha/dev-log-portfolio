@@ -1,4 +1,5 @@
 import { createClient } from '@/src/utils/supabase/server'
+import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { BackButton } from '@/src/components/common/BackButton'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AboutContent } from '@/src/components/about/AboutContent'
@@ -7,27 +8,15 @@ import type { AboutProfile } from '@/src/types/profile'
 
 /**
  * About 페이지
- * 
+ *
  * 개발자 프로필을 표시하는 공개 페이지입니다.
  * 관리자는 우측 하단 플로팅 버튼을 통해 프로필을 편집할 수 있습니다.
  */
 export default async function AboutPage() {
-  const supabase = await createClient()
-  
-  // 로그인 상태 및 권한 확인
-  const { data: { user } } = await supabase.auth.getUser()
-  let userRole = 'guest'
-  let isAdmin = false
+  // 로그인 상태 및 권한 확인 (공통 유틸리티 사용)
+  const { role: userRole, isAdmin } = await getCurrentUserRole()
 
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-    userRole = profile?.role || 'user'
-    isAdmin = userRole === 'admin'
-  }
+  const supabase = await createClient()
 
   // 프로필 데이터 조회
   let profileData: AboutProfile | null = null
@@ -56,7 +45,7 @@ export default async function AboutPage() {
 
       {/* 관리자 안내 - 프로필이 없을 때만 표시 */}
       {isAdmin && !profileData && (
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mt-8">
+        <div className="bg-blue-50 border-l-4 border-brand-primary p-6 rounded-lg mt-8">
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0">
               <span className="text-2xl">✏️</span>
@@ -70,7 +59,7 @@ export default async function AboutPage() {
               </p>
               <Link
                 href="/admin/profile"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary text-white font-semibold rounded-lg hover:opacity-90 transition-all"
               >
                 <span>프로필 편집하기</span>
               </Link>

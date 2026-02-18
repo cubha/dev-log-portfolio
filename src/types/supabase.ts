@@ -47,41 +47,74 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_links: {
+        Row: {
+          created_at: string | null
+          href: string | null
+          icon_key: string
+          id: string
+          is_copyable: boolean
+          label: string
+          sort_order: number
+          value: string
+        }
+        Insert: {
+          created_at?: string | null
+          href?: string | null
+          icon_key: string
+          id?: string
+          is_copyable?: boolean
+          label: string
+          sort_order?: number
+          value: string
+        }
+        Update: {
+          created_at?: string | null
+          href?: string | null
+          icon_key?: string
+          id?: string
+          is_copyable?: boolean
+          label?: string
+          sort_order?: number
+          value?: string
+        }
+        Relationships: []
+      }
       inquiries: {
         Row: {
           content: string
           created_at: string
           id: string
-          is_public: boolean
+          is_public: boolean | null
           password: string
           password_hash: string
-          title: string
-          reply: string | null
           replied_at: string | null
+          reply: string | null
+          title: string
           updated_at: string
         }
         Insert: {
           content: string
           created_at?: string
           id?: string
-          is_public?: boolean
+          is_public?: boolean | null
           password: string
           password_hash?: string
-          title: string
-          reply?: string | null
           replied_at?: string | null
+          reply?: string | null
+          title: string
           updated_at?: string
         }
         Update: {
           content?: string
           created_at?: string
           id?: string
-          is_public?: boolean
+          is_public?: boolean | null
           password?: string
           password_hash?: string
-          title?: string
-          reply?: string | null
           replied_at?: string | null
+          reply?: string | null
+          title?: string
           updated_at?: string
         }
         Relationships: []

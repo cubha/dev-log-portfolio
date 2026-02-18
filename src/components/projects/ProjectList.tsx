@@ -101,7 +101,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
           {isAdmin && (
             <Link
               href="/admin/projects"
-              className="group flex items-center gap-2 px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm hover:shadow-md"
+              className="group flex items-center gap-2 px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-brand-primary hover:text-brand-primary transition-all shadow-sm hover:shadow-md"
               title="새 프로젝트 추가"
             >
               <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
@@ -278,8 +278,8 @@ function FilterBar({
               transition-colors duration-200 cursor-pointer
               ${
                 isActive
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md shadow-blue-500/25'
-                  : 'bg-white text-gray-600 border border-gray-300 hover:border-blue-400 hover:text-blue-600'
+                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-md shadow-brand-primary/25'
+                  : 'bg-white text-gray-600 border border-gray-300 hover:border-brand-primary hover:text-brand-primary'
               }
             `}
           >
@@ -326,8 +326,8 @@ function PaginationDots({
               rounded-full cursor-pointer transition-all duration-200
               ${
                 isActive
-                  ? 'w-10 h-3 bg-gradient-to-r from-blue-600 to-purple-600 shadow-md shadow-blue-500/25'
-                  : 'w-3 h-3 bg-gray-300 hover:bg-blue-400 hover:scale-110'
+                  ? 'w-10 h-3 bg-gradient-to-r from-brand-primary to-brand-secondary shadow-md shadow-brand-primary/25'
+                  : 'w-3 h-3 bg-gray-300 hover:bg-brand-primary hover:scale-110'
               }
             `}
             aria-label={`${i + 1}페이지로 이동`}
@@ -336,7 +336,7 @@ function PaginationDots({
             {isActive && (
               <motion.div
                 layoutId="activeDot"
-                className="w-full h-full rounded-full bg-gradient-to-r from-blue-600 to-purple-600"
+                className="w-full h-full rounded-full bg-gradient-to-r from-brand-primary to-brand-secondary"
                 transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               />
             )}

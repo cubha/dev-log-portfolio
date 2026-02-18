@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'sonner'
 import { HiOutlineTrash, HiOutlineLockClosed, HiChevronDown, HiCheckCircle, HiClock } from 'react-icons/hi'
 import { deleteInquiry } from '../../utils/inquiries/delete'
 import { verifyInquiryPassword } from '../../utils/inquiries/verify'
@@ -14,7 +15,7 @@ interface InquiryCardProps {
     reply: string | null
     replied_at: string | null
     created_at: string
-    is_public: boolean
+    is_public: boolean | null
   }
   isAdmin: boolean
 }
@@ -48,7 +49,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
 
   const handlePasswordVerify = async () => {
     if (!password.trim()) {
-      alert('비밀번호를 입력해주세요.')
+      toast.error('비밀번호를 입력해주세요.')
       return
     }
 
@@ -63,11 +64,11 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
         setPassword('')
         setIsOpen(true)
       } else {
-        alert(result.error || '비밀번호가 일치하지 않습니다.')
+        toast.error(result.error || '비밀번호가 일치하지 않습니다.')
       }
     } catch (error) {
       console.error('Failed to verify password:', error)
-      alert('비밀번호 검증에 실패했습니다.')
+      toast.error('비밀번호 검증에 실패했습니다.')
     } finally {
       setIsVerifying(false)
     }
@@ -75,7 +76,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
 
   const handleDelete = async () => {
     if (!isAdmin && !password.trim()) {
-      alert('비밀번호를 입력해주세요.')
+      toast.error('비밀번호를 입력해주세요.')
       return
     }
 
@@ -85,14 +86,14 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
       const result = await deleteInquiry(inquiry.id, isAdmin ? null : password)
       
       if (result.success) {
-        alert('문의가 삭제되었습니다.')
+        toast.success('문의가 삭제되었습니다.')
         window.location.reload()
       } else {
-        alert(result.error || '삭제에 실패했습니다.')
+        toast.error(result.error || '삭제에 실패했습니다.')
       }
     } catch (error) {
       console.error('Failed to delete inquiry:', error)
-      alert('삭제에 실패했습니다.')
+      toast.error('삭제에 실패했습니다.')
     } finally {
       setIsDeleting(false)
       setShowDeleteModal(false)
@@ -115,7 +116,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
           {/* 답변 상태 아이콘 */}
           <div className="flex-shrink-0">
             {hasReply ? (
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center">
                 <HiCheckCircle className="w-4 h-4 text-white" />
               </div>
             ) : (
@@ -195,7 +196,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
                 {hasReply && (
                   <div className="p-3 bg-gray-50 rounded-xl">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <div className="w-5 h-5 rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-md bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center">
                         <span className="text-white text-[10px] font-bold">A</span>
                       </div>
                       <div className="text-xs font-medium text-gray-900">관리자 답변</div>
@@ -232,7 +233,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
               className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-7"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center">
                   <HiOutlineLockClosed className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -256,7 +257,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
                       }
                     }}
                     placeholder="비밀번호 입력"
-                    className="w-full pl-12 pr-4 py-2.5 border-[0.5px] border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all"
+                    className="w-full h-11 pl-12 pr-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all"
                     autoFocus
                   />
                 </div>
@@ -269,7 +270,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
                     setPassword('')
                   }}
                   disabled={isVerifying}
-                  className="flex-1 px-4 py-3 border-[0.5px] border-gray-100 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
                 >
                   취소
                 </button>
@@ -324,7 +325,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="비밀번호 입력"
-                      className="w-full pl-12 pr-4 py-2.5 border-[0.5px] border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all"
+                      className="w-full h-11 pl-12 pr-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all"
                       autoFocus
                     />
                   </div>
@@ -335,7 +336,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
                 <button
                   onClick={() => setShowDeleteModal(false)}
                   disabled={isDeleting}
-                  className="flex-1 px-4 py-3 border-[0.5px] border-gray-100 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
                 >
                   취소
                 </button>

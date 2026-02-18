@@ -86,7 +86,7 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
           )}
         </div>
       ) : (
-        <div className="h-28 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+        <div className="h-28 bg-gradient-to-br from-brand-primary via-brand-secondary to-pink-500 flex items-center justify-center flex-shrink-0">
           <FolderKanban className="w-10 h-10 text-white opacity-50" />
         </div>
       )}
@@ -149,7 +149,7 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
                 href={project.link_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-700 font-medium hover:underline"
+                className="flex items-center gap-1 text-[11px] text-brand-primary hover:opacity-80 font-medium hover:underline"
               >
                 <ExternalLink className="w-3 h-3" />
                 <span>데모</span>

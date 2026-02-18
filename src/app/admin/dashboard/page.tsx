@@ -86,7 +86,7 @@ export default async function AdminDashboardPage() {
               className="group flex items-center justify-between p-4 bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border border-blue-200 rounded-lg transition-all hover:shadow-md"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-600 rounded-lg">
+                <div className="p-2 bg-brand-primary rounded-lg">
                   <FolderKanban className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -94,7 +94,7 @@ export default async function AdminDashboardPage() {
                   <p className="text-sm text-gray-600">프로젝트 추가 및 수정</p>
                 </div>
               </div>
-              <ArrowRight className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 text-brand-primary group-hover:translate-x-1 transition-transform" />
             </Link>
 
             <Link
@@ -102,7 +102,7 @@ export default async function AdminDashboardPage() {
               className="group flex items-center justify-between p-4 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border border-purple-200 rounded-lg transition-all hover:shadow-md"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-600 rounded-lg">
+                <div className="p-2 bg-brand-secondary rounded-lg">
                   <Code2 className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -110,7 +110,7 @@ export default async function AdminDashboardPage() {
                   <p className="text-sm text-gray-600">기술 스택 추가 및 수정</p>
                 </div>
               </div>
-              <ArrowRight className="w-5 h-5 text-purple-600 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 text-brand-secondary group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
@@ -154,8 +154,8 @@ function StatCard({
   description: string
 }) {
   const colorClasses = {
-    blue: 'from-blue-500 to-blue-600 text-blue-600',
-    purple: 'from-purple-500 to-purple-600 text-purple-600',
+    blue: 'from-brand-primary/70 to-brand-primary text-brand-primary',
+    purple: 'from-brand-secondary/70 to-brand-secondary text-brand-secondary',
     green: 'from-green-500 to-green-600 text-green-600',
   }
 

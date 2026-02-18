@@ -20,7 +20,7 @@ export function AboutCTA() {
       >
         {/* 글로우 배경 */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          className="absolute inset-0 bg-gradient-to-r from-brand-primary/20 via-brand-secondary/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
           animate={{
             backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
           }}
@@ -35,7 +35,7 @@ export function AboutCTA() {
         />
 
         {/* 보더 그라데이션 */}
-        <div className="absolute inset-0 rounded-xl p-[2px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-60 group-hover:opacity-100 transition-opacity">
+        <div className="absolute inset-0 rounded-xl p-[2px] bg-gradient-to-r from-brand-primary via-brand-secondary to-pink-500 opacity-60 group-hover:opacity-100 transition-opacity">
           <div className="absolute inset-[2px] bg-white rounded-xl" />
         </div>
 
@@ -66,12 +66,12 @@ export function AboutCTA() {
               ease: 'linear',
             }}
           >
-            <Sparkles className="w-5 h-5 text-purple-600" />
+            <Sparkles className="w-5 h-5 text-brand-secondary" />
           </motion.div>
-          <span className="text-lg font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <span className="text-lg font-bold bg-gradient-to-r from-brand-primary via-brand-secondary to-pink-600 bg-clip-text text-transparent">
             About Me
           </span>
-          <User className="w-5 h-5 text-blue-600 group-hover:text-purple-600 transition-colors" />
+          <User className="w-5 h-5 text-brand-primary group-hover:text-brand-secondary transition-colors" />
         </div>
 
         {/* 펄스 효과 */}

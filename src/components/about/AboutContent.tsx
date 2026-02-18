@@ -78,7 +78,7 @@ export function AboutContent({ profile }: AboutContentProps) {
               transition={{ duration: 0.6, delay: 0.2 }}
               whileHover={{ scale: 1.08 }}
               onClick={() => setIsImageExpanded(true)}
-              className="relative w-80 h-80 cursor-pointer rounded-full bg-gradient-to-br from-blue-500 to-purple-500 p-[3px]"
+              className="relative w-80 h-80 cursor-pointer rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary p-[3px]"
             >
               <div className="relative w-full h-full rounded-full overflow-hidden bg-white">
                 <Image
@@ -96,7 +96,7 @@ export function AboutContent({ profile }: AboutContentProps) {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               whileHover={{ scale: 1.08 }}
-              className="w-80 h-80 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 p-[3px]"
+              className="w-80 h-80 rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary p-[3px]"
             >
               <div className="w-full h-full bg-gray-100 rounded-full flex items-center justify-center">
                 <User className="w-36 h-36 text-gray-300" />
@@ -198,7 +198,7 @@ export function AboutContent({ profile }: AboutContentProps) {
             transition={{ duration: 0.5, delay: 0.5 }}
             className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"
           >
-            <span className="w-1 h-6 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></span>
+            <span className="w-1 h-6 bg-gradient-to-b from-brand-primary to-brand-secondary rounded-full"></span>
             About Me
           </motion.h2>
 

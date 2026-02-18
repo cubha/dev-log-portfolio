@@ -27,7 +27,7 @@ export function ProfilePreview({
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 overflow-auto max-h-[calc(100vh-120px)]">
       <div className="mb-4 pb-4 border-b border-gray-200">
         <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-          <span className="text-blue-600">👀</span>
+          <span className="text-brand-primary">👀</span>
           미리보기
         </h3>
         <p className="text-xs text-gray-500 mt-1">
@@ -50,7 +50,7 @@ export function ProfilePreview({
                 />
               </div>
             ) : (
-              <div className="w-32 h-32 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-full border-4 border-blue-500 shadow-lg flex items-center justify-center">
+              <div className="w-32 h-32 bg-gradient-to-br from-brand-primary via-brand-secondary to-pink-500 rounded-full border-4 border-brand-primary shadow-lg flex items-center justify-center">
                 <User className="w-16 h-16 text-white opacity-50" />
               </div>
             )}
@@ -70,7 +70,7 @@ export function ProfilePreview({
         {/* 스토리 섹션들 */}
         <section className="space-y-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <span className="w-1 h-6 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></span>
+            <span className="w-1 h-6 bg-gradient-to-b from-brand-primary to-brand-secondary rounded-full"></span>
             About Me
           </h2>
 

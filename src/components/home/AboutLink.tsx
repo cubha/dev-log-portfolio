@@ -29,15 +29,15 @@ export function AboutLink() {
             ease: 'easeInOut',
           }}
         >
-          <Sparkles className="w-4 h-4 text-purple-500" />
+          <Sparkles className="w-4 h-4 text-brand-secondary" />
         </motion.div>
         
-        <span className="text-gray-600 group-hover:text-blue-600 transition-colors">
+        <span className="text-gray-600 group-hover:text-brand-primary transition-colors">
           더 자세한 역량이 궁금하신가요?
         </span>
         
         <motion.div
-          className="flex items-center gap-1 text-blue-600 font-semibold"
+          className="flex items-center gap-1 text-brand-primary font-semibold"
           whileHover={{ x: 5 }}
           transition={{ type: 'spring', stiffness: 400 }}
           >

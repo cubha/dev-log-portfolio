@@ -10,9 +10,29 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // Pretendard 폰트를 기본 sans-serif로 지정
+      fontFamily: {
+        sans: [
+          'Pretendard Variable',
+          'Pretendard',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'system-ui',
+          'Helvetica Neue',
+          'Arial',
+          'sans-serif',
+        ],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        // 브랜드 시맨틱 컬러 시스템
+        // 사용 예: text-brand-primary, bg-brand-secondary
+        // 그라데이션: from-brand-primary to-brand-secondary
+        brand: {
+          primary: '#2563EB',   // blue-600
+          secondary: '#9333EA', // purple-600
+        },
       },
       keyframes: {
         gradient: {

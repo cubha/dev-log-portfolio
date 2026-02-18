@@ -220,7 +220,7 @@ export default function AdminProfilePage() {
         <BackButton />
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mb-4"></div>
             <p className="text-gray-600">프로필 데이터를 불러오는 중...</p>
           </div>
         </div>
@@ -244,7 +244,7 @@ export default function AdminProfilePage() {
         </div>
         <button
           onClick={() => setShowPreview(!showPreview)}
-          className="flex items-center gap-2 px-4 py-2 text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-brand-primary bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
         >
           <Eye className="w-5 h-5" />
           <span className="font-medium">{showPreview ? '미리보기 닫기' : '미리보기'}</span>
@@ -285,7 +285,7 @@ export default function AdminProfilePage() {
             {/* 기본 정보 섹션 */}
             <section>
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <User className="w-5 h-5 text-blue-600" />
+                <User className="w-5 h-5 text-brand-primary" />
                 기본 정보
               </h2>
 
@@ -391,7 +391,7 @@ export default function AdminProfilePage() {
             {/* 스토리 섹션 */}
             <section>
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-purple-600" />
+                <FileText className="w-5 h-5 text-brand-secondary" />
                 About Me
               </h2>
 
@@ -419,7 +419,7 @@ export default function AdminProfilePage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-5 h-5" />
                 {isSubmitting ? '저장 중...' : '저장하기'}

@@ -45,8 +45,11 @@ export async function InquiryList() {
   return (
     <section className="mt-12">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-1 h-5 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full" />
-        <h2 className="text-xl font-semibold text-gray-900">문의내역</h2>
+        <div className="w-1 h-5 bg-gradient-to-b from-brand-primary to-brand-secondary rounded-full" />
+        <h2 className="text-xl font-semibold text-gray-900">
+          {/* {isAdmin ? '문의내역' : '나의 문의내역'} */}
+          {'문의내역'}
+        </h2>
       </div>
       {!inquiries || inquiries.length === 0 ? (
         <div className="bg-white border-[0.5px] border-gray-100 rounded-2xl p-8 text-center">

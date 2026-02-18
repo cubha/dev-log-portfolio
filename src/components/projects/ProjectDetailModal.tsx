@@ -107,7 +107,7 @@ export function ProjectDetailModal() {
                   )}
                 </div>
               ) : (
-                <div className="w-full h-80 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+                <div className="w-full h-80 bg-gradient-to-br from-brand-primary via-brand-secondary to-pink-500 flex items-center justify-center">
                   <FolderKanban className="w-24 h-24 text-white opacity-50" />
                 </div>
               )}
@@ -120,7 +120,7 @@ export function ProjectDetailModal() {
                   <div className="flex items-center gap-3">
                     {(selectedProject.start_date || selectedProject.end_date) && (
                       <>
-                        <Calendar className="w-5 h-5 text-blue-600" />
+                        <Calendar className="w-5 h-5 text-brand-primary" />
                         <div>
                           <div className="text-lg font-bold text-gray-900">
                             {selectedProject.start_date && formatDateShort(selectedProject.start_date)}
@@ -144,7 +144,7 @@ export function ProjectDetailModal() {
                         {selectedProject.company_name || '-'}
                       </div>
                       {selectedProject.project_role && (
-                        <div className="text-sm text-blue-600 font-semibold">
+                        <div className="text-sm text-brand-primary font-semibold">
                           {selectedProject.project_role}
                         </div>
                       )}
@@ -244,7 +244,7 @@ export function ProjectDetailModal() {
                 {selectedProject.detailed_tasks && selectedProject.detailed_tasks.length > 0 && (
                   <div className="mb-8">
                     <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                      <span className="w-1 h-6 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></span>
+                      <span className="w-1 h-6 bg-gradient-to-b from-brand-primary to-brand-secondary rounded-full"></span>
                       상세 내용
                     </h3>
                     <div className="space-y-2.5 pl-2">
@@ -256,7 +256,7 @@ export function ProjectDetailModal() {
                           transition={{ delay: index * 0.05 }}
                           className="flex gap-3 items-start group"
                         >
-                          <span className="text-blue-600 font-bold text-base mt-0.5 group-hover:text-purple-600 transition-colors">
+                          <span className="text-brand-primary font-bold text-base mt-0.5 group-hover:text-brand-secondary transition-colors">
                             &gt;&gt;
                           </span>
                           <span className="text-gray-800 text-base leading-relaxed flex-1">
@@ -276,7 +276,7 @@ export function ProjectDetailModal() {
                         href={selectedProject.link_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
+                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
                       >
                         <ExternalLink className="w-5 h-5" />
                         <span>라이브 데모 보기</span>

@@ -47,7 +47,7 @@ export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
                   href="/admin/profile"
                   className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  <Edit className="w-4 h-4 text-purple-600" />
+                  <Edit className="w-4 h-4 text-brand-secondary" />
                   <span className="font-medium">프로필 편집</span>
                 </Link>
               ) : (
@@ -55,7 +55,7 @@ export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
                   href="/admin/dashboard"
                   className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  <LayoutDashboard className="w-4 h-4 text-blue-600" />
+                  <LayoutDashboard className="w-4 h-4 text-brand-primary" />
                   <span className="font-medium">대시보드</span>
                 </Link>
               )}
@@ -86,7 +86,7 @@ export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
           ${isOpen
             ? 'bg-gray-800 text-white hover:bg-gray-900'
             : isAdmin
-              ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
+              ? 'bg-gradient-to-br from-brand-primary to-brand-secondary text-white hover:opacity-90'
               : 'bg-gray-700 text-white hover:bg-gray-800'
           }
         `}

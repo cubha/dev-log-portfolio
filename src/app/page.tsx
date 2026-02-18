@@ -1,34 +1,22 @@
 import Link from 'next/link'
 import { FolderKanban, ArrowRight, Zap, Code2, Database, Palette, Sparkles } from 'lucide-react'
-import { createClient } from '@/src/utils/supabase/server'
+import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AboutLink } from '@/src/components/home/AboutLink'
 import { ContactLink } from '@/src/components/home/ContactLink'
 
 /**
  * 홈페이지
- * 
+ *
  * 프로젝트의 메인 랜딩 페이지입니다.
  * 프로젝트 리스트 및 About 페이지로 이동할 수 있는 버튼을 제공합니다.
  * 로그인 유저에게 우측 하단에 플로팅 메뉴가 표시됩니다.
  */
 export default async function Home() {
-  // 로그인 상태 및 권한 확인 (서버 컴포넌트에서 안전하게 체크)
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  let userRole = 'guest'
-
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-    userRole = profile?.role || 'user'
-  }
+  // 로그인 상태 및 권한 확인 (공통 유틸리티 사용)
+  const { user, isAdmin } = await getCurrentUserRole()
 
   const isLoggedIn = !!user
-  const isAdmin = userRole === 'admin'
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8">
       <div className="max-w-4xl w-full text-center space-y-8">
@@ -50,7 +38,7 @@ export default async function Home() {
           {/* 프로젝트 보기 버튼 */}
           <Link
             href="/projects"
-            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
+            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-brand-primary to-brand-secondary text-white text-lg font-semibold rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
           >
             <FolderKanban className="w-6 h-6" />
             <span>프로젝트 보기</span>
@@ -81,7 +69,7 @@ export default async function Home() {
                   key={tech.name}
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all"
                 >
-                  <Icon className="w-4 h-4 text-blue-600" />
+                  <Icon className="w-4 h-4 text-brand-primary" />
                   {tech.name}
                 </span>
               )

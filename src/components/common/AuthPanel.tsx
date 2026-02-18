@@ -63,7 +63,7 @@ export async function AuthPanel() {
           <span className="text-sm text-gray-400">
             {displayName}
             {userRole === 'admin' && (
-              <span className="ml-1.5 px-1.5 py-0.5 bg-blue-600 text-xs font-semibold rounded">
+              <span className="ml-1.5 px-1.5 py-0.5 bg-brand-primary text-xs font-semibold rounded">
                 관리자
               </span>
             )}

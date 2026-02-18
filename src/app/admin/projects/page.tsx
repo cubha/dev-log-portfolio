@@ -329,7 +329,7 @@ export default function ProjectFormPage() {
                     checked={formData.category === type.value}
                     onChange={handleChange}
                     required
-                    className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    className="w-4 h-4 text-brand-primary border-gray-300 focus:ring-brand-primary"
                   />
                   <span className="text-sm text-gray-700">{type.label}</span>
                 </label>
@@ -471,8 +471,8 @@ export default function ProjectFormPage() {
                         end_date: !prev.is_ongoing ? '' : prev.end_date, // 진행중으로 변경 시 종료일 초기화
                       }))
                     }}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                      formData.is_ongoing ? 'bg-blue-600' : 'bg-gray-300'
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 ${
+                      formData.is_ongoing ? 'bg-brand-primary' : 'bg-gray-300'
                     }`}
                     role="switch"
                     aria-checked={formData.is_ongoing}
@@ -539,7 +539,7 @@ export default function ProjectFormPage() {
                       placeholder={`업무 ${index + 1}: 예) REST API 설계 및 구현`}
                       className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600 font-bold text-sm">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-primary font-bold text-sm">
                       &gt;&gt;
                     </span>
                   </div>
@@ -556,7 +556,7 @@ export default function ProjectFormPage() {
               <button
                 type="button"
                 onClick={handleAddTask}
-                className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+                className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-brand-primary hover:text-brand-primary hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
               >
                 <Upload className="w-5 h-5" />
                 <span className="font-medium">상세 업무 추가</span>
@@ -677,7 +677,7 @@ export default function ProjectFormPage() {
               name="is_featured"
               checked={formData.is_featured}
               onChange={handleChange}
-              className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="w-5 h-5 text-brand-primary border-gray-300 rounded focus:ring-brand-primary"
             />
             <label htmlFor="is_featured" className="text-sm font-medium text-gray-700 cursor-pointer">
               주요 프로젝트로 표시
@@ -689,7 +689,7 @@ export default function ProjectFormPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FolderKanban className="w-5 h-5" />
               {isSubmitting

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSetAtom } from 'jotai'
 import { Settings, Edit, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { deleteProject } from '@/src/utils/projects/delete'
 import { editingProjectAtom } from '@/src/store/authAtom'
 import { Database } from '@/src/types/supabase'
@@ -62,7 +63,7 @@ export function ProjectCardActions({ project }: ProjectCardActionsProps) {
       setEditingProject(null)
       router.refresh()
     } catch (error) {
-      alert(error instanceof Error ? error.message : '프로젝트 삭제 중 오류가 발생했습니다.')
+      toast.error(error instanceof Error ? error.message : '프로젝트 삭제 중 오류가 발생했습니다.')
       setIsDeleting(false)
     }
   }

@@ -21,7 +21,7 @@ export default function AdminLayout({
           <div className="flex items-center justify-between">
             {/* 타이틀 */}
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg">
+              <div className="p-2 bg-gradient-to-br from-brand-primary to-brand-secondary rounded-lg">
                 <Wrench className="w-6 h-6 text-white" />
               </div>
               <div>

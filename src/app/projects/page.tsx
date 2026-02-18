@@ -1,40 +1,30 @@
 import { createClient } from '@/src/utils/supabase/server'
+import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { Database } from '@/src/types/supabase'
 import { FolderKanban } from 'lucide-react'
 import { BackButton } from '@/src/components/common/BackButton'
 import { ProjectList } from '@/src/components/projects/ProjectList'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
-import { AboutLink } from '@/src/components/home/AboutLink'
 import Link from 'next/link'
 
 /**
  * 프로젝트 리스트 페이지 (공개 페이지)
- * 
+ *
  * Supabase의 projects 테이블에서 모든 프로젝트를 가져와
  * 모던한 카드 레이아웃으로 표시합니다.
- * 
+ *
  * - 비로그인 방문자도 모든 프로젝트를 볼 수 있습니다.
  * - 관리자(admin)로 로그인한 경우에만 "프로젝트 추가하기" 버튼이 표시됩니다.
- * 
+ *
  * Supabase CLI로 생성된 타입을 활용하여 완벽한 타입 안정성을 제공합니다.
  */
 export default async function ProjectsPage() {
   try {
+    // 현재 로그인 유저의 role 확인 (공통 유틸리티 사용)
+    const { role: userRole, isAdmin } = await getCurrentUserRole()
+
     const supabase = await createClient()
-
-    // 현재 로그인 유저의 role 확인 (서버 컴포넌트에서 안전하게 체크)
-    const { data: { user } } = await supabase.auth.getUser()
-    let userRole = 'guest'
-
-    if (user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-      userRole = profile?.role || 'user'
-    }
 
     // 프로젝트 데이터 가져오기 (최신순 정렬)
     // Database 타입이 주입되어 자동 완성과 타입 체크 제공
@@ -48,8 +38,6 @@ export default async function ProjectsPage() {
 
     // 타입 안전성 확보: Database 타입 명시적 사용
     const typedProjects: Database['public']['Tables']['projects']['Row'][] = projects || []
-
-    const isAdmin = userRole === 'admin'
 
     // 단일 return 문으로 통합된 레이아웃
     return (
@@ -124,7 +112,7 @@ function EmptyState({ isAdmin }: { isAdmin: boolean }) {
             </p>
             <Link
               href="/admin/projects"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
             >
               <FolderKanban className="w-5 h-5" />
               <span className="font-medium">프로젝트 추가하기</span>
