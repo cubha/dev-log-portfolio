@@ -57,8 +57,8 @@ interface TechStackInputProps {
   onChange: (techStack: string[]) => void
 }
 
-// 인기 기술 스택 목록 (자동완성용)
-const POPULAR_TECHS = [
+// 인기 기술 스택 목록 (자동완성용) — skills/page.tsx에서도 공유
+export const POPULAR_TECHS = [
   // Frontend
   'React',
   'Vue',
@@ -266,13 +266,13 @@ export function TechStackInput({ value, onChange }: TechStackInputProps) {
 
   return (
     <div ref={containerRef} className="relative">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-foreground/60 mb-2">
         기술 스택
       </label>
 
       {/* 태그 컨테이너 */}
       <div
-        className="min-h-[52px] w-full px-3 py-2 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all bg-white flex flex-wrap gap-2 items-center cursor-text"
+        className="min-h-[52px] w-full px-3 py-2 border border-foreground/10 rounded-lg focus-within:ring-2 focus-within:ring-foreground/20 focus-within:border-foreground/30 transition-all bg-background flex flex-wrap gap-2 items-center cursor-text"
         onClick={() => inputRef.current?.focus()}
       >
         {/* 선택된 태그들 */}
@@ -294,19 +294,19 @@ export function TechStackInput({ value, onChange }: TechStackInputProps) {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder={value.length === 0 ? '기술을 입력하세요 (예: React, TypeScript)' : ''}
-          className="flex-1 min-w-[200px] outline-none bg-transparent text-sm"
+          className="flex-1 min-w-[200px] outline-none bg-transparent text-sm text-foreground placeholder:text-foreground/30"
         />
       </div>
 
       {/* 자동완성 제안 */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-1 bg-background border border-foreground/10 rounded-lg shadow-lg max-h-48 overflow-y-auto">
           {suggestions.map((tech) => (
             <button
               key={tech}
               type="button"
               onClick={() => addTech(tech)}
-              className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 transition-colors group"
+              className="w-full px-4 py-2 text-left hover:bg-foreground/5 flex items-center gap-2 transition-colors group"
             >
               <div className="relative w-4 h-4">
                 <img
@@ -318,14 +318,14 @@ export function TechStackInput({ value, onChange }: TechStackInputProps) {
                   }}
                 />
               </div>
-              <span className="text-sm text-gray-700 group-hover:text-gray-900">{tech}</span>
+              <span className="text-sm text-foreground/70 group-hover:text-foreground">{tech}</span>
             </button>
           ))}
         </div>
       )}
 
       {/* 도움말 텍스트 */}
-      <p className="mt-1 text-xs text-gray-500">
+      <p className="mt-1 text-xs text-foreground/40">
         Enter 또는 쉼표(,)로 태그를 추가할 수 있습니다. 커스텀 기술명도 입력 가능합니다.
       </p>
     </div>

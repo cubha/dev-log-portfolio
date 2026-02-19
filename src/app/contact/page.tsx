@@ -1,9 +1,9 @@
 import { createClient } from '@/src/utils/supabase/server'
 import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
-import { BackButton } from '@/src/components/common/BackButton'
 import { ContactInfo } from '@/src/components/contact/ContactInfo'
 import { InquiryForm } from '@/src/components/contact/InquiryForm'
 import { InquiryList } from '@/src/components/contact/InquiryList'
+import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import type { ContactLink } from '@/src/types/contact'
 
 /**
@@ -15,7 +15,7 @@ import type { ContactLink } from '@/src/types/contact'
  */
 export default async function ContactPage() {
   // ── 1. 관리자 권한 확인 (공통 유틸리티) ──────────────────
-  const { isAdmin } = await getCurrentUserRole()
+  const { role, isAdmin } = await getCurrentUserRole()
 
   // ── 2. contact_links 데이터 fetch ────────────────────────
   const supabase = await createClient()
@@ -33,27 +33,30 @@ export default async function ContactPage() {
   const contactLinks: ContactLink[] = data ?? []
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        <BackButton />
+    <>
+      <div className="min-h-screen bg-background">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          {/* 페이지 헤더 */}
+          <div className="mb-10 text-center">
+            <h1 className="text-3xl font-bold text-foreground">Contact</h1>
+          </div>
 
-        {/* 페이지 헤더 */}
-        <div className="mb-10 text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Contact</h1>
+          {/* 2열 레이아웃 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            {/* 좌측: Contact Info — DB 데이터 + 관리자 여부 전달 */}
+            <ContactInfo initialData={contactLinks} isAdmin={isAdmin} />
+
+            {/* 우측: Inquiry Form */}
+            <InquiryForm />
+          </div>
+
+          {/* 하단: 공개된 문의 목록 */}
+          <InquiryList />
         </div>
-
-        {/* 2열 레이아웃 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          {/* 좌측: Contact Info — DB 데이터 + 관리자 여부 전달 */}
-          <ContactInfo initialData={contactLinks} isAdmin={isAdmin} />
-
-          {/* 우측: Inquiry Form */}
-          <InquiryForm />
-        </div>
-
-        {/* 하단: 공개된 문의 목록 */}
-        <InquiryList />
       </div>
-    </div>
+
+      {/* 로그인 유저: 플로팅 메뉴 */}
+      {role !== 'guest' && <FloatingUserButton isAdmin={isAdmin} />}
+    </>
   )
 }

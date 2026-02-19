@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Lock, User, Eye, EyeOff, AlertTriangle } from 'lucide-react'
-import Link from 'next/link'
 import { loginUser } from '@/src/utils/auth/login'
 
 /**
@@ -63,15 +62,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* 헤더 */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-brand-primary to-brand-secondary rounded-2xl mb-4 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-silver-metal rounded-2xl mb-4 shadow-lg">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">관리자 로그인</h1>
-          <p className="text-gray-600">포트폴리오 관리 패널에 접속하세요</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">관리자 로그인</h1>
+          <p className="text-foreground/60">포트폴리오 관리 패널에 접속하세요</p>
         </div>
 
         {/* 보안 경고 메시지 */}
@@ -88,16 +87,16 @@ export default function LoginPage() {
         )}
 
         {/* 로그인 폼 */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+        <div className="bg-background rounded-2xl shadow-xl border border-foreground/10 p-8">
           <form onSubmit={handleLogin} className="space-y-6">
             {/* 사용자 ID 입력 */}
             <div>
-              <label htmlFor="userId" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="userId" className="block text-sm font-medium text-foreground/70 mb-2">
                 사용자 ID
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                  <User className="h-5 w-5 text-foreground/40" />
                 </div>
                 <input
                   id="userId"
@@ -106,19 +105,19 @@ export default function LoginPage() {
                   onChange={(e) => setUserId(e.target.value)}
                   placeholder="admin"
                   required
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="block w-full pl-10 pr-3 py-3 bg-background border border-foreground/20 rounded-lg focus:ring-2 focus:ring-brand-primary/40 focus:border-brand-primary transition-all text-foreground"
                 />
               </div>
             </div>
 
             {/* 비밀번호 입력 */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-foreground/70 mb-2">
                 비밀번호
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-foreground/40" />
                 </div>
                 <input
                   id="password"
@@ -127,12 +126,12 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="block w-full pl-10 pr-12 py-3 bg-background border border-foreground/20 rounded-lg focus:ring-2 focus:ring-brand-primary/40 focus:border-brand-primary transition-all text-foreground"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-foreground/40 hover:text-foreground/70"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -150,7 +149,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-brand-primary to-brand-secondary hover:opacity-90 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 px-4 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -163,17 +162,11 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* 하단 링크 */}
-          <div className="mt-6 text-center">
-            <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-              ← 메인 페이지로 돌아가기
-            </Link>
-          </div>
         </div>
 
         {/* 안내 메시지 */}
         <div className="mt-6 text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-foreground/50">
             관리자 계정이 없으신가요? 시스템 관리자에게 문의하세요.
           </p>
         </div>

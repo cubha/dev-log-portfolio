@@ -57,7 +57,7 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
       whileHover={isActive || onCardClick ? { scale: 1.02 } : {}}
       whileTap={isActive || onCardClick ? { scale: 0.98 } : {}}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-      className={`h-full flex flex-col group bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-blue-500 hover:shadow-lg transition-[color,border-color,box-shadow] duration-300 relative ${
+      className={`h-full flex flex-col group bg-background rounded-xl border border-foreground/10 overflow-hidden hover:border-foreground/40 hover:shadow-lg transition-[color,border-color,box-shadow] duration-300 relative ${
         isActive || onCardClick ? 'cursor-pointer' : ''
       }`}
     >
@@ -70,7 +70,7 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
 
       {/* 썸네일 이미지 */}
       {project.thumbnail_url ? (
-        <div className="relative h-28 bg-gray-100 overflow-hidden flex-shrink-0">
+        <div className="relative h-28 bg-foreground/10 overflow-hidden flex-shrink-0">
           <Image
             src={project.thumbnail_url}
             alt={project.title}
@@ -86,7 +86,7 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
           )}
         </div>
       ) : (
-        <div className="h-28 bg-gradient-to-br from-brand-primary via-brand-secondary to-pink-500 flex items-center justify-center flex-shrink-0">
+        <div className="h-28 bg-foreground/8 flex items-center justify-center flex-shrink-0">
           <FolderKanban className="w-10 h-10 text-white opacity-50" />
         </div>
       )}
@@ -95,13 +95,13 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
       <div className="p-3.5 flex flex-col flex-grow">
         {/* 제목 */}
         <div className="mb-1.5">
-          <h2 className="text-sm font-bold text-gray-900 line-clamp-1">
+          <h2 className="text-sm font-bold text-foreground line-clamp-1">
             {project.title}
           </h2>
         </div>
 
         {/* 설명 */}
-        <p className="text-gray-600 text-[11px] mb-2 line-clamp-2 leading-relaxed flex-grow">
+        <p className="text-foreground/60 text-[11px] mb-2 line-clamp-2 leading-relaxed flex-grow">
           {project.description || '프로젝트 설명이 없습니다.'}
         </p>
 
@@ -111,13 +111,13 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
             {project.tech_stack.slice(0, 3).map((tech, index) => (
               <span
                 key={index}
-                className="px-1.5 py-0.5 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 text-blue-700 text-[9px] font-semibold rounded"
+                className="px-1.5 py-0.5 bg-brand-secondary/5 border border-brand-secondary/20 text-brand-secondary text-[9px] font-semibold rounded"
               >
                 {tech}
               </span>
             ))}
             {project.tech_stack.length > 3 && (
-              <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[9px] font-semibold rounded">
+              <span className="px-1.5 py-0.5 bg-foreground/10 text-foreground/60 text-[9px] font-semibold rounded">
                 +{project.tech_stack.length - 3}
               </span>
             )}
@@ -128,7 +128,7 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
         <div className="mt-auto space-y-1.5">
           {/* 날짜 */}
           {(project.start_date || project.end_date) && (
-            <div className="flex items-center gap-1 text-[9px] text-gray-500">
+            <div className="flex items-center gap-1 text-[9px] text-foreground/50">
               <Calendar className="w-2.5 h-2.5" />
               <span>
                 {project.start_date && project.end_date
@@ -143,13 +143,13 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
           )}
 
           {/* 링크 버튼들 */}
-          <div className="flex items-center gap-2 pt-1.5 border-t border-gray-100">
+          <div className="flex items-center gap-2 pt-1.5 border-t border-foreground/8">
             {project.link_url && (
               <a
                 href={project.link_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[11px] text-brand-primary hover:opacity-80 font-medium hover:underline"
+                className="flex items-center gap-1 text-[11px] text-brand-secondary hover:opacity-80 font-medium hover:underline"
               >
                 <ExternalLink className="w-3 h-3" />
                 <span>데모</span>

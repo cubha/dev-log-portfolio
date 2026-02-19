@@ -1,8 +1,9 @@
 import { createClient } from '@/src/utils/supabase/server'
 import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
-import { BackButton } from '@/src/components/common/BackButton'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AboutContent } from '@/src/components/about/AboutContent'
+import { SkillsSection } from '@/src/components/about/SkillsSection'
+import { getAllSkills } from '@/src/utils/skills/getSkills'
 import Link from 'next/link'
 import type { AboutProfile } from '@/src/types/profile'
 
@@ -18,30 +19,36 @@ export default async function AboutPage() {
 
   const supabase = await createClient()
 
-  // 프로필 데이터 조회
+  // 프로필 + 기술 스택 병렬 조회
   let profileData: AboutProfile | null = null
-  
-  try {
-    const { data, error } = await supabase
-      .from('about_profiles')
-      .select('*')
-      .order('updated_at', { ascending: false })
-      .limit(1)
-      .single()
 
-    if (!error && data) {
-      profileData = data as unknown as AboutProfile
-    }
-  } catch (error) {
-    console.error('프로필 조회 오류:', error)
-  }
+  const [skillsData] = await Promise.all([
+    getAllSkills(),
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('about_profiles')
+          .select('*')
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .single()
+
+        if (!error && data) {
+          profileData = data as unknown as AboutProfile
+        }
+      } catch (error) {
+        console.error('프로필 조회 오류:', error)
+      }
+    })(),
+  ])
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
-      <BackButton />
-      
-      {/* 동적 콘텐츠 */}
+      {/* 프로필 콘텐츠 */}
       <AboutContent profile={profileData} />
+
+      {/* 기술 스택 섹션 (DB 데이터) */}
+      <SkillsSection skills={skillsData} />
 
       {/* 관리자 안내 - 프로필이 없을 때만 표시 */}
       {isAdmin && !profileData && (

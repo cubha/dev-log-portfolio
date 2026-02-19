@@ -8,7 +8,6 @@ import { uploadImage } from '@/src/utils/storage/uploadImage'
 import { upsertProfile } from '@/src/utils/profile/upsertProfile'
 import { getProfileClient } from '@/src/utils/profile/getProfileClient'
 import { DEFAULT_STORY_SECTIONS, type StorySection } from '@/src/types/profile'
-import { BackButton } from '@/src/components/common/BackButton'
 import { ProfilePreview } from '@/src/components/admin/ProfilePreview'
 
 /**
@@ -217,11 +216,10 @@ export default function AdminProfilePage() {
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto">
-        <BackButton />
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mb-4"></div>
-            <p className="text-gray-600">프로필 데이터를 불러오는 중...</p>
+            <p className="text-foreground/60">프로필 데이터를 불러오는 중...</p>
           </div>
         </div>
       </div>
@@ -230,21 +228,20 @@ export default function AdminProfilePage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <BackButton />
 
       {/* 페이지 헤더 */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             프로필 편집
           </h1>
-          <p className="text-gray-600">
+          <p className="text-foreground/60">
             About 페이지에 표시될 나의 프로필을 관리합니다.
           </p>
         </div>
         <button
           onClick={() => setShowPreview(!showPreview)}
-          className="flex items-center gap-2 px-4 py-2 text-brand-primary bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-foreground/70 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 transition-colors"
         >
           <Eye className="w-5 h-5" />
           <span className="font-medium">{showPreview ? '미리보기 닫기' : '미리보기'}</span>
@@ -280,18 +277,18 @@ export default function AdminProfilePage() {
       {/* 레이아웃: 폼 + 미리보기 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* 왼쪽: 편집 폼 */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+        <form onSubmit={handleSubmit} className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8">
           <div className="space-y-8">
             {/* 기본 정보 섹션 */}
             <section>
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <User className="w-5 h-5 text-brand-primary" />
+              <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                <User className="w-5 h-5 text-foreground/50" />
                 기본 정보
               </h2>
 
               {/* 메인 카피 */}
               <div className="mb-6">
-                <label htmlFor="main_copy" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="main_copy" className="block text-sm font-medium text-foreground/60 mb-2">
                   메인 카피 (한 줄 요약) <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -302,13 +299,13 @@ export default function AdminProfilePage() {
                   onChange={handleChange}
                   required
                   placeholder="예: 문제 해결을 즐기는 풀스택 개발자"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
                 />
               </div>
 
               {/* 서두 소개글 */}
               <div className="mb-6">
-                <label htmlFor="intro_text" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="intro_text" className="block text-sm font-medium text-foreground/60 mb-2">
                   서두 소개글 <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -319,13 +316,13 @@ export default function AdminProfilePage() {
                   required
                   rows={4}
                   placeholder="나를 소개하는 짧은 글을 작성하세요..."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all resize-none"
                 />
               </div>
 
               {/* 프로필 이미지 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground/60 mb-2">
                   <ImageIcon className="w-4 h-4 inline mr-1" />
                   프로필 이미지
                 </label>
@@ -337,7 +334,7 @@ export default function AdminProfilePage() {
                       src={previewUrl}
                       alt="프로필 미리보기"
                       fill
-                      className="object-cover rounded-full border-4 border-gray-300"
+                      className="object-cover rounded-full border-4 border-foreground/20"
                       unoptimized={previewUrl.startsWith('blob:')}
                     />
                     <button
@@ -355,8 +352,8 @@ export default function AdminProfilePage() {
                 <div
                   className={`rounded-lg border-2 border-dashed p-6 transition-all ${
                     isDragging
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-300 bg-white hover:border-blue-500 hover:bg-blue-50'
+                      ? 'border-brand-secondary/60 bg-brand-secondary/5'
+                      : 'border-foreground/15 bg-background hover:border-foreground/30 hover:bg-foreground/3'
                   }`}
                   onDragEnter={handleDragEnter}
                   onDragOver={handleDragOver}
@@ -366,10 +363,10 @@ export default function AdminProfilePage() {
                   <div className="text-center">
                     <label
                       htmlFor="profile_image"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-background border border-foreground/15 rounded-lg hover:border-foreground/30 hover:bg-foreground/5 transition-all cursor-pointer"
                     >
-                      <Upload className="w-5 h-5 text-gray-600" />
-                      <span className="text-sm font-medium text-gray-700">
+                      <Upload className="w-5 h-5 text-foreground/50" />
+                      <span className="text-sm font-medium text-foreground/70">
                         {previewUrl ? '다른 이미지 선택' : '이미지 선택'}
                       </span>
                     </label>
@@ -380,7 +377,7 @@ export default function AdminProfilePage() {
                       onChange={handleFileSelect}
                       className="hidden"
                     />
-                    <p className="mt-3 text-xs text-gray-500">
+                    <p className="mt-3 text-xs text-foreground/40">
                       JPG, PNG, GIF (최대 5MB)
                     </p>
                   </div>
@@ -390,15 +387,15 @@ export default function AdminProfilePage() {
 
             {/* 스토리 섹션 */}
             <section>
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-brand-secondary" />
+              <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-foreground/50" />
                 About Me
               </h2>
 
               <div className="space-y-6">
                 {formData.story_sections.map((section, index) => (
-                  <div key={section.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <label className="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                  <div key={section.id} className="bg-foreground/3 p-4 rounded-lg border border-foreground/8">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
                       <span className="text-2xl">{section.icon}</span>
                       {section.title}
                     </label>
@@ -407,7 +404,7 @@ export default function AdminProfilePage() {
                       onChange={(e) => handleStoryChange(index, e.target.value)}
                       rows={4}
                       placeholder={`${section.title}에 대해 작성하세요...`}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none bg-white"
+                      className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all resize-none"
                     />
                   </div>
                 ))}
@@ -415,11 +412,11 @@ export default function AdminProfilePage() {
             </section>
 
             {/* 제출 버튼 */}
-            <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
+            <div className="flex items-center gap-4 pt-4 border-t border-foreground/10">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-5 h-5" />
                 {isSubmitting ? '저장 중...' : '저장하기'}
@@ -428,7 +425,7 @@ export default function AdminProfilePage() {
                 type="button"
                 onClick={() => router.back()}
                 disabled={isSubmitting}
-                className="px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 text-foreground/60 bg-foreground/8 border border-foreground/10 rounded-lg hover:bg-foreground/12 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 취소
               </button>

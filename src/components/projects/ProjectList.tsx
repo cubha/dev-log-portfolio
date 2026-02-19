@@ -96,12 +96,12 @@ export function ProjectList({ projects }: { projects: Project[] }) {
       {/* 페이지 헤더 */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-3xl font-bold text-gray-900">프로젝트</h1>
+          <h1 className="text-3xl font-bold text-foreground">프로젝트</h1>
           {/* 관리자 전용: 새 프로젝트 추가 버튼 */}
           {isAdmin && (
             <Link
               href="/admin/projects"
-              className="group flex items-center gap-2 px-3 py-1.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-brand-primary hover:text-brand-primary transition-all shadow-sm hover:shadow-md"
+              className="group flex items-center gap-2 px-3 py-1.5 text-foreground/70 bg-background border border-foreground/20 rounded-lg hover:bg-foreground/5 hover:border-foreground/40 hover:text-foreground transition-all shadow-sm hover:shadow-md"
               title="새 프로젝트 추가"
             >
               <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
@@ -109,7 +109,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
             </Link>
           )}
         </div>
-        <p className="text-gray-600 text-sm">
+        <p className="text-foreground/60 text-sm">
           제가 작업한 프로젝트들을 소개합니다.
         </p>
       </div>
@@ -278,8 +278,8 @@ function FilterBar({
               transition-colors duration-200 cursor-pointer
               ${
                 isActive
-                  ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-md shadow-brand-primary/25'
-                  : 'bg-white text-gray-600 border border-gray-300 hover:border-brand-primary hover:text-brand-primary'
+                  ? 'bg-silver-metal text-white dark:text-slate-950 shadow-md'
+                  : 'bg-background text-foreground/60 border border-foreground/20 hover:border-foreground/40 hover:text-foreground'
               }
             `}
           >
@@ -288,7 +288,7 @@ function FilterBar({
             {isActive && (
               <motion.span
                 layoutId="filterIndicator"
-                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full"
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-foreground/40 rounded-full"
                 transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               />
             )}
@@ -326,8 +326,8 @@ function PaginationDots({
               rounded-full cursor-pointer transition-all duration-200
               ${
                 isActive
-                  ? 'w-10 h-3 bg-gradient-to-r from-brand-primary to-brand-secondary shadow-md shadow-brand-primary/25'
-                  : 'w-3 h-3 bg-gray-300 hover:bg-brand-primary hover:scale-110'
+                  ? 'w-10 h-3 bg-silver-metal shadow-md'
+                  : 'w-3 h-3 bg-foreground/20 hover:bg-brand-primary hover:scale-110'
               }
             `}
             aria-label={`${i + 1}페이지로 이동`}
@@ -336,7 +336,7 @@ function PaginationDots({
             {isActive && (
               <motion.div
                 layoutId="activeDot"
-                className="w-full h-full rounded-full bg-gradient-to-r from-brand-primary to-brand-secondary"
+                className="w-full h-full rounded-full bg-silver-metal"
                 transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               />
             )}
@@ -359,7 +359,7 @@ function EmptyFilterState({ activeFilter }: { activeFilter: ProjectFilter }) {
       transition={{ duration: 0.3 }}
       className="text-center py-20"
     >
-      <p className="text-gray-400 text-lg">
+      <p className="text-foreground/40 text-lg">
         &apos;{activeFilter}&apos; 카테고리에 해당하는 프로젝트가 없습니다.
       </p>
     </motion.div>

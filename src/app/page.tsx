@@ -13,32 +13,30 @@ import { ContactLink } from '@/src/components/home/ContactLink'
  * 로그인 유저에게 우측 하단에 플로팅 메뉴가 표시됩니다.
  */
 export default async function Home() {
-  // 로그인 상태 및 권한 확인 (공통 유틸리티 사용)
   const { user, isAdmin } = await getCurrentUserRole()
-
   const isLoggedIn = !!user
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8">
       <div className="max-w-4xl w-full text-center space-y-8">
         {/* 메인 타이틀 */}
         <div className="space-y-3">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
             Dev Log Portfolio
           </h1>
-          <p className="text-base md:text-lg text-gray-600">
+          <p className="text-base md:text-lg text-foreground/60">
             개발 블로그 포트폴리오 프로젝트
           </p>
-          <p className="text-sm text-gray-500 max-w-2xl mx-auto">
+          <p className="text-sm text-foreground/50 max-w-2xl mx-auto">
             Next.js 15와 Supabase로 구축한 포트폴리오 관리 시스템입니다.
           </p>
         </div>
 
         {/* CTA 버튼 */}
         <div className="flex justify-center items-center pt-8">
-          {/* 프로젝트 보기 버튼 */}
           <Link
             href="/projects"
-            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-brand-primary to-brand-secondary text-white text-lg font-semibold rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
+            className="group inline-flex items-center gap-3 px-8 py-4 bg-silver-metal animate-shine text-white dark:text-slate-950 text-lg font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
           >
             <FolderKanban className="w-6 h-6" />
             <span>프로젝트 보기</span>
@@ -48,13 +46,13 @@ export default async function Home() {
 
         {/* About 링크 */}
         <AboutLink />
-        
+
         {/* Contact 링크 */}
         <ContactLink />
 
         {/* 기술 스택 표시 */}
         <div className="pt-16">
-          <p className="text-sm text-gray-500 mb-4">사용 기술</p>
+          <p className="text-sm text-foreground/50 mb-4">사용 기술</p>
           <div className="flex flex-wrap justify-center gap-3">
             {[
               { name: 'Next.js 15', icon: Zap },
@@ -67,9 +65,9 @@ export default async function Home() {
               return (
                 <span
                   key={tech.name}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-foreground/5 text-foreground/70 text-sm font-medium rounded-lg border border-foreground/10 hover:border-brand-primary hover:shadow-md transition-all"
                 >
-                  <Icon className="w-4 h-4 text-brand-primary" />
+                  <Icon className="w-4 h-4 text-foreground/50" />
                   {tech.name}
                 </span>
               )
@@ -77,8 +75,8 @@ export default async function Home() {
           </div>
         </div>
       </div>
-      {/* 로그인 유저: 우측 하단 플로팅 메뉴 (로그아웃 + 관리자는 대시보드) */}
+
       {isLoggedIn && <FloatingUserButton isAdmin={isAdmin} />}
     </main>
-  );
+  )
 }

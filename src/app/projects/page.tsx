@@ -2,7 +2,6 @@ import { createClient } from '@/src/utils/supabase/server'
 import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { Database } from '@/src/types/supabase'
 import { FolderKanban } from 'lucide-react'
-import { BackButton } from '@/src/components/common/BackButton'
 import { ProjectList } from '@/src/components/projects/ProjectList'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
@@ -44,7 +43,6 @@ export default async function ProjectsPage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* 서버에서 확인한 권한 정보를 Jotai atom에 동기화 */}
         <AuthStateInitializer isAdmin={isAdmin} />
-        <BackButton />
         {errorMessage ? (
           <ErrorState message={errorMessage} />
         ) : typedProjects.length === 0 ? (
@@ -62,8 +60,7 @@ export default async function ProjectsPage() {
     const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류'
 
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8 pt-24">
-        <BackButton />
+      <div className="max-w-4xl mx-auto px-4 py-8 pt-8">
         <ErrorState message={errorMessage} />
       </div>
     )
@@ -112,7 +109,7 @@ function EmptyState({ isAdmin }: { isAdmin: boolean }) {
             </p>
             <Link
               href="/admin/projects"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg transition-all shadow-md hover:shadow-lg"
             >
               <FolderKanban className="w-5 h-5" />
               <span className="font-medium">프로젝트 추가하기</span>

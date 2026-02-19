@@ -44,10 +44,10 @@ export function AboutContent({ profile }: AboutContentProps) {
   }, [isImageExpanded])
   if (!profile) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
+      <div className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8 mb-8">
         <div className="prose prose-lg max-w-none text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">프로필이 없습니다</h2>
-          <p className="text-gray-600">
+          <h2 className="text-2xl font-bold text-foreground mb-4">프로필이 없습니다</h2>
+          <p className="text-foreground/60">
             아직 등록된 프로필이 없습니다.
           </p>
         </div>
@@ -78,9 +78,9 @@ export function AboutContent({ profile }: AboutContentProps) {
               transition={{ duration: 0.6, delay: 0.2 }}
               whileHover={{ scale: 1.08 }}
               onClick={() => setIsImageExpanded(true)}
-              className="relative w-80 h-80 cursor-pointer rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary p-[3px]"
+              className="relative w-80 h-80 cursor-pointer rounded-full bg-brand-primary/30 p-[3px]"
             >
-              <div className="relative w-full h-full rounded-full overflow-hidden bg-white">
+              <div className="relative w-full h-full rounded-full overflow-hidden bg-background">
                 <Image
                   src={profile.profile_image_url}
                   alt="프로필"
@@ -96,10 +96,10 @@ export function AboutContent({ profile }: AboutContentProps) {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               whileHover={{ scale: 1.08 }}
-              className="w-80 h-80 rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary p-[3px]"
+              className="w-80 h-80 rounded-full bg-brand-primary/30 p-[3px]"
             >
-              <div className="w-full h-full bg-gray-100 rounded-full flex items-center justify-center">
-                <User className="w-36 h-36 text-gray-300" />
+              <div className="w-full h-full bg-foreground/10 rounded-full flex items-center justify-center">
+                <User className="w-36 h-36 text-foreground/30" />
               </div>
             </motion.div>
           )}
@@ -165,7 +165,7 @@ export function AboutContent({ profile }: AboutContentProps) {
           className="mb-4"
         >
           <h1 
-            className="font-bold text-gray-900 whitespace-nowrap"
+            className="font-bold text-foreground whitespace-nowrap"
             style={{
               fontSize: 'clamp(0.875rem, 2.5vw, 1.5rem)',
               letterSpacing: '-0.02em',
@@ -180,7 +180,7 @@ export function AboutContent({ profile }: AboutContentProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-sm text-gray-500"
+          className="text-sm text-foreground/50"
           style={{
             letterSpacing: '0.15em',
           }}
@@ -196,9 +196,9 @@ export function AboutContent({ profile }: AboutContentProps) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"
+            className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2"
           >
-            <span className="w-1 h-6 bg-gradient-to-b from-brand-primary to-brand-secondary rounded-full"></span>
+            <span className="w-1 h-6 bg-foreground/30 rounded-full"></span>
             About Me
           </motion.h2>
 
@@ -208,13 +208,13 @@ export function AboutContent({ profile }: AboutContentProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-              className="bg-gradient-to-br from-blue-50 to-purple-50 p-5 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-gradient-to-br from-brand-primary/5 to-brand-secondary/5 p-5 rounded-xl border border-brand-primary/10 shadow-sm hover:shadow-md transition-shadow"
             >
-              <h3 className="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <h3 className="text-base font-bold text-foreground mb-2 flex items-center gap-2">
                 {section.icon && <span className="text-lg">{section.icon}</span>}
                 {section.title}
               </h3>
-              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+              <p className="text-sm text-foreground/70 leading-relaxed whitespace-pre-line">
                 {section.content}
               </p>
             </motion.div>
@@ -228,9 +228,9 @@ export function AboutContent({ profile }: AboutContentProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="bg-gray-50 rounded-xl p-8 text-center"
+          className="bg-foreground/5 rounded-xl p-8 text-center"
         >
-          <p className="text-gray-500">
+          <p className="text-foreground/50">
             스토리 섹션이 아직 작성되지 않았습니다.
           </p>
         </motion.div>

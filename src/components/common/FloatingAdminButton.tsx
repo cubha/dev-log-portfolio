@@ -37,7 +37,7 @@ export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
       {/* 펼쳐지는 메뉴 */}
       {isOpen && (
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div className="bg-background rounded-xl shadow-lg border border-foreground/10 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
           {/* 관리자 전용 메뉴 */}
           {isAdmin && (
             <>
@@ -45,21 +45,21 @@ export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
               {isAboutPage ? (
                 <Link
                   href="/admin/profile"
-                  className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <Edit className="w-4 h-4 text-brand-secondary" />
+                className="flex items-center gap-2.5 px-4 py-3 text-sm text-foreground/70 hover:bg-foreground/5 transition-colors"
+              >
+                <Edit className="w-4 h-4 text-brand-secondary" />
                   <span className="font-medium">프로필 편집</span>
                 </Link>
               ) : (
                 <Link
                   href="/admin/dashboard"
-                  className="flex items-center gap-2.5 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <LayoutDashboard className="w-4 h-4 text-brand-primary" />
+                className="flex items-center gap-2.5 px-4 py-3 text-sm text-foreground/70 hover:bg-foreground/5 transition-colors"
+              >
+                <LayoutDashboard className="w-4 h-4 text-brand-secondary" />
                   <span className="font-medium">대시보드</span>
                 </Link>
               )}
-              <hr className="border-gray-100" />
+              <hr className="border-foreground/8" />
             </>
           )}
 
@@ -86,7 +86,7 @@ export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
           ${isOpen
             ? 'bg-gray-800 text-white hover:bg-gray-900'
             : isAdmin
-              ? 'bg-gradient-to-br from-brand-primary to-brand-secondary text-white hover:opacity-90'
+              ? 'bg-silver-metal animate-shine text-white dark:text-slate-950'
               : 'bg-gray-700 text-white hover:bg-gray-800'
           }
         `}

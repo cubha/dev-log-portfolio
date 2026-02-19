@@ -15,7 +15,7 @@ export function ContactLink() {
       transition={{ delay: 0.6 }}
       className="text-center"
     >
-      <Link href="/contact" className="group inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+      <Link href="/contact" className="group inline-flex items-center gap-2 text-foreground/60 hover:text-foreground transition-colors">
         <HiOutlineMail className="w-4 h-4" />
         <span className="text-sm">문의하기</span>
         <span className="text-sm group-hover:translate-x-1 transition-transform">→</span>

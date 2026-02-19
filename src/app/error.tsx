@@ -21,9 +21,9 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="max-w-md w-full mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+        <div className="bg-background rounded-lg shadow-lg border border-foreground/10 p-8 text-center">
           <div className="mb-4">
             <svg
               className="w-16 h-16 mx-auto text-red-500"
@@ -39,14 +39,14 @@ export default function Error({
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-foreground mb-2">
             오류가 발생했습니다
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-foreground/60 mb-6">
             페이지를 불러오는 중 문제가 발생했습니다.
           </p>
-          <div className="mb-6 p-4 bg-gray-50 rounded-md">
-            <p className="text-sm text-gray-700 font-mono">
+          <div className="mb-6 p-4 bg-foreground/5 rounded-md">
+            <p className="text-sm text-foreground/70 font-mono">
               {error.message || '알 수 없는 오류'}
             </p>
           </div>

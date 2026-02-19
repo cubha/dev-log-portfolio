@@ -271,10 +271,10 @@ export default function ProjectFormPage() {
     <div className="max-w-4xl mx-auto">
       {/* 페이지 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           {isEditMode ? '프로젝트 수정' : '새 프로젝트 등록'}
         </h1>
-        <p className="text-gray-600">
+        <p className="text-foreground/60">
           {isEditMode
             ? '프로젝트 정보를 수정하세요'
             : '포트폴리오에 추가할 프로젝트 정보를 입력하세요'}
@@ -301,11 +301,11 @@ export default function ProjectFormPage() {
       )}
 
       {/* 프로젝트 등록 폼 */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+      <form onSubmit={handleSubmit} className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8">
         <div className="space-y-6">
           {/* 구분 (category) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground/60 mb-2">
               프로젝트 구분 <span className="text-red-500">*</span>
             </label>
             <div className="flex flex-wrap gap-4">
@@ -318,8 +318,8 @@ export default function ProjectFormPage() {
                   key={type.value}
                   className={`flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer transition-colors ${
                     formData.category === type.value
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-300 hover:bg-gray-50'
+                      ? 'border-foreground/40 bg-foreground/8'
+                      : 'border-foreground/10 hover:bg-foreground/5'
                   }`}
                 >
                   <input
@@ -329,9 +329,9 @@ export default function ProjectFormPage() {
                     checked={formData.category === type.value}
                     onChange={handleChange}
                     required
-                    className="w-4 h-4 text-brand-primary border-gray-300 focus:ring-brand-primary"
+                    className="w-4 h-4 text-brand-primary border-foreground/20 focus:ring-foreground/30"
                   />
-                  <span className="text-sm text-gray-700">{type.label}</span>
+                  <span className="text-sm text-foreground/70">{type.label}</span>
                 </label>
               ))}
             </div>
@@ -339,7 +339,7 @@ export default function ProjectFormPage() {
 
           {/* 제목 */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="title" className="block text-sm font-medium text-foreground/60 mb-2">
               프로젝트 제목 <span className="text-red-500">*</span>
             </label>
             <input
@@ -350,13 +350,13 @@ export default function ProjectFormPage() {
               onChange={handleChange}
               required
               placeholder="예: 포트폴리오 웹사이트"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
             />
           </div>
 
           {/* 설명 */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-foreground/60 mb-2">
               프로젝트 설명 (주요 업무)
             </label>
             <textarea
@@ -366,14 +366,14 @@ export default function ProjectFormPage() {
               onChange={handleChange}
               rows={4}
               placeholder="프로젝트에 대한 간략한 소개 및 주요 업무를 작성하세요"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+              className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all resize-none"
             />
           </div>
 
           {/* 회사명 & 담당 역할 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="company_name" className="block text-sm font-medium text-foreground/60 mb-2">
                 회사명 / 소속
               </label>
               <input
@@ -383,11 +383,11 @@ export default function ProjectFormPage() {
                 value={formData.company_name}
                 onChange={handleChange}
                 placeholder="예: LG CNS, 프리랜서"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
               />
             </div>
             <div>
-              <label htmlFor="project_role" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="project_role" className="block text-sm font-medium text-foreground/60 mb-2">
                 담당 역할
               </label>
               <input
@@ -397,14 +397,14 @@ export default function ProjectFormPage() {
                 value={formData.project_role}
                 onChange={handleChange}
                 placeholder="예: 풀스택 개발자, 프론트엔드 리드"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
               />
             </div>
           </div>
 
           {/* 참여 인원 */}
           <div>
-            <label htmlFor="team_size" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="team_size" className="block text-sm font-medium text-foreground/60 mb-2">
               참여 인원
             </label>
             <input
@@ -416,14 +416,14 @@ export default function ProjectFormPage() {
               min="0"
               placeholder="숫자 입력 또는 드롭다운에서 범위 선택"
               list="team-size-options"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
             />
             <datalist id="team-size-options">
               <option value="0">O (0~9명)</option>
               <option value="10">OO (10~99명)</option>
               <option value="100">OOO (100명 이상)</option>
             </datalist>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-foreground/40">
               직접 입력하거나 드롭다운에서 범위를 선택하세요. (O=0~9명, OO=10~99명, OOO=100명 이상)
             </p>
           </div>
@@ -431,7 +431,7 @@ export default function ProjectFormPage() {
           {/* 기간 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="start_date" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="start_date" className="block text-sm font-medium text-foreground/60 mb-2">
                 <Calendar className="w-4 h-4 inline mr-1" />
                 시작 날짜 <span className="text-red-500">*</span>
               </label>
@@ -451,17 +451,17 @@ export default function ProjectFormPage() {
                   handleChange(e)
                 }}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
               />
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="end_date" className="block text-sm font-medium text-foreground/60">
                   <Calendar className="w-4 h-4 inline mr-1" />
                   종료 날짜 {!formData.is_ongoing && <span className="text-red-500">*</span>}
                 </label>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">진행중</span>
+                  <span className="text-sm text-foreground/60">진행중</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -471,8 +471,8 @@ export default function ProjectFormPage() {
                         end_date: !prev.is_ongoing ? '' : prev.end_date, // 진행중으로 변경 시 종료일 초기화
                       }))
                     }}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 ${
-                      formData.is_ongoing ? 'bg-brand-primary' : 'bg-gray-300'
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-foreground/30 focus:ring-offset-2 ${
+                      formData.is_ongoing ? 'bg-brand-primary' : 'bg-foreground/20'
                     }`}
                     role="switch"
                     aria-checked={formData.is_ongoing}
@@ -503,10 +503,10 @@ export default function ProjectFormPage() {
                 min={formData.start_date || undefined}
                 disabled={formData.is_ongoing}
                 required={!formData.is_ongoing}
-                className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                className={`w-full px-4 py-3 border border-foreground/10 rounded-lg focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all text-foreground ${
                   formData.is_ongoing
-                    ? 'bg-gray-100 cursor-not-allowed opacity-60'
-                    : 'bg-white'
+                    ? 'bg-foreground/5 cursor-not-allowed opacity-60'
+                    : 'bg-background'
                 }`}
               />
             </div>
@@ -524,7 +524,7 @@ export default function ProjectFormPage() {
 
           {/* 상세 업무 내용 (Dynamic List) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground/60 mb-2">
               <Code className="w-4 h-4 inline mr-1" />
               상세 업무 내용
             </label>
@@ -537,9 +537,9 @@ export default function ProjectFormPage() {
                       value={task}
                       onChange={(e) => handleTaskChange(index, e.target.value)}
                       placeholder={`업무 ${index + 1}: 예) REST API 설계 및 구현`}
-                      className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 pl-10 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
                     />
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-primary font-bold text-sm">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40 font-bold text-sm">
                       &gt;&gt;
                     </span>
                   </div>
@@ -556,13 +556,13 @@ export default function ProjectFormPage() {
               <button
                 type="button"
                 onClick={handleAddTask}
-                className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-brand-primary hover:text-brand-primary hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+                className="w-full px-4 py-3 border-2 border-dashed border-foreground/15 rounded-lg text-foreground/50 hover:border-foreground/30 hover:text-foreground hover:bg-foreground/3 transition-all flex items-center justify-center gap-2"
               >
                 <Upload className="w-5 h-5" />
                 <span className="font-medium">상세 업무 추가</span>
               </button>
             </div>
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-foreground/40">
               프로젝트에서 수행한 구체적인 업무 내용을 항목별로 추가하세요.
             </p>
           </div>
@@ -570,7 +570,7 @@ export default function ProjectFormPage() {
           {/* 링크 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="github_url" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="github_url" className="block text-sm font-medium text-foreground/60 mb-2">
                 <LinkIcon className="w-4 h-4 inline mr-1" />
                 GitHub URL
               </label>
@@ -581,11 +581,11 @@ export default function ProjectFormPage() {
                 value={formData.github_url}
                 onChange={handleChange}
                 placeholder="https://github.com/username/repo"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
               />
             </div>
             <div>
-              <label htmlFor="link_url" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="link_url" className="block text-sm font-medium text-foreground/60 mb-2">
                 <LinkIcon className="w-4 h-4 inline mr-1" />
                 배포 URL
               </label>
@@ -596,14 +596,14 @@ export default function ProjectFormPage() {
                 value={formData.link_url}
                 onChange={handleChange}
                 placeholder="https://example.com"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
               />
             </div>
           </div>
 
           {/* 썸네일 이미지 업로드 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground/60 mb-2">
               <ImageIcon className="w-4 h-4 inline mr-1" />
               썸네일 이미지
             </label>
@@ -615,7 +615,7 @@ export default function ProjectFormPage() {
                   src={previewUrl}
                   alt="썸네일 미리보기"
                   fill
-                  className="object-cover rounded-lg border-2 border-gray-300"
+                  className="object-cover rounded-lg border-2 border-foreground/20"
                   unoptimized={previewUrl.startsWith('blob:')}
                 />
                 {/* 이미지 제거 버튼 */}
@@ -634,8 +634,8 @@ export default function ProjectFormPage() {
             <div
               className={`rounded-lg border-2 border-dashed p-4 transition-all ${
                 isDragging
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-300 bg-white hover:border-blue-500 hover:bg-blue-50'
+                  ? 'border-brand-secondary/60 bg-brand-secondary/5'
+                  : 'border-foreground/15 bg-background hover:border-foreground/30 hover:bg-foreground/3'
               }`}
               onDragEnter={handleDragEnter}
               onDragOver={handleDragOver}
@@ -645,10 +645,10 @@ export default function ProjectFormPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <label
                   htmlFor="thumbnail_file"
-                  className="flex items-center gap-2 px-4 py-3 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-3 bg-background border border-foreground/15 rounded-lg hover:border-foreground/30 hover:bg-foreground/5 transition-all cursor-pointer"
                 >
-                  <Upload className="w-5 h-5 text-gray-600" />
-                  <span className="text-sm font-medium text-gray-700">
+                  <Upload className="w-5 h-5 text-foreground/50" />
+                  <span className="text-sm font-medium text-foreground/70">
                     {previewUrl ? '다른 이미지 선택' : '이미지 선택'}
                   </span>
                 </label>
@@ -659,37 +659,37 @@ export default function ProjectFormPage() {
                   onChange={handleFileSelect}
                   className="hidden"
                 />
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-foreground/40">
                   JPG, PNG, GIF (최대 5MB)
                 </span>
               </div>
-              <p className="mt-3 text-xs text-gray-500">
+              <p className="mt-3 text-xs text-foreground/40">
                 또는 이 영역으로 이미지를 드래그해서 놓아주세요.
               </p>
             </div>
           </div>
 
           {/* 주요 프로젝트 체크박스 */}
-          <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border border-blue-100">
+          <div className="flex items-center gap-3 p-4 bg-foreground/3 rounded-lg border border-foreground/10">
             <input
               type="checkbox"
               id="is_featured"
               name="is_featured"
               checked={formData.is_featured}
               onChange={handleChange}
-              className="w-5 h-5 text-brand-primary border-gray-300 rounded focus:ring-brand-primary"
+              className="w-5 h-5 text-brand-primary border-foreground/20 rounded focus:ring-foreground/30"
             />
-            <label htmlFor="is_featured" className="text-sm font-medium text-gray-700 cursor-pointer">
+            <label htmlFor="is_featured" className="text-sm font-medium text-foreground/70 cursor-pointer">
               주요 프로젝트로 표시
             </label>
           </div>
 
           {/* 제출 버튼 */}
-          <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
+          <div className="flex items-center gap-4 pt-4 border-t border-foreground/10">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FolderKanban className="w-5 h-5" />
               {isSubmitting
@@ -704,7 +704,7 @@ export default function ProjectFormPage() {
               type="button"
               onClick={handleCancel}
               disabled={isSubmitting}
-              className="px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 text-foreground/60 bg-foreground/8 border border-foreground/10 rounded-lg hover:bg-foreground/12 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               취소
             </button>

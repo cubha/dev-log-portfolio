@@ -28,18 +28,18 @@ type EditDraft = Record<string, { value: string; href: string }>
  * - text-sm font-medium 를 정확히 맞춰 leading/font도 동일하게 유지
  */
 const GHOST_VALUE =
-  'w-full min-w-0 bg-transparent border-0 border-b border-gray-300 ' +
+  'w-full min-w-0 bg-transparent border-0 border-b border-foreground/20 ' +
   'focus:border-brand-primary outline-none px-0 py-0 h-auto leading-5 ' +
-  'text-sm text-gray-900 font-medium transition-colors placeholder:text-gray-300'
+  'text-sm text-foreground font-medium transition-colors placeholder:text-foreground/30'
 
 /**
  * href(URL) 전용 Ghost Input — value 입력 바로 아래에 배치
  * 폰트를 text-xs로 줄여 view 모드와의 row 높이 차이를 최소화
  */
 const GHOST_HREF =
-  'w-full min-w-0 bg-transparent border-0 border-b border-gray-200 ' +
+  'w-full min-w-0 bg-transparent border-0 border-b border-foreground/10 ' +
   'focus:border-brand-primary/60 outline-none px-0 py-0 h-auto leading-4 ' +
-  'text-xs text-gray-400 transition-colors placeholder:text-gray-200 mt-0.5'
+  'text-xs text-foreground/40 transition-colors placeholder:text-foreground/20 mt-0.5'
 
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
 
@@ -145,8 +145,8 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
       {/* ── 섹션 헤더 ─────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-1 h-5 bg-gradient-to-b from-brand-primary to-brand-secondary rounded-full" />
-          <h2 className="text-xl font-semibold text-gray-900">Contact Info</h2>
+          <div className="w-1 h-5 bg-foreground/30 rounded-full" />
+          <h2 className="text-xl font-semibold text-foreground">Contact Info</h2>
         </div>
 
         {/*
@@ -162,7 +162,7 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
                   onClick={handleCancel}
                   disabled={isPending}
                   title="취소"
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-40"
+                  className="p-1.5 rounded-lg text-foreground/40 hover:text-foreground/70 hover:bg-foreground/10 transition-colors disabled:opacity-40"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -170,7 +170,7 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
                   onClick={handleSave}
                   disabled={isPending}
                   title={isPending ? '저장 중...' : '저장'}
-                  className="p-1.5 rounded-lg text-brand-primary hover:bg-brand-primary hover:text-white transition-all disabled:opacity-40"
+                  className="p-1.5 rounded-lg text-brand-secondary hover:bg-brand-secondary hover:text-white transition-all disabled:opacity-40"
                 >
                   <Check className="w-4 h-4" />
                 </button>
@@ -179,7 +179,7 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
               <button
                 onClick={handleEditStart}
                 title="연락처 수정"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-brand-primary hover:bg-blue-50 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-foreground/50 hover:text-brand-secondary hover:bg-brand-secondary/5 rounded-lg transition-colors"
               >
                 <Pencil className="w-3.5 h-3.5" />
                 수정
@@ -194,9 +194,9 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
         h-[350px] 고정 — Ghost Input 덕분에 Edit/View 모드에서
         row 높이가 동일하여 레이아웃 변화가 없습니다.
       */}
-      <div className="bg-white border border-gray-100 shadow-sm rounded-2xl px-6 py-5 h-[350px] flex flex-col justify-center">
+      <div className="bg-background border border-foreground/10 shadow-sm rounded-2xl px-6 py-5 h-[350px] flex flex-col justify-center">
         {optimisticItems.length === 0 && (
-          <p className="text-center text-sm text-gray-400">
+          <p className="text-center text-sm text-foreground/40">
             연락처 정보가 없습니다.
           </p>
         )}
@@ -215,14 +215,14 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
             const rowInner = (
               <>
                 {/* 아이콘 (고정) */}
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center">
+                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-silver-metal flex items-center justify-center">
                   <Icon className="w-5 h-5 text-white" />
                 </div>
 
                 {/* 텍스트 / Ghost Input 영역 */}
                 <div className="flex-1 min-w-0">
                   {/* 라벨: 항상 고정 표시 */}
-                  <p className="text-xs text-gray-500 leading-none mb-0.5">
+                  <p className="text-xs text-foreground/50 leading-none mb-0.5">
                     {item.label}
                   </p>
 
@@ -260,7 +260,7 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
                     </div>
                   ) : (
                     /* 뷰 모드: 기존 텍스트 그대로 */
-                    <p className="text-sm text-gray-900 font-medium truncate leading-5">
+                    <p className="text-sm text-foreground font-medium truncate leading-5">
                       {item.value}
                     </p>
                   )}
@@ -273,7 +273,7 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
                       e.preventDefault()
                       handleCopy(item.value)
                     }}
-                    className="flex-shrink-0 text-xs text-gray-400 hover:text-brand-primary transition-colors px-2 py-1 rounded hover:bg-blue-50"
+                    className="flex-shrink-0 text-xs text-foreground/40 hover:text-brand-secondary transition-colors px-2 py-1 rounded hover:bg-brand-secondary/5"
                   >
                     Copy
                   </button>
@@ -291,7 +291,7 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 py-2 px-2 -mx-2 hover:bg-gray-50 rounded-lg transition-colors"
+                className="flex items-center gap-3 py-2 px-2 -mx-2 hover:bg-foreground/5 rounded-lg transition-colors"
               >
                 {rowInner}
               </a>

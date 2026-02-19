@@ -111,17 +111,17 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
         {/* 헤더 (클릭 가능한 영역) */}
         <div
           onClick={handleCardClick}
-          className="px-5 py-4 cursor-pointer flex items-center gap-3 hover:bg-gray-50 transition-colors"
+          className="px-5 py-4 cursor-pointer flex items-center gap-3 hover:bg-foreground/5 transition-colors"
         >
           {/* 답변 상태 아이콘 */}
           <div className="flex-shrink-0">
             {hasReply ? (
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-silver-metal flex items-center justify-center">
                 <HiCheckCircle className="w-4 h-4 text-white" />
               </div>
             ) : (
-              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
-                <HiClock className="w-4 h-4 text-gray-400" />
+              <div className="w-8 h-8 rounded-lg bg-foreground/10 flex items-center justify-center">
+                <HiClock className="w-4 h-4 text-foreground/40" />
               </div>
             )}
           </div>
@@ -130,21 +130,21 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 mb-1">
               {isPrivate && !isUnlocked && (
-                <HiOutlineLockClosed className="flex-shrink-0 w-4 h-4 text-gray-400" />
+                <HiOutlineLockClosed className="flex-shrink-0 w-4 h-4 text-foreground/40" />
               )}
-              <h3 className="text-sm font-semibold text-gray-900 truncate">{inquiry.title}</h3>
+              <h3 className="text-sm font-semibold text-foreground truncate">{inquiry.title}</h3>
               {hasReply && (
-                <span className="flex-shrink-0 px-2 py-0.5 text-[10px] font-medium bg-gray-900 text-white rounded-full">
+                <span className="flex-shrink-0 px-2 py-0.5 text-[10px] font-medium bg-foreground text-background rounded-full">
                   답변완료
                 </span>
               )}
               {isPrivate && (
-                <span className="flex-shrink-0 px-2 py-0.5 text-[10px] font-medium bg-gray-200 text-gray-700 rounded-full">
+                <span className="flex-shrink-0 px-2 py-0.5 text-[10px] font-medium bg-foreground/10 text-foreground/70 rounded-full">
                   비공개
                 </span>
               )}
             </div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-foreground/50">
               {new Date(inquiry.created_at).toLocaleDateString('ko-KR', {
                 year: 'numeric',
                 month: 'long',
@@ -160,7 +160,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
                 e.stopPropagation()
                 setShowDeleteModal(true)
               }}
-              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+              className="p-1.5 text-foreground/40 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
               title="삭제"
             >
               <HiOutlineTrash className="w-4 h-4" />
@@ -168,7 +168,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
             <motion.div
               animate={{ rotate: isOpen ? 180 : 0 }}
               transition={{ duration: 0.3 }}
-              className="text-gray-400"
+              className="text-foreground/40"
             >
               <HiChevronDown className="w-5 h-5" />
             </motion.div>
@@ -185,28 +185,28 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <div className="px-5 pb-4 space-y-3 border-t border-gray-100">
+              <div className="px-5 pb-4 space-y-3 border-t border-foreground/8">
                 {/* 문의 내용 */}
                 <div className="pt-3">
-                  <div className="text-xs font-medium text-gray-500 mb-1.5">문의 내용</div>
-                  <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">{inquiry.content}</p>
+                  <div className="text-xs font-medium text-foreground/50 mb-1.5">문의 내용</div>
+                  <p className="text-sm text-foreground/70 whitespace-pre-line leading-relaxed">{inquiry.content}</p>
                 </div>
 
                 {/* 답변 내용 */}
                 {hasReply && (
-                  <div className="p-3 bg-gray-50 rounded-xl">
+                  <div className="p-3 bg-foreground/5 rounded-xl">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <div className="w-5 h-5 rounded-md bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center">
+                      <div className="w-5 h-5 rounded-md bg-silver-metal flex items-center justify-center">
                         <span className="text-white text-[10px] font-bold">A</span>
                       </div>
-                      <div className="text-xs font-medium text-gray-900">관리자 답변</div>
+                      <div className="text-xs font-medium text-foreground">관리자 답변</div>
                       {inquiry.replied_at && (
-                        <div className="text-[11px] text-gray-500 ml-auto">
+                        <div className="text-[11px] text-foreground/50 ml-auto">
                           {new Date(inquiry.replied_at).toLocaleDateString('ko-KR')}
                         </div>
                       )}
                     </div>
-                    <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed ml-7">{inquiry.reply}</p>
+                    <p className="text-sm text-foreground/70 whitespace-pre-line leading-relaxed ml-7">{inquiry.reply}</p>
                   </div>
                 )}
               </div>
@@ -230,15 +230,15 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-7"
+              className="bg-background rounded-2xl shadow-2xl max-w-md w-full p-7"
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-silver-metal flex items-center justify-center">
                   <HiOutlineLockClosed className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">비공개 문의</h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <h3 className="text-xl font-bold text-foreground">비공개 문의</h3>
+                  <p className="text-sm text-foreground/50 mt-1">
                     비밀번호를 입력하세요
                   </p>
                 </div>
@@ -246,7 +246,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
 
               <div className="mb-6">
                 <div className="relative">
-                  <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
                   <input
                     type="password"
                     value={password}
@@ -257,7 +257,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
                       }
                     }}
                     placeholder="비밀번호 입력"
-                    className="w-full h-11 pl-12 pr-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all"
+                    className="w-full h-11 pl-12 pr-4 bg-background border border-foreground/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all text-foreground"
                     autoFocus
                   />
                 </div>
@@ -270,7 +270,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
                     setPassword('')
                   }}
                   disabled={isVerifying}
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-3 border border-foreground/10 rounded-xl font-medium text-foreground/70 hover:bg-foreground/5 transition-colors disabled:opacity-50"
                 >
                   취소
                 </button>
@@ -302,15 +302,15 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-7"
+              className="bg-background rounded-2xl shadow-2xl max-w-md w-full p-7"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                   <HiOutlineTrash className="w-6 h-6 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">문의 삭제</h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <h3 className="text-xl font-bold text-foreground">문의 삭제</h3>
+                  <p className="text-sm text-foreground/50 mt-1">
                     {isAdmin ? '정말 삭제하시겠습니까?' : '비밀번호를 입력하세요'}
                   </p>
                 </div>
@@ -319,13 +319,13 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
               {!isAdmin && (
                 <div className="mb-6">
                   <div className="relative">
-                    <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
                     <input
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="비밀번호 입력"
-                      className="w-full h-11 pl-12 pr-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all"
+                      className="w-full h-11 pl-12 pr-4 bg-background border border-foreground/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all text-foreground"
                       autoFocus
                     />
                   </div>
@@ -336,7 +336,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
                 <button
                   onClick={() => setShowDeleteModal(false)}
                   disabled={isDeleting}
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-3 border border-foreground/10 rounded-xl font-medium text-foreground/70 hover:bg-foreground/5 transition-colors disabled:opacity-50"
                 >
                   취소
                 </button>

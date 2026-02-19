@@ -1,58 +1,98 @@
-/* Pretendard 폰트 CDN 로드 (한국어 최적화 정적 폰트) */
+/* Pretendard 폰트 CDN 로드 */
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* [Light Mode] 대비를 높여 가독성 확보 */
+    --background: 210 40% 98%;    /* slate-50 */
+    --foreground: 222 47% 11%;    /* slate-950 (진한 텍스트) */
+
+    /* 실버 그라데이션 - 뭉치지 않게 명도 차이 최적화 */
+    --metal-start: 215 16% 40%;  /* 어두운 메탈 */
+    --metal-mid: 214 20% 75%;    /* 밝은 실버 */
+    --metal-end: 215 16% 40%;    /* 어두운 메탈 */
+
+    --brand-secondary: 201 96% 40%; /* 쨍하지 않은 고급스러운 블루 */
+  }
+
+  .dark {
+    /* [Dark Mode] 깊이감 있는 배경 */
+    --background: 222 47% 4%;     /* slate-950+ */
+    --foreground: 215 20% 85%;    /* 부드러운 실버 텍스트 */
+
+    /* 다크모드 실버 광택 - 하이라이트 강화 */
+    --metal-start: 215 20% 30%;
+    --metal-mid: 214 30% 90%;    /* 강력한 실버 포인트 */
+    --metal-end: 215 20% 30%;
+
+    --brand-secondary: 199 89% 48%;
   }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-family: 'Pretendard Variable', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @layer utilities {
+  /* 1. 실버 메탈 배경 (입체감 강화) */
+  .bg-silver-metal {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--metal-start)) 0%,
+      hsl(var(--metal-mid)) 50%,
+      hsl(var(--metal-end)) 100%
+    );
+    background-size: 200% auto;
+    transition: 0.5s;
+  }
+
+  /* 2. 실버 메탈 텍스트 (로고용) */
+  .text-silver-metal {
+    background: linear-gradient(
+      to right,
+      hsl(var(--metal-start)),
+      hsl(var(--metal-mid)),
+      hsl(var(--metal-start))
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+  }
+
+  /* 3. 광택 애니메이션 (뭉침 현상 해결 버전) */
+  .animate-shine:hover {
+    animation: shine 1.5s linear infinite;
+    background-image: linear-gradient(
+      110deg,
+      hsl(var(--metal-start)) 45%,
+      hsl(var(--metal-mid)) 50%,
+      hsl(var(--metal-start)) 55%
+    );
+    background-size: 200% 100%;
+  }
+
+  @keyframes shine {
+    to {
+      background-position-x: -200%;
+    }
+  }
+
   .text-balance {
     text-wrap: balance;
   }
-  
-  .animate-gradient {
-    background-size: 200% 200%;
-  }
 }
 
-/* 커스텀 스크롤바 스타일 (모달용) */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
+/* 커스텀 스크롤바 */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: hsl(var(--background)); }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
-  border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #2563eb, #7c3aed);
-}
-
-/* Firefox용 스크롤바 스타일 */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #3b82f6 #f1f1f1;
+  background: hsl(var(--metal-start) / 0.4);
+  border-radius: 10px;
 }

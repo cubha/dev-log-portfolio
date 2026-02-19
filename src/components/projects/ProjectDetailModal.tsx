@@ -75,22 +75,22 @@ export function ProjectDetailModal() {
               stiffness: 300,
               damping: 30,
             }}
-            className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-4xl max-h-[90vh] bg-background rounded-2xl shadow-2xl overflow-hidden"
           >
             {/* 닫기 버튼 */}
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-gray-100 transition-colors group"
+              className="absolute top-4 right-4 z-10 p-2 bg-background/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-foreground/10 transition-colors group"
               aria-label="모달 닫기"
             >
-              <X className="w-6 h-6 text-gray-600 group-hover:text-gray-900" />
+              <X className="w-6 h-6 text-foreground/60 group-hover:text-foreground" />
             </button>
 
             {/* 스크롤 가능한 콘텐츠 */}
             <div className="overflow-y-auto max-h-[90vh] custom-scrollbar">
               {/* 썸네일 이미지 - 더 크게 */}
               {selectedProject.thumbnail_url ? (
-                <div className="relative w-full h-80 bg-gray-100">
+                <div className="relative w-full h-80 bg-foreground/10">
                   <Image
                     src={selectedProject.thumbnail_url}
                     alt={selectedProject.title}
@@ -107,7 +107,7 @@ export function ProjectDetailModal() {
                   )}
                 </div>
               ) : (
-                <div className="w-full h-80 bg-gradient-to-br from-brand-primary via-brand-secondary to-pink-500 flex items-center justify-center">
+                <div className="w-full h-80 bg-foreground/8 flex items-center justify-center">
                   <FolderKanban className="w-24 h-24 text-white opacity-50" />
                 </div>
               )}
@@ -115,21 +115,21 @@ export function ProjectDetailModal() {
               {/* 본문 콘텐츠 */}
               <div className="p-8 md:p-10">
                 {/* 헤더: 기간 & 회사 정보 */}
-                <div className="flex flex-wrap items-start justify-between gap-4 mb-6 pb-6 border-b-2 border-gray-200">
+                <div className="flex flex-wrap items-start justify-between gap-4 mb-6 pb-6 border-b-2 border-foreground/10">
                   {/* 좌측: 진행 기간 & 총 개월 수 */}
                   <div className="flex items-center gap-3">
                     {(selectedProject.start_date || selectedProject.end_date) && (
                       <>
-                        <Calendar className="w-5 h-5 text-brand-primary" />
+                        <Calendar className="w-5 h-5 text-brand-secondary" />
                         <div>
-                          <div className="text-lg font-bold text-gray-900">
+                          <div className="text-lg font-bold text-foreground">
                             {selectedProject.start_date && formatDateShort(selectedProject.start_date)}
                             {' - '}
                             {selectedProject.is_ongoing 
                               ? '진행중' 
                               : selectedProject.end_date && formatDateShort(selectedProject.end_date)}
                           </div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-foreground/60">
                             총 {calculateMonthDuration(selectedProject.start_date, selectedProject.end_date, selectedProject.is_ongoing)}개월
                           </div>
                         </div>
@@ -140,11 +140,11 @@ export function ProjectDetailModal() {
                   {/* 우측: 회사명 & 역할 */}
                   {(selectedProject.company_name || selectedProject.project_role) && (
                     <div className="text-right">
-                      <div className="text-lg font-bold text-gray-900">
+                      <div className="text-lg font-bold text-foreground">
                         {selectedProject.company_name || '-'}
                       </div>
                       {selectedProject.project_role && (
-                        <div className="text-sm text-brand-primary font-semibold">
+                        <div className="text-sm text-brand-secondary font-semibold">
                           {selectedProject.project_role}
                         </div>
                       )}
@@ -153,28 +153,28 @@ export function ProjectDetailModal() {
                 </div>
 
                 {/* 프로젝트 제목 */}
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6 leading-tight">
                   {selectedProject.title}
                 </h2>
 
                 {/* 카테고리 배지 */}
                 {selectedProject.category && (
                   <div className="mb-6">
-                    <span className="inline-block px-4 py-1.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-semibold rounded-full">
+                    <span className="inline-block px-4 py-1.5 bg-brand-secondary/10 text-brand-secondary text-sm font-semibold rounded-full">
                       {selectedProject.category} 프로젝트
                     </span>
                   </div>
                 )}
 
                 {/* 프로젝트 정보 리스트 */}
-                <div className="mb-8 space-y-4 bg-gray-50 p-6 rounded-xl border border-gray-200">
+                <div className="mb-8 space-y-4 bg-foreground/5 p-6 rounded-xl border border-foreground/10">
                   {/* 주요 업무 */}
                   {selectedProject.description && (
                     <div className="flex gap-4">
-                      <div className="flex-shrink-0 w-28 font-bold text-gray-700 text-sm">
+                      <div className="flex-shrink-0 w-28 font-bold text-foreground/70 text-sm">
                         주요 업무
                       </div>
-                      <div className="flex-1 text-gray-900 text-sm leading-relaxed whitespace-pre-line">
+                      <div className="flex-1 text-foreground text-sm leading-relaxed whitespace-pre-line">
                         {selectedProject.description}
                       </div>
                     </div>
@@ -183,10 +183,10 @@ export function ProjectDetailModal() {
                   {/* 담당 역할 */}
                   {selectedProject.project_role && (
                     <div className="flex gap-4">
-                      <div className="flex-shrink-0 w-28 font-bold text-gray-700 text-sm">
+                      <div className="flex-shrink-0 w-28 font-bold text-foreground/70 text-sm">
                         담당 역할
                       </div>
-                      <div className="flex-1 text-gray-900 text-sm">
+                      <div className="flex-1 text-foreground text-sm">
                         {selectedProject.project_role}
                       </div>
                     </div>
@@ -195,7 +195,7 @@ export function ProjectDetailModal() {
                   {/* 개발 환경 (기술 스택) */}
                   {selectedProject.tech_stack && selectedProject.tech_stack.length > 0 && (
                     <div className="flex gap-4">
-                      <div className="flex-shrink-0 w-28 font-bold text-gray-700 text-sm">
+                      <div className="flex-shrink-0 w-28 font-bold text-foreground/70 text-sm">
                         개발 환경
                       </div>
                       <div className="flex-1">
@@ -208,7 +208,7 @@ export function ProjectDetailModal() {
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.03 }}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 text-gray-800 text-xs font-semibold rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all"
+                                className="flex items-center gap-2 px-3 py-1.5 bg-background border border-foreground/10 text-foreground/80 text-xs font-semibold rounded-lg shadow-sm hover:shadow-md hover:border-brand-primary/40 transition-all"
                               >
                                 {iconResult ? (
                                   <iconResult.icon 
@@ -216,7 +216,7 @@ export function ProjectDetailModal() {
                                     style={{ color: iconResult.color }}
                                   />
                                 ) : (
-                                  <Code className="w-4 h-4 flex-shrink-0 text-gray-400" />
+                                  <Code className="w-4 h-4 flex-shrink-0 text-foreground/40" />
                                 )}
                                 <span>{tech}</span>
                               </motion.span>
@@ -230,10 +230,10 @@ export function ProjectDetailModal() {
                   {/* 진행 인원 */}
                   {selectedProject.team_size !== null && selectedProject.team_size !== undefined && (
                     <div className="flex gap-4">
-                      <div className="flex-shrink-0 w-28 font-bold text-gray-700 text-sm">
+                      <div className="flex-shrink-0 w-28 font-bold text-foreground/70 text-sm">
                         진행 인원
                       </div>
-                      <div className="flex-1 text-gray-900 text-sm">
+                      <div className="flex-1 text-foreground text-sm">
                         {formatTeamSize(selectedProject.team_size)}
                       </div>
                     </div>
@@ -243,8 +243,8 @@ export function ProjectDetailModal() {
                 {/* 상세 내용 섹션 */}
                 {selectedProject.detailed_tasks && selectedProject.detailed_tasks.length > 0 && (
                   <div className="mb-8">
-                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                      <span className="w-1 h-6 bg-gradient-to-b from-brand-primary to-brand-secondary rounded-full"></span>
+                    <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                      <span className="w-1 h-6 bg-foreground/30 rounded-full"></span>
                       상세 내용
                     </h3>
                     <div className="space-y-2.5 pl-2">
@@ -256,10 +256,10 @@ export function ProjectDetailModal() {
                           transition={{ delay: index * 0.05 }}
                           className="flex gap-3 items-start group"
                         >
-                          <span className="text-brand-primary font-bold text-base mt-0.5 group-hover:text-brand-secondary transition-colors">
+                          <span className="text-brand-secondary font-bold text-base mt-0.5 group-hover:text-foreground transition-colors">
                             &gt;&gt;
                           </span>
-                          <span className="text-gray-800 text-base leading-relaxed flex-1">
+                          <span className="text-foreground/90 text-base leading-relaxed flex-1">
                             {task}
                           </span>
                         </motion.div>
@@ -270,13 +270,13 @@ export function ProjectDetailModal() {
 
                 {/* 링크 버튼들 */}
                 {(selectedProject.github_url || selectedProject.link_url) && (
-                  <div className="flex flex-wrap gap-4 pt-6 border-t border-gray-200">
+                  <div className="flex flex-wrap gap-4 pt-6 border-t border-foreground/10">
                     {selectedProject.link_url && (
                       <a
                         href={selectedProject.link_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+                        className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
                       >
                         <ExternalLink className="w-5 h-5" />
                         <span>라이브 데모 보기</span>

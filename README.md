@@ -343,6 +343,40 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 
 ## 📅 최근 업데이트
 
+## 🚀 2026-02-19 업데이트 내역
+
+### 1. Admin Skills 이름 입력 자동완성 구현
+
+*   **`TechStackInput.tsx`**: `POPULAR_TECHS` 상수 `export` 처리 → 관리자 페이지 간 공유
+*   **`admin/skills/page.tsx`**: 기술 이름 입력 필드에 자동완성 드롭다운 추가
+    *   입력 시 `POPULAR_TECHS` 목록에서 실시간 필터링 (최대 7개)
+    *   드롭다운 각 항목에 `SkillIcon` 아이콘 미리보기 표시
+    *   항목 클릭 시 이름 자동 입력 + 드롭다운 닫힘
+    *   외부 클릭 감지(`mousedown` 이벤트)로 드롭다운 자동 닫힘
+    *   모달 닫기 시 자동완성 상태 초기화
+
+---
+
+### 2. Admin Dashboard 실버 메탈 테마 전체 동기화
+
+#### AdminHeader / AdminSidebar 컴포넌트 분리 (신규)
+*   **신규 파일**: `src/components/admin/AdminHeader.tsx`
+    *   헤더 + 사이드바를 클라이언트 컴포넌트로 분리
+    *   헤더 우측에 **ThemeToggle** 통합 → 관리자 페이지에서도 다크/라이트 전환 가능
+    *   `usePathname` 기반 사이드바 활성 항목 자동 강조
+*   **`admin/layout.tsx`**: 서버 컴포넌트로 유지하며 `AdminHeader` / `AdminSidebar` import로 리팩토링
+
+#### 전역 CSS 변수 기반 테마 통일 (4개 페이지 + TechStackInput)
+*   `bg-white` / `bg-gray-50` → `bg-background`
+*   `border-gray-*` → `border-foreground/*` (불투명도 비율 적용)
+*   `text-gray-*` → `text-foreground/*`
+*   모든 `<input>` / `<textarea>` / `<select>`: `bg-background text-foreground placeholder:text-foreground/30 focus:ring-foreground/20`
+*   저장/추가 버튼: `bg-silver-metal animate-shine text-white dark:text-slate-950`
+*   취소 버튼: `bg-foreground/8 text-foreground/60`
+*   테이블 헤더: `bg-foreground/3 border-foreground/8`
+*   대시보드 빠른 액션 카드: 블루 그라데이션 → `bg-foreground/3 hover:bg-foreground/5` 메탈릭 스타일
+
+
 ## 🚀 2026-02-18 업데이트 내역
 
 ### 1. Phase 1: 디자인 시스템 정립

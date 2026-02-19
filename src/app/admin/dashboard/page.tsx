@@ -43,8 +43,8 @@ export default async function AdminDashboardPage() {
       <div>
         {/* 페이지 헤더 */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">대시보드</h1>
-          <p className="text-gray-600">포트폴리오 관리 현황을 한눈에 확인하세요</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">대시보드</h1>
+          <p className="text-foreground/60">포트폴리오 관리 현황을 한눈에 확인하세요</p>
         </div>
 
         {/* 통계 카드 그리드 */}
@@ -78,47 +78,47 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* 빠른 액션 */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">빠른 액션</h2>
+        <div className="bg-background rounded-xl border border-foreground/10 p-6 shadow-sm">
+          <h2 className="text-xl font-bold text-foreground mb-4">빠른 액션</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link
               href="/admin/projects"
-              className="group flex items-center justify-between p-4 bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border border-blue-200 rounded-lg transition-all hover:shadow-md"
+              className="group flex items-center justify-between p-4 bg-foreground/3 hover:bg-foreground/5 border border-foreground/10 hover:border-foreground/20 rounded-lg transition-all hover:shadow-md"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-brand-primary rounded-lg">
-                  <FolderKanban className="w-5 h-5 text-white" />
+                <div className="p-2 bg-silver-metal rounded-lg">
+                  <FolderKanban className="w-5 h-5 text-white dark:text-slate-950" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">프로젝트 관리</p>
-                  <p className="text-sm text-gray-600">프로젝트 추가 및 수정</p>
+                  <p className="font-semibold text-foreground">프로젝트 관리</p>
+                  <p className="text-sm text-foreground/50">프로젝트 추가 및 수정</p>
                 </div>
               </div>
-              <ArrowRight className="w-5 h-5 text-brand-primary group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 text-foreground/40 group-hover:text-foreground group-hover:translate-x-1 transition-all" />
             </Link>
 
             <Link
               href="/admin/skills"
-              className="group flex items-center justify-between p-4 bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border border-purple-200 rounded-lg transition-all hover:shadow-md"
+              className="group flex items-center justify-between p-4 bg-foreground/3 hover:bg-foreground/5 border border-foreground/10 hover:border-foreground/20 rounded-lg transition-all hover:shadow-md"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-brand-secondary rounded-lg">
-                  <Code2 className="w-5 h-5 text-white" />
+                <div className="p-2 bg-silver-metal rounded-lg">
+                  <Code2 className="w-5 h-5 text-white dark:text-slate-950" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">기술 스택 관리</p>
-                  <p className="text-sm text-gray-600">기술 스택 추가 및 수정</p>
+                  <p className="font-semibold text-foreground">기술 스택 관리</p>
+                  <p className="text-sm text-foreground/50">기술 스택 추가 및 수정</p>
                 </div>
               </div>
-              <ArrowRight className="w-5 h-5 text-brand-secondary group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 text-foreground/40 group-hover:text-foreground group-hover:translate-x-1 transition-all" />
             </Link>
           </div>
         </div>
 
         {/* 최근 활동 (추후 구현 예정) */}
-        <div className="mt-8 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">최근 활동</h2>
-          <p className="text-gray-500 text-center py-8">최근 활동 내역이 여기에 표시됩니다.</p>
+        <div className="mt-8 bg-background rounded-xl border border-foreground/10 p-6 shadow-sm">
+          <h2 className="text-xl font-bold text-foreground mb-4">최근 활동</h2>
+          <p className="text-foreground/50 text-center py-8">최근 활동 내역이 여기에 표시됩니다.</p>
         </div>
       </div>
     )
@@ -128,7 +128,7 @@ export default async function AdminDashboardPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <p className="text-red-600 font-semibold mb-2">데이터 로딩 오류</p>
-          <p className="text-gray-600 text-sm">대시보드 데이터를 불러올 수 없습니다.</p>
+          <p className="text-foreground/60 text-sm">대시보드 데이터를 불러올 수 없습니다.</p>
         </div>
       </div>
     )
@@ -160,16 +160,16 @@ function StatCard({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-background rounded-xl border border-foreground/10 p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
         <div className={`p-3 bg-gradient-to-br ${colorClasses[color]} bg-opacity-10 rounded-lg`}>
           <div className={colorClasses[color]}>{icon}</div>
         </div>
       </div>
       <div>
-        <p className="text-gray-600 text-sm mb-1">{title}</p>
-        <p className="text-3xl font-bold text-gray-900 mb-1">{value}</p>
-        <p className="text-gray-500 text-xs">{description}</p>
+        <p className="text-foreground/60 text-sm mb-1">{title}</p>
+        <p className="text-3xl font-bold text-foreground mb-1">{value}</p>
+        <p className="text-foreground/50 text-xs">{description}</p>
       </div>
     </div>
   )

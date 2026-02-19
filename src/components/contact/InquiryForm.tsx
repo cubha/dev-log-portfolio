@@ -65,12 +65,12 @@ export function InquiryForm() {
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-1 h-5 bg-gradient-to-b from-brand-primary to-brand-secondary rounded-full" />
-          <h2 className="text-xl font-semibold text-gray-900">문의 작성</h2>
+          <div className="w-1 h-5 bg-foreground/30 rounded-full" />
+          <h2 className="text-xl font-semibold text-foreground">문의 작성</h2>
         </div>
         {/* 공개 여부 토글 */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-foreground/50">
             {formData.isPublic ? '공개' : '비공개'}
           </span>
           <button
@@ -78,7 +78,7 @@ export function InquiryForm() {
             onClick={() => setFormData(prev => ({ ...prev, isPublic: !prev.isPublic }))}
             className={`
               relative w-12 h-6 rounded-full transition-all duration-300
-              ${formData.isPublic ? 'bg-gradient-to-r from-brand-primary to-brand-secondary' : 'bg-gray-300'}
+              ${formData.isPublic ? 'bg-brand-primary' : 'bg-foreground/20'}
             `}
           >
             <span
@@ -92,12 +92,12 @@ export function InquiryForm() {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="space-y-3.5 bg-white border border-gray-100 shadow-sm rounded-2xl p-6 h-[350px] flex flex-col"
+        className="space-y-3.5 bg-background border border-foreground/10 shadow-sm rounded-2xl p-6 h-[350px] flex flex-col"
       >
 
         {/* 제목 */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-900 mb-1.5">
+          <label htmlFor="title" className="block text-sm font-medium text-foreground mb-1.5">
             제목
           </label>
           <input
@@ -105,14 +105,14 @@ export function InquiryForm() {
             type="text"
             value={formData.title}
             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all text-sm"
+            className="w-full h-11 px-3 bg-background border border-foreground/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all text-sm text-foreground"
             placeholder="문의 제목을 입력하세요"
           />
         </div>
 
         {/* 비밀번호 */}
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-1.5">
+          <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">
             비밀번호
           </label>
           <input
@@ -120,21 +120,21 @@ export function InquiryForm() {
             type="password"
             value={formData.password}
             onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-            className="w-full h-11 px-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all text-sm"
+            className="w-full h-11 px-3 bg-background border border-foreground/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all text-sm text-foreground"
             placeholder="수정/삭제 시 사용할 비밀번호"
           />
         </div>
 
         {/* 내용 */}
         <div className="flex-1 flex flex-col">
-          <label htmlFor="content" className="block text-sm font-medium text-gray-900 mb-1.5">
+          <label htmlFor="content" className="block text-sm font-medium text-foreground mb-1.5">
             내용
           </label>
           <textarea
             id="content"
             value={formData.content}
             onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-            className="w-full flex-1 px-3 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all resize-none text-sm"
+            className="w-full flex-1 px-3 py-2 bg-background border border-foreground/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary transition-all resize-none text-sm text-foreground"
             placeholder="문의 내용을 입력하세요"
           />
         </div>
@@ -143,7 +143,7 @@ export function InquiryForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full px-4 py-2.5 bg-gradient-to-r from-brand-primary to-brand-secondary text-white text-sm font-semibold rounded-xl hover:opacity-90 hover:shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-4 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 text-sm font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? 'Sending...' : 'Send Message'}
         </button>
