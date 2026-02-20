@@ -2,7 +2,6 @@ import { createClient } from '@/src/utils/supabase/client'
 import type { Training, TrainingInsert, TrainingUpdate } from '@/src/types/profile'
 
 type SupabaseClient = ReturnType<typeof createClient>
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyBuilder = any
 
 /** 전체 교육/자격증 목록 조회 (최신순) */

@@ -45,14 +45,14 @@ const cardVariants = {
   hidden: { opacity: 0, x: -12 },
   visible: (i: number) => ({
     opacity: 1, x: 0,
-    transition: { duration: 0.3, ease: 'easeOut', delay: i * 0.04 },
+    transition: { duration: 0.3, ease: 'easeOut' as const, delay: i * 0.04 },
   }),
 }
 
 const expandVariants = {
   hidden:  { opacity: 0, height: 0 },
-  visible: { opacity: 1, height: 'auto', transition: { duration: 0.45, ease: 'easeOut' } },
-  exit:    { opacity: 0, height: 0,      transition: { duration: 0.3,  ease: 'easeIn'  } },
+  visible: { opacity: 1, height: 'auto', transition: { duration: 0.45, ease: 'easeOut' as const } },
+  exit:    { opacity: 0, height: 0,      transition: { duration: 0.3,  ease: 'easeIn'  as const } },
 }
 
 /**

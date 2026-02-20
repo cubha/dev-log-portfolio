@@ -4,6 +4,7 @@ import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AboutLink } from '@/src/components/home/AboutLink'
 import { ContactLink } from '@/src/components/home/ContactLink'
+import { ThemeCard } from '@/src/components/common/ThemeCard'
 
 /**
  * 홈페이지
@@ -63,13 +64,14 @@ export default async function Home() {
             ].map((tech) => {
               const Icon = tech.icon
               return (
-                <span
+                <ThemeCard
                   key={tech.name}
-                  className="flex items-center gap-2 px-4 py-2 bg-foreground/5 text-foreground/70 text-sm font-medium rounded-lg border border-foreground/10 hover:border-brand-primary hover:shadow-md transition-all"
+                  noHoverLift
+                  className="flex items-center gap-2 px-4 py-2"
                 >
                   <Icon className="w-4 h-4 text-foreground/50" />
-                  {tech.name}
-                </span>
+                  <span className="text-sm font-medium text-foreground/75">{tech.name}</span>
+                </ThemeCard>
               )
             })}
           </div>
