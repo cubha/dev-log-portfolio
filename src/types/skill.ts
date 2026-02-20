@@ -28,7 +28,6 @@ export type SkillUpdate = Partial<SkillInsert>
 export const SKILL_CATEGORIES = [
   'Frontend',
   'Backend',
-  'Language',
   'Database',
   'DevOps',
   'Tools',

@@ -52,10 +52,10 @@ export function Header() {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 w-full bg-white/70 dark:bg-slate-950/80 backdrop-blur-md transition-all duration-300 ${
+        className={`sticky top-0 z-50 w-full bg-background/70 backdrop-blur-md transition-all duration-300 border-b ${
           isScrolled
-            ? 'border-b border-slate-200/80 dark:border-white/10 shadow-sm'
-            : 'border-b border-transparent'
+            ? 'border-brand-primary/10 shadow-sm'
+            : 'border-transparent'
         }`}
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

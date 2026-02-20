@@ -5,6 +5,7 @@ import {
   Plus, Pencil, Trash2, X, Layers, AlertCircle, Check,
   ChevronUp, ChevronDown,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   fetchSkills,
   createSkill,
@@ -27,7 +28,6 @@ const EMPTY_FORM: SkillInsert = {
 const CATEGORY_COLORS: Record<string, string> = {
   Frontend: 'bg-blue-50 text-blue-700',
   Backend:  'bg-green-50 text-green-700',
-  Language: 'bg-purple-50 text-purple-700',
   Database: 'bg-orange-50 text-orange-700',
   DevOps:   'bg-cyan-50 text-cyan-700',
   Tools:    'bg-gray-100 text-gray-600',
@@ -171,16 +171,32 @@ export default function AdminSkillsPage() {
   // ─── 폼 제출 ──────────────────────────────────────────────────────────────
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!formData.name.trim()) {
+    const trimmedName = formData.name.trim()
+
+    if (!trimmedName) {
       setFormError('기술 이름을 입력해주세요.')
       return
     }
+
+    // ── 중복 이름 체크 (추가 시에만 / 대소문자 무시) ──────────────────────
+    if (!editingSkill) {
+      const isDuplicate = skills.some(
+        (s) => s.name.toLowerCase() === trimmedName.toLowerCase()
+      )
+      if (isDuplicate) {
+        toast.error('이미 등록된 기술입니다.', {
+          description: `"${trimmedName}"은(는) 이미 목록에 있습니다.`,
+        })
+        return
+      }
+    }
+
     setIsSubmitting(true)
     setFormError(null)
 
     const payload: SkillInsert = {
       ...formData,
-      name:     formData.name.trim(),
+      name:      trimmedName,
       icon_name: formData.icon_name?.trim() || null,
     }
 
@@ -191,6 +207,7 @@ export default function AdminSkillsPage() {
     if (result.error) {
       setFormError(result.error)
     } else {
+      toast.success(editingSkill ? '기술이 수정되었습니다.' : '새 기술이 추가되었습니다.')
       closeModal()
       await loadSkills()
     }

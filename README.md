@@ -343,6 +343,68 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 
 ## 📅 최근 업데이트
 
+## 🚀 2026-02-20 업데이트 내역
+
+### 1. ThemeCard 공통 컴포넌트 디자인 전면 개편
+
+**File:** `src/components/common/ThemeCard.tsx`
+
+기존 글래스모피즘(Glass Morphism) 스타일에서 그라데이션 기반 미니멀 디자인으로 전환했습니다.
+
+- **배경**: `bg-white/80 backdrop-blur-md` → `bg-gradient-to-br from-brand-primary/5 to-brand-secondary/5`
+- **테두리**: `border-brand-primary/20` → `border-brand-primary/10` (더 섬세한 경계선)
+- **모서리**: `rounded-2xl` → `rounded-xl`
+- **Sheen 오버레이 제거**: 상단 금속 광택 라인(`::before`) 제거로 구조 단순화
+- **전파 범위**: `/about` 스토리, `/projects` 카드, `/contact` 정보/폼 전체 자동 반영
+
+---
+
+### 2. /about 페이지 Experience 섹션 구조 개선
+
+**File:** `src/app/about/page.tsx`, `src/components/about/ExperienceTabsSection.tsx`
+
+전체를 하나의 ThemeCard로 감싸던 방식에서, 개별 타임라인 아이템에 ThemeCard를 적용하는 방식으로 변경했습니다.
+
+- `about/page.tsx`: `<ThemeCard noHoverLift className="mt-14 p-6 sm:p-8">` 래퍼 제거 → `<div className="mt-14">`로 교체
+- `ExperienceTabsSection.tsx` `TimelineList`: 각 아이템 카드 `div` → `<ThemeCard noHoverLift className="p-5">`로 교체
+- 타임라인 세로 선 및 Silver Dot은 기존 구조(`relative pl-10`) 그대로 유지
+- framer-motion 등장 애니메이션과의 충돌 방지를 위해 `noHoverLift` 적용
+
+---
+
+### 3. /about 페이지 Skills 섹션 ThemeCard 통일
+
+**File:** `src/components/about/SkillsSection.tsx`
+
+Technical Skills 섹션의 기술 아이템들에 ThemeCard 그라데이션 테마를 적용했습니다.
+
+- **Collapsed 뷰 (대표 기술 배지)**: 기존 `div` (`bg-background border-foreground/10`) → `<ThemeCard noHoverLift>` 교체
+- **Expanded 뷰 (전체 카드 그리드)**: `motion.div` 클래스 → `THEME_CARD_CLASS` 적용
+- framer-motion의 `cardVariants` 등장 애니메이션은 유지
+
+---
+
+### 4. Experience 요약 텍스트 스타일 간소화
+
+**File:** `src/components/about/ExperienceTabsSection.tsx`
+
+탭 상단의 경력/학력 요약 정보를 배경 박스에서 인라인 텍스트로 변경했습니다.
+
+- **Before**: 그라데이션 배경 + 테두리가 있는 `SummaryBanner` 컴포넌트 (카드 형태)
+- **After**: `flex items-center gap-2 text-sm font-medium text-foreground/55` 플레인 텍스트
+- `panelVariants` 타입 오류 수정: `ease: 'easeOut'` → `ease: 'easeOut' as const` (Framer Motion `Easing` 타입 호환)
+
+---
+
+### 5. 교육/자격증 관리 — 교육 타입 날짜 범위 입력 지원
+
+**Files:** `src/components/admin/TrainingManager.tsx`, `src/types/profile.ts`, `src/types/supabase.ts`, `src/utils/training/getTrainings.ts`  
+**Migration:** `supabase/migrations/20260220_trainings_add_date_range.sql`
+
+교육(`education`) 타입의 이력을 단일 날짜가 아닌 기간(from–to)으로 입력할 수 있도록 개선했습니다.
+
+
+
 ## 🚀 2026-02-19 업데이트 내역
 
 ### 1. Admin Skills 이름 입력 자동완성 구현

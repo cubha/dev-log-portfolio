@@ -189,12 +189,8 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
         )}
       </div>
 
-      {/*
-        ── 카드 본문 ────────────────────────────────────────
-        h-[350px] 고정 — Ghost Input 덕분에 Edit/View 모드에서
-        row 높이가 동일하여 레이아웃 변화가 없습니다.
-      */}
-      <div className="bg-background border border-foreground/10 shadow-sm rounded-2xl px-6 py-5 h-[350px] flex flex-col justify-center">
+      {/* 카드 본문 */}
+      <div className="flex flex-col justify-center">
         {optimisticItems.length === 0 && (
           <p className="text-center text-sm text-foreground/40">
             연락처 정보가 없습니다.

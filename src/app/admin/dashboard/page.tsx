@@ -1,5 +1,5 @@
 import { createClient } from '@/src/utils/supabase/server'
-import { FolderKanban, Code2, TrendingUp, ArrowRight } from 'lucide-react'
+import { FolderKanban, Code2, TrendingUp, ArrowRight, User } from 'lucide-react'
 import Link from 'next/link'
 
 /**
@@ -80,9 +80,10 @@ export default async function AdminDashboardPage() {
         {/* 빠른 액션 */}
         <div className="bg-background rounded-xl border border-foreground/10 p-6 shadow-sm">
           <h2 className="text-xl font-bold text-foreground mb-4">빠른 액션</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               href="/admin/projects"
+              target="_self"
               className="group flex items-center justify-between p-4 bg-foreground/3 hover:bg-foreground/5 border border-foreground/10 hover:border-foreground/20 rounded-lg transition-all hover:shadow-md"
             >
               <div className="flex items-center gap-3">
@@ -99,6 +100,7 @@ export default async function AdminDashboardPage() {
 
             <Link
               href="/admin/skills"
+              target="_self"
               className="group flex items-center justify-between p-4 bg-foreground/3 hover:bg-foreground/5 border border-foreground/10 hover:border-foreground/20 rounded-lg transition-all hover:shadow-md"
             >
               <div className="flex items-center gap-3">
@@ -108,6 +110,23 @@ export default async function AdminDashboardPage() {
                 <div>
                   <p className="font-semibold text-foreground">기술 스택 관리</p>
                   <p className="text-sm text-foreground/50">기술 스택 추가 및 수정</p>
+                </div>
+              </div>
+              <ArrowRight className="w-5 h-5 text-foreground/40 group-hover:text-foreground group-hover:translate-x-1 transition-all" />
+            </Link>
+            
+            <Link
+              href="/admin/profile"
+              target="_self"
+              className="group flex items-center justify-between p-4 bg-foreground/3 hover:bg-foreground/5 border border-foreground/10 hover:border-foreground/20 rounded-lg transition-all hover:shadow-md"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-silver-metal rounded-lg">
+                  <User className="w-5 h-5 text-white dark:text-slate-950" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">프로필 관리</p>
+                  <p className="text-sm text-foreground/50">About 프로필 편집</p>
                 </div>
               </div>
               <ArrowRight className="w-5 h-5 text-foreground/40 group-hover:text-foreground group-hover:translate-x-1 transition-all" />

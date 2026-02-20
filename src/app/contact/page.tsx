@@ -4,6 +4,7 @@ import { ContactInfo } from '@/src/components/contact/ContactInfo'
 import { InquiryForm } from '@/src/components/contact/InquiryForm'
 import { InquiryList } from '@/src/components/contact/InquiryList'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
+import { ThemeCard } from '@/src/components/common/ThemeCard'
 import type { ContactLink } from '@/src/types/contact'
 
 /**
@@ -43,11 +44,15 @@ export default async function ContactPage() {
 
           {/* 2열 레이아웃 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-            {/* 좌측: Contact Info — DB 데이터 + 관리자 여부 전달 */}
-            <ContactInfo initialData={contactLinks} isAdmin={isAdmin} />
+            {/* 좌측: Contact Info */}
+            <ThemeCard noHoverLift className="p-6">
+              <ContactInfo initialData={contactLinks} isAdmin={isAdmin} />
+            </ThemeCard>
 
             {/* 우측: Inquiry Form */}
-            <InquiryForm />
+            <ThemeCard noHoverLift className="p-6">
+              <InquiryForm />
+            </ThemeCard>
           </div>
 
           {/* 하단: 공개된 문의 목록 */}

@@ -19,8 +19,12 @@ export type Database = {
           created_at: string | null
           id: string
           intro_text: string
+          is_intro_visible: boolean
           main_copy: string
           profile_image_url: string | null
+          show_education: boolean
+          show_experience: boolean
+          show_training: boolean
           story_json: Json
           updated_at: string | null
           user_id: string
@@ -29,8 +33,12 @@ export type Database = {
           created_at?: string | null
           id?: string
           intro_text: string
+          is_intro_visible?: boolean
           main_copy: string
           profile_image_url?: string | null
+          show_education?: boolean
+          show_experience?: boolean
+          show_training?: boolean
           story_json?: Json
           updated_at?: string | null
           user_id: string
@@ -39,8 +47,12 @@ export type Database = {
           created_at?: string | null
           id?: string
           intro_text?: string
+          is_intro_visible?: boolean
           main_copy?: string
           profile_image_url?: string | null
+          show_education?: boolean
+          show_experience?: boolean
+          show_training?: boolean
           story_json?: Json
           updated_at?: string | null
           user_id?: string
@@ -77,6 +89,69 @@ export type Database = {
           label?: string
           sort_order?: number
           value?: string
+        }
+        Relationships: []
+      }
+      educations: {
+        Row: {
+          created_at: string | null
+          end_date: string | null
+          id: number
+          major: string
+          school_name: string
+          start_date: string
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_date?: string | null
+          id?: number
+          major: string
+          school_name: string
+          start_date: string
+          status?: string
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string | null
+          id?: number
+          major?: string
+          school_name?: string
+          start_date?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      experiences: {
+        Row: {
+          company_name: string
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: number
+          is_current: boolean
+          position: string
+          start_date: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: number
+          is_current?: boolean
+          position: string
+          start_date: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: number
+          is_current?: boolean
+          position?: string
+          start_date?: string
         }
         Relationships: []
       }
@@ -266,6 +341,42 @@ export type Database = {
           id?: number
           name?: string
           proficiency?: number | null
+        }
+        Relationships: []
+      }
+      trainings: {
+        Row: {
+          acquired_date: string
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: number
+          institution: string
+          start_date: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          acquired_date: string
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: number
+          institution: string
+          start_date?: string | null
+          title: string
+          type?: string
+        }
+        Update: {
+          acquired_date?: string
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: number
+          institution?: string
+          start_date?: string | null
+          title?: string
+          type?: string
         }
         Relationships: []
       }

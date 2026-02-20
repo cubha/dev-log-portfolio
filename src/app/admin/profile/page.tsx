@@ -3,58 +3,154 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { User, FileText, Image as ImageIcon, Save, Eye, AlertCircle, X, Upload } from 'lucide-react'
-import { uploadImage } from '@/src/utils/storage/uploadImage'
-import { upsertProfile } from '@/src/utils/profile/upsertProfile'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  User, FileText, Image as ImageIcon, Save, Eye,
+  AlertCircle, X, Upload, Briefcase, GraduationCap, Award,
+} from 'lucide-react'
+import { uploadImage }      from '@/src/utils/storage/uploadImage'
+import { upsertProfile }    from '@/src/utils/profile/upsertProfile'
 import { getProfileClient } from '@/src/utils/profile/getProfileClient'
 import { DEFAULT_STORY_SECTIONS, type StorySection } from '@/src/types/profile'
-import { ProfilePreview } from '@/src/components/admin/ProfilePreview'
+import { ProfilePreview }   from '@/src/components/admin/ProfilePreview'
+import { ExperienceManager } from '@/src/components/admin/ExperienceManager'
+import { EducationManager }  from '@/src/components/admin/EducationManager'
+import { TrainingManager }   from '@/src/components/admin/TrainingManager'
 
-/**
- * 관리자용 프로필 편집 페이지
- * 
- * About 페이지에 표시될 프로필 정보를 수정합니다.
- * - 메인 카피, 서두 소개글, 프로필 이미지
- * - 5가지 스토리 섹션 (성장 과정, 마인드, 의지력, 소통, 포부)
- */
+// ─── 탭 정의 ─────────────────────────────────────────────────────────────────
+type TabId = 'profile' | 'experience' | 'education' | 'training'
+
+const TABS: { id: TabId; label: string; Icon: React.FC<{ className?: string }> }[] = [
+  { id: 'profile',    label: '기본정보',    Icon: User },
+  { id: 'experience', label: '경력관리',    Icon: Briefcase },
+  { id: 'education',  label: '학력관리',    Icon: GraduationCap },
+  { id: 'training',   label: '교육/자격증', Icon: Award },
+]
+
+// ─── Silver Toggle ────────────────────────────────────────────────────────────
+function SilverSwitch({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean
+  onChange: (v: boolean) => void
+  label: string
+}) {
+  return (
+    <label className="flex items-center gap-2 cursor-pointer select-none">
+      <span className="text-xs font-medium text-foreground/60">{label}</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={() => onChange(!checked)}
+        className={`relative w-11 h-6 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-foreground/20 ${
+          checked
+            ? 'bg-silver-metal shadow-inner'
+            : 'bg-foreground/15'
+        }`}
+      >
+        <motion.div
+          layout
+          transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+          className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md ${
+            checked ? 'left-6' : 'left-1'
+          }`}
+        />
+      </button>
+    </label>
+  )
+}
+
+// ─── 섹션 공개 배너 ───────────────────────────────────────────────────────────
+function SectionVisibilityBanner({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string
+  checked: boolean
+  onChange: (v: boolean) => void
+}) {
+  return (
+    <div className={`flex items-center justify-between px-4 py-3 rounded-xl border mb-6 transition-colors ${
+      checked
+        ? 'bg-gradient-to-r from-slate-50 to-gray-50 border-slate-200 dark:from-slate-900/30 dark:to-gray-900/30 dark:border-slate-700/50'
+        : 'bg-foreground/3 border-foreground/8'
+    }`}>
+      <div className="flex items-center gap-2">
+        <div className={`w-2 h-2 rounded-full transition-colors ${checked ? 'bg-green-400' : 'bg-foreground/20'}`} />
+        <span className="text-sm font-medium text-foreground/70">{label}</span>
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium transition-colors ${
+          checked
+            ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
+            : 'bg-foreground/8 text-foreground/40'
+        }`}>
+          {checked ? 'About 공개' : '숨김'}
+        </span>
+      </div>
+      <SilverSwitch checked={checked} onChange={onChange} label="" />
+    </div>
+  )
+}
+
+// ─── 메인 페이지 ──────────────────────────────────────────────────────────────
 export default function AdminProfilePage() {
   const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
-  const [showPreview, setShowPreview] = useState(false)
 
-  // 이미지 업로드 상태
+  const [activeTab, setActiveTab] = useState<TabId>('profile')
+
+  // 기본정보 탭 상태
+  const [isLoading, setIsLoading]       = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError]               = useState<string | null>(null)
+  const [success, setSuccess]           = useState(false)
+  const [showPreview, setShowPreview]   = useState(false)
+
+  // 섹션 공개 여부
+  const [showExperience, setShowExperience] = useState(true)
+  const [showEducation,  setShowEducation]  = useState(true)
+  const [showTraining,   setShowTraining]   = useState(true)
+
+  // 이미지 업로드
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
+  const [previewUrl,   setPreviewUrl]   = useState<string | null>(null)
+  const [isDragging,   setIsDragging]   = useState(false)
 
   // 폼 데이터
   const [formData, setFormData] = useState({
-    main_copy: '',
-    intro_text: '',
+    main_copy:         '',
+    intro_text:        '',
     profile_image_url: '',
-    story_sections: DEFAULT_STORY_SECTIONS,
+    story_sections:    DEFAULT_STORY_SECTIONS as StorySection[],
   })
 
-  // 기존 프로필 데이터 불러오기
+  // ── 기존 프로필 로드 ──────────────────────────────────────────────────────
   useEffect(() => {
-    const loadProfile = async () => {
+    const load = async () => {
       try {
         const profile = await getProfileClient()
         if (profile) {
+          // story_json에 isVisible 기본값 병합 (기존 데이터 호환)
+          const rawSections = Array.isArray(profile.story_json) && profile.story_json.length > 0
+            ? profile.story_json
+            : DEFAULT_STORY_SECTIONS
+          const mergedSections = rawSections.map((s) => ({
+            ...s,
+            isVisible: s.isVisible !== false,
+          }))
+
           setFormData({
-            main_copy: profile.main_copy || '',
-            intro_text: profile.intro_text || '',
+            main_copy:         profile.main_copy || '',
+            intro_text:        profile.intro_text || '',
             profile_image_url: profile.profile_image_url || '',
-            story_sections: Array.isArray(profile.story_json) && profile.story_json.length > 0
-              ? profile.story_json
-              : DEFAULT_STORY_SECTIONS,
+            story_sections:    mergedSections,
           })
-          if (profile.profile_image_url) {
-            setPreviewUrl(profile.profile_image_url)
-          }
+          setShowExperience(profile.show_experience ?? true)
+          setShowEducation(profile.show_education ?? true)
+          setShowTraining(profile.show_training ?? true)
+          if (profile.profile_image_url) setPreviewUrl(profile.profile_image_url)
         }
       } catch (err) {
         console.error('프로필 불러오기 오류:', err)
@@ -62,20 +158,17 @@ export default function AdminProfilePage() {
         setIsLoading(false)
       }
     }
-
-    loadProfile()
+    load()
   }, [])
 
-  // 미리보기 URL cleanup
+  // ── previewUrl 메모리 해제 ────────────────────────────────────────────────
   useEffect(() => {
     return () => {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl)
-      }
+      if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl)
     }
   }, [previewUrl])
 
-  // 폼 제출 핸들러
+  // ── 폼 제출 ──────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
@@ -84,11 +177,8 @@ export default function AdminProfilePage() {
 
     try {
       let imageUrl = formData.profile_image_url
-
-      // 새로운 이미지 파일이 선택되었으면 업로드
       if (selectedFile) {
         try {
-          // project-images 버킷의 profile/ 폴더에 저장하여 프로젝트 썸네일과 구분
           imageUrl = await uploadImage(selectedFile, 'project-images', 'profile/')
         } catch (uploadError) {
           throw new Error(
@@ -99,128 +189,84 @@ export default function AdminProfilePage() {
         }
       }
 
-      const formDataToSend = new FormData()
-      formDataToSend.append('main_copy', formData.main_copy)
-      formDataToSend.append('intro_text', formData.intro_text)
-      formDataToSend.append('profile_image_url', imageUrl || '')
-      formDataToSend.append('story_json', JSON.stringify(formData.story_sections))
+      const fd = new FormData()
+      fd.append('main_copy',         formData.main_copy)
+      fd.append('intro_text',        formData.intro_text)
+      fd.append('profile_image_url', imageUrl || '')
+      fd.append('story_json',        JSON.stringify(formData.story_sections))
+      fd.append('is_intro_visible',  'true')
+      fd.append('show_experience',   String(showExperience))
+      fd.append('show_education',    String(showEducation))
+      fd.append('show_training',     String(showTraining))
 
-      await upsertProfile(formDataToSend)
-      
+      await upsertProfile(fd)
       setSuccess(true)
-      setTimeout(() => {
-        router.push('/about')
-      }, 1500)
+      setTimeout(() => router.push('/about'), 1500)
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : '프로필 저장 중 오류가 발생했습니다.'
-      )
+      setError(err instanceof Error ? err.message : '프로필 저장 중 오류가 발생했습니다.')
       setIsSubmitting(false)
     }
   }
 
-  // 입력 필드 변경 핸들러
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  // ── 입력 핸들러 ──────────────────────────────────────────────────────────
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }))
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  // 스토리 섹션 변경 핸들러
   const handleStoryChange = (index: number, content: string) => {
     setFormData(prev => ({
       ...prev,
-      story_sections: prev.story_sections.map((section, i) =>
-        i === index ? { ...section, content } : section
-      ),
+      story_sections: prev.story_sections.map((s, i) => i === index ? { ...s, content } : s),
     }))
   }
 
-  // 이미지 파일 선택 핸들러
-  const processSelectedFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      setError('이미지 파일만 업로드 가능합니다.')
-      return
-    }
+  const handleStoryVisibility = (index: number, isVisible: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      story_sections: prev.story_sections.map((s, i) => i === index ? { ...s, isVisible } : s),
+    }))
+  }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError('이미지 크기는 5MB 이하여야 합니다.')
-      return
-    }
-
+  // ── 이미지 핸들러 ────────────────────────────────────────────────────────
+  const processFile = (file: File) => {
+    if (!file.type.startsWith('image/')) { setError('이미지 파일만 업로드 가능합니다.'); return }
+    if (file.size > 5 * 1024 * 1024)    { setError('이미지 크기는 5MB 이하여야 합니다.'); return }
     setSelectedFile(file)
     setError(null)
-
-    const objectUrl = URL.createObjectURL(file)
-    if (previewUrl && previewUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(previewUrl)
-    }
-    setPreviewUrl(objectUrl)
+    const url = URL.createObjectURL(file)
+    if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl)
+    setPreviewUrl(url)
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file) return
-    processSelectedFile(file)
-  }
-
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(true)
-  }
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(true)
-  }
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      setIsDragging(false)
-    }
+    if (file) processFile(file)
   }
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault(); e.stopPropagation()
     setIsDragging(false)
-
     const file = e.dataTransfer.files?.[0]
-    if (!file) return
-    processSelectedFile(file)
+    if (file) processFile(file)
   }
 
   const handleRemoveImage = () => {
     setSelectedFile(null)
-    if (previewUrl && previewUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(previewUrl)
-    }
+    if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl)
     setPreviewUrl(null)
     setFormData(prev => ({ ...prev, profile_image_url: '' }))
-    setIsDragging(false)
-    const fileInput = document.getElementById('profile_image') as HTMLInputElement
-    if (fileInput) fileInput.value = ''
+    const fi = document.getElementById('profile_image') as HTMLInputElement
+    if (fi) fi.value = ''
   }
 
-  // 로딩 중
+  // ── 로딩 ─────────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mb-4"></div>
-            <p className="text-foreground/60">프로필 데이터를 불러오는 중...</p>
-          </div>
+      <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-foreground/30 mb-4" />
+          <p className="text-foreground/60">프로필 데이터를 불러오는 중...</p>
         </div>
       </div>
     )
@@ -230,221 +276,382 @@ export default function AdminProfilePage() {
     <div className="max-w-7xl mx-auto">
 
       {/* 페이지 헤더 */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            프로필 편집
-          </h1>
-          <p className="text-foreground/60">
-            About 페이지에 표시될 나의 프로필을 관리합니다.
-          </p>
+          <h1 className="text-3xl font-bold text-foreground mb-1">프로필 편집</h1>
+          <p className="text-foreground/60">About 페이지에 표시될 나의 프로필을 관리합니다.</p>
         </div>
-        <button
-          onClick={() => setShowPreview(!showPreview)}
-          className="flex items-center gap-2 px-4 py-2 text-foreground/70 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 transition-colors"
-        >
-          <Eye className="w-5 h-5" />
-          <span className="font-medium">{showPreview ? '미리보기 닫기' : '미리보기'}</span>
-        </button>
+        {activeTab === 'profile' && (
+          <button
+            onClick={() => setShowPreview(!showPreview)}
+            className="flex items-center gap-2 px-4 py-2 text-foreground/70 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 transition-colors"
+          >
+            <Eye className="w-5 h-5" />
+            <span className="font-medium">{showPreview ? '미리보기 닫기' : '미리보기'}</span>
+          </button>
+        )}
       </div>
 
-      {/* 성공 메시지 */}
-      {success && (
-        <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
-          <p className="text-sm font-semibold text-green-800">
-            ✓ 프로필이 성공적으로 저장되었습니다!
-          </p>
-        </div>
-      )}
-
-      {/* 에러 메시지 */}
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-red-800">저장 실패</p>
-            <p className="text-sm text-red-600 mt-1">{error}</p>
-          </div>
+      {/* ── 탭 네비게이션 (Silver Metal) ────────────────────────────────── */}
+      <div className="flex gap-1 p-1 bg-gradient-to-br from-slate-100 to-gray-100 dark:from-slate-900/40 dark:to-gray-900/40 rounded-xl border border-slate-200/60 dark:border-slate-700/40 w-fit mb-8 shadow-inner">
+        {TABS.map(({ id, label, Icon }) => (
           <button
-            onClick={() => setError(null)}
-            className="text-red-400 hover:text-red-600 transition-colors"
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              activeTab === id
+                ? 'bg-silver-metal text-white dark:text-slate-950 shadow-md'
+                : 'text-foreground/55 hover:text-foreground hover:bg-white/60 dark:hover:bg-slate-800/60'
+            }`}
           >
-            <X className="w-4 h-4" />
+            {activeTab === id && (
+              <motion.span
+                layoutId="tab-indicator"
+                className="absolute inset-0 rounded-lg bg-silver-metal shadow-md -z-10"
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              />
+            )}
+            <Icon className="w-4 h-4" />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── 기본정보 탭 ─────────────────────────────────────────────────── */}
+      <AnimatePresence mode="wait">
+        {activeTab === 'profile' && (
+          <motion.div
+            key="profile"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* 성공 메시지 */}
+            {success && (
+              <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
+                <p className="text-sm font-semibold text-green-800">✓ 프로필이 성공적으로 저장되었습니다!</p>
+              </div>
+            )}
+
+            {/* 에러 메시지 */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-red-800">저장 실패</p>
+                  <p className="text-sm text-red-600 mt-1">{error}</p>
+                </div>
+                <button onClick={() => setError(null)} className="text-red-400 hover:text-red-600 transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* 편집 폼 */}
+              <form onSubmit={handleSubmit} className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8">
+                <div className="space-y-8">
+
+                  {/* ── 기본 정보 ── */}
+                  <section>
+                    <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                      <User className="w-5 h-5 text-foreground/50" />
+                      기본 정보
+                    </h2>
+
+                    {/* 메인 카피 */}
+                    <div className="mb-6">
+                      <label htmlFor="main_copy" className="block text-sm font-medium text-foreground/60 mb-2">
+                        메인 카피 (한 줄 요약) <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="main_copy"
+                        name="main_copy"
+                        value={formData.main_copy}
+                        onChange={handleChange}
+                        required
+                        placeholder="예: 문제 해결을 즐기는 풀스택 개발자"
+                        className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
+                      />
+                    </div>
+
+                    {/* 서두 소개글 (항상 공개 — 토글 없음) */}
+                    <div className="mb-4">
+                      <label htmlFor="intro_text" className="block text-sm font-medium text-foreground/60 mb-2">
+                        서두 소개글 <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        id="intro_text"
+                        name="intro_text"
+                        value={formData.intro_text}
+                        onChange={handleChange}
+                        required
+                        rows={4}
+                        placeholder="나를 소개하는 짧은 글을 작성하세요..."
+                        className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all resize-none"
+                      />
+                      <p className="mt-1.5 text-xs text-foreground/40">
+                        줄바꿈이 About 페이지에 그대로 반영됩니다.
+                      </p>
+                    </div>
+
+                    {/* 프로필 이미지 */}
+                    <div>
+                      <label className="block text-sm font-medium text-foreground/60 mb-2">
+                        <ImageIcon className="w-4 h-4 inline mr-1" />
+                        프로필 이미지
+                      </label>
+
+                      {previewUrl && (
+                        <div className="mb-4 relative w-40 h-40 group mx-auto">
+                          <Image
+                            src={previewUrl}
+                            alt="프로필 미리보기"
+                            fill
+                            className="object-cover rounded-full border-4 border-foreground/20"
+                            unoptimized={previewUrl.startsWith('blob:')}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleRemoveImage}
+                            className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
+                            title="이미지 제거"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+
+                      <div
+                        className={`rounded-lg border-2 border-dashed p-6 transition-all ${
+                          isDragging
+                            ? 'border-brand-secondary/60 bg-brand-secondary/5'
+                            : 'border-foreground/15 bg-background hover:border-foreground/30 hover:bg-foreground/3'
+                        }`}
+                        onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true) }}
+                        onDragOver={(e)  => { e.preventDefault(); e.stopPropagation(); setIsDragging(true) }}
+                        onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false) }}
+                        onDrop={handleDrop}
+                      >
+                        <div className="text-center">
+                          <label
+                            htmlFor="profile_image"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-background border border-foreground/15 rounded-lg hover:border-foreground/30 hover:bg-foreground/5 transition-all cursor-pointer"
+                          >
+                            <Upload className="w-5 h-5 text-foreground/50" />
+                            <span className="text-sm font-medium text-foreground/70">
+                              {previewUrl ? '다른 이미지 선택' : '이미지 선택'}
+                            </span>
+                          </label>
+                          <input
+                            type="file"
+                            id="profile_image"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                          />
+                          <p className="mt-3 text-xs text-foreground/40">JPG, PNG, GIF (최대 5MB)</p>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* ── About Me 스토리 섹션 ── */}
+                  <section>
+                    <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-foreground/50" />
+                      About Me
+                    </h2>
+                    <div className="space-y-4">
+                      {formData.story_sections.map((section, index) => {
+                        const visible = section.isVisible !== false
+                        return (
+                          <div
+                            key={section.id}
+                            className={`p-4 rounded-xl border transition-all ${
+                              visible
+                                ? 'bg-gradient-to-br from-slate-50/80 to-gray-50/80 dark:from-slate-900/20 dark:to-gray-900/20 border-slate-200/60 dark:border-slate-700/40'
+                                : 'bg-foreground/2 border-foreground/6 opacity-60'
+                            }`}
+                          >
+                            {/* 카드 헤더: 제목 + 토글 */}
+                            <div className="flex items-center justify-between mb-3">
+                              <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                                <span className="text-xl">{section.icon}</span>
+                                {section.title}
+                              </label>
+                              <SilverSwitch
+                                checked={visible}
+                                onChange={(v) => handleStoryVisibility(index, v)}
+                                label={visible ? 'About 공개' : '숨김'}
+                              />
+                            </div>
+                            <AnimatePresence>
+                              {visible && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: 'auto' }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  style={{ overflow: 'hidden' }}
+                                >
+                                  <textarea
+                                    value={section.content}
+                                    onChange={(e) => handleStoryChange(index, e.target.value)}
+                                    rows={3}
+                                    placeholder={`${section.title}에 대해 작성하세요...`}
+                                    className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all resize-none"
+                                  />
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                            {!visible && (
+                              <p className="text-xs text-foreground/35 mt-1">About 페이지에서 이 항목을 숨깁니다</p>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </section>
+
+                  {/* 제출 버튼 */}
+                  <div className="flex items-center gap-4 pt-4 border-t border-foreground/10">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Save className="w-5 h-5" />
+                      {isSubmitting ? '저장 중...' : '저장하기'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => router.back()}
+                      disabled={isSubmitting}
+                      className="px-6 py-3 text-foreground/60 bg-foreground/8 border border-foreground/10 rounded-lg hover:bg-foreground/12 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              {/* 미리보기 */}
+              {showPreview && (
+                <div className="lg:sticky lg:top-8 lg:h-fit">
+                  <ProfilePreview
+                    mainCopy={formData.main_copy}
+                    introText={formData.intro_text}
+                    profileImageUrl={previewUrl || formData.profile_image_url}
+                    storySections={formData.story_sections}
+                  />
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── 경력관리 탭 ─────────────────────────────────────────────────── */}
+        {activeTab === 'experience' && (
+          <motion.div
+            key="experience"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8"
+          >
+            <SectionVisibilityBanner
+              label="경력 섹션 공개 여부"
+              checked={showExperience}
+              onChange={setShowExperience}
+            />
+            <ExperienceManager />
+          </motion.div>
+        )}
+
+        {/* ── 학력관리 탭 ─────────────────────────────────────────────────── */}
+        {activeTab === 'education' && (
+          <motion.div
+            key="education"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8"
+          >
+            <SectionVisibilityBanner
+              label="학력 섹션 공개 여부"
+              checked={showEducation}
+              onChange={setShowEducation}
+            />
+            <EducationManager />
+          </motion.div>
+        )}
+
+        {/* ── 교육/자격증 탭 ───────────────────────────────────────────────── */}
+        {activeTab === 'training' && (
+          <motion.div
+            key="training"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8"
+          >
+            <SectionVisibilityBanner
+              label="교육/자격증 섹션 공개 여부"
+              checked={showTraining}
+              onChange={setShowTraining}
+            />
+            <TrainingManager />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 경력·학력·교육 탭의 공개 여부는 프로필 저장으로 함께 반영됩니다 */}
+      {activeTab !== 'profile' && (
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={async () => {
+              setError(null)
+              setSuccess(false)
+              setIsSubmitting(true)
+              try {
+                const fd = new FormData()
+                fd.append('main_copy',         formData.main_copy || 'untitled')
+                fd.append('intro_text',        formData.intro_text || '')
+                fd.append('profile_image_url', formData.profile_image_url || '')
+                fd.append('story_json',        JSON.stringify(formData.story_sections))
+                fd.append('is_intro_visible',  'true')
+                fd.append('show_experience',   String(showExperience))
+                fd.append('show_education',    String(showEducation))
+                fd.append('show_training',     String(showTraining))
+                await upsertProfile(fd)
+                setSuccess(true)
+                setTimeout(() => setSuccess(false), 3000)
+              } catch (err) {
+                setError(err instanceof Error ? err.message : '저장 중 오류가 발생했습니다.')
+              } finally {
+                setIsSubmitting(false)
+              }
+            }}
+            disabled={isSubmitting}
+            className="flex items-center gap-2 px-5 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 text-sm"
+          >
+            <Save className="w-4 h-4" />
+            {isSubmitting ? '저장 중...' : '공개 설정 저장'}
           </button>
         </div>
       )}
-
-      {/* 레이아웃: 폼 + 미리보기 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* 왼쪽: 편집 폼 */}
-        <form onSubmit={handleSubmit} className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8">
-          <div className="space-y-8">
-            {/* 기본 정보 섹션 */}
-            <section>
-              <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                <User className="w-5 h-5 text-foreground/50" />
-                기본 정보
-              </h2>
-
-              {/* 메인 카피 */}
-              <div className="mb-6">
-                <label htmlFor="main_copy" className="block text-sm font-medium text-foreground/60 mb-2">
-                  메인 카피 (한 줄 요약) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="main_copy"
-                  name="main_copy"
-                  value={formData.main_copy}
-                  onChange={handleChange}
-                  required
-                  placeholder="예: 문제 해결을 즐기는 풀스택 개발자"
-                  className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
-                />
-              </div>
-
-              {/* 서두 소개글 */}
-              <div className="mb-6">
-                <label htmlFor="intro_text" className="block text-sm font-medium text-foreground/60 mb-2">
-                  서두 소개글 <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  id="intro_text"
-                  name="intro_text"
-                  value={formData.intro_text}
-                  onChange={handleChange}
-                  required
-                  rows={4}
-                  placeholder="나를 소개하는 짧은 글을 작성하세요..."
-                  className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all resize-none"
-                />
-              </div>
-
-              {/* 프로필 이미지 */}
-              <div>
-                <label className="block text-sm font-medium text-foreground/60 mb-2">
-                  <ImageIcon className="w-4 h-4 inline mr-1" />
-                  프로필 이미지
-                </label>
-
-                {/* 이미지 미리보기 */}
-                {previewUrl && (
-                  <div className="mb-4 relative w-40 h-40 group mx-auto">
-                    <Image
-                      src={previewUrl}
-                      alt="프로필 미리보기"
-                      fill
-                      className="object-cover rounded-full border-4 border-foreground/20"
-                      unoptimized={previewUrl.startsWith('blob:')}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
-                      title="이미지 제거"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-
-                {/* 드래그 앤 드롭 영역 */}
-                <div
-                  className={`rounded-lg border-2 border-dashed p-6 transition-all ${
-                    isDragging
-                      ? 'border-brand-secondary/60 bg-brand-secondary/5'
-                      : 'border-foreground/15 bg-background hover:border-foreground/30 hover:bg-foreground/3'
-                  }`}
-                  onDragEnter={handleDragEnter}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                >
-                  <div className="text-center">
-                    <label
-                      htmlFor="profile_image"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-background border border-foreground/15 rounded-lg hover:border-foreground/30 hover:bg-foreground/5 transition-all cursor-pointer"
-                    >
-                      <Upload className="w-5 h-5 text-foreground/50" />
-                      <span className="text-sm font-medium text-foreground/70">
-                        {previewUrl ? '다른 이미지 선택' : '이미지 선택'}
-                      </span>
-                    </label>
-                    <input
-                      type="file"
-                      id="profile_image"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      className="hidden"
-                    />
-                    <p className="mt-3 text-xs text-foreground/40">
-                      JPG, PNG, GIF (최대 5MB)
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* 스토리 섹션 */}
-            <section>
-              <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-foreground/50" />
-                About Me
-              </h2>
-
-              <div className="space-y-6">
-                {formData.story_sections.map((section, index) => (
-                  <div key={section.id} className="bg-foreground/3 p-4 rounded-lg border border-foreground/8">
-                    <label className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2">
-                      <span className="text-2xl">{section.icon}</span>
-                      {section.title}
-                    </label>
-                    <textarea
-                      value={section.content}
-                      onChange={(e) => handleStoryChange(index, e.target.value)}
-                      rows={4}
-                      placeholder={`${section.title}에 대해 작성하세요...`}
-                      className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all resize-none"
-                    />
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* 제출 버튼 */}
-            <div className="flex items-center gap-4 pt-4 border-t border-foreground/10">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Save className="w-5 h-5" />
-                {isSubmitting ? '저장 중...' : '저장하기'}
-              </button>
-              <button
-                type="button"
-                onClick={() => router.back()}
-                disabled={isSubmitting}
-                className="px-6 py-3 text-foreground/60 bg-foreground/8 border border-foreground/10 rounded-lg hover:bg-foreground/12 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                취소
-              </button>
-            </div>
-          </div>
-        </form>
-
-        {/* 오른쪽: 실시간 미리보기 */}
-        {showPreview && (
-          <div className="lg:sticky lg:top-8 lg:h-fit">
-            <ProfilePreview
-              mainCopy={formData.main_copy}
-              introText={formData.intro_text}
-              profileImageUrl={previewUrl || formData.profile_image_url}
-              storySections={formData.story_sections}
-            />
-          </div>
-        )}
-      </div>
+      {success && activeTab !== 'profile' && (
+        <p className="text-right text-xs text-green-600 mt-2">✓ 공개 설정이 저장되었습니다.</p>
+      )}
+      {error && activeTab !== 'profile' && (
+        <p className="text-right text-xs text-red-500 mt-2">{error}</p>
+      )}
     </div>
   )
 }

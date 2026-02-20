@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { User, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import type { AboutProfile } from '@/src/types/profile'
+import { ThemeCard } from '@/src/components/common/ThemeCard'
 
 interface AboutContentProps {
   profile: AboutProfile | null
@@ -12,64 +13,53 @@ interface AboutContentProps {
 
 /**
  * About 페이지 동적 콘텐츠
- * 
- * DB에서 가져온 프로필 데이터를 표시합니다.
- * 빈 섹션은 자동으로 숨겨집니다.
- * 프로필 이미지 클릭 시 확대 모달을 표시합니다.
+ *
+ * - intro_text를 DB에서 가져와 pre-wrap으로 표시합니다.
+ * - story_json 섹션은 isVisible === true인 항목만 렌더링합니다.
+ * - 프로필 이미지 클릭 시 확대 모달을 표시합니다.
  */
 export function AboutContent({ profile }: AboutContentProps) {
   const [isImageExpanded, setIsImageExpanded] = useState(false)
 
-  // ESC 키로 이미지 모달 닫기
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isImageExpanded) {
-        setIsImageExpanded(false)
-      }
+      if (e.key === 'Escape' && isImageExpanded) setIsImageExpanded(false)
     }
     window.addEventListener('keydown', handleEsc)
     return () => window.removeEventListener('keydown', handleEsc)
   }, [isImageExpanded])
 
-  // 이미지 확대 모달이 열릴 때 body 스크롤 비활성화
   useEffect(() => {
-    if (isImageExpanded) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-    return () => {
-      document.body.style.overflow = 'unset'
-    }
+    document.body.style.overflow = isImageExpanded ? 'hidden' : 'unset'
+    return () => { document.body.style.overflow = 'unset' }
   }, [isImageExpanded])
+
   if (!profile) {
     return (
       <div className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8 mb-8">
         <div className="prose prose-lg max-w-none text-center">
           <h2 className="text-2xl font-bold text-foreground mb-4">프로필이 없습니다</h2>
-          <p className="text-foreground/60">
-            아직 등록된 프로필이 없습니다.
-          </p>
+          <p className="text-foreground/60">아직 등록된 프로필이 없습니다.</p>
         </div>
       </div>
     )
   }
 
-  // 스토리 섹션 필터링: 내용이 있는 것만 표시
-  const validStorySections = profile.story_json?.filter(
-    (section) => section.content && section.content.trim().length > 0
-  ) || []
+  // isVisible === true 인 항목만 렌더링 (content 유무와 무관)
+  const visibleStorySections = (profile.story_json ?? []).filter(
+    (section) => section.isVisible !== false
+  )
 
   return (
     <>
-      {/* 히어로 섹션 - 극도의 미니멀리즘 */}
+      {/* 히어로 섹션 */}
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
         className="min-h-[70vh] flex flex-col items-center justify-center text-center px-8 py-16 mb-3"
       >
-        {/* 프로필 이미지 - 인스타 스타일 심플 */}
+        {/* 프로필 이미지 */}
         <div className="mb-12 flex justify-center">
           {profile.profile_image_url ? (
             <motion.div
@@ -128,11 +118,7 @@ export function AboutContent({ profile }: AboutContentProps) {
                 initial={{ scale: 0.85, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.85, opacity: 0 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 300,
-                  damping: 25,
-                }}
+                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                 onClick={(e) => e.stopPropagation()}
                 className="relative w-full max-w-3xl aspect-square cursor-default"
               >
@@ -157,14 +143,14 @@ export function AboutContent({ profile }: AboutContentProps) {
           )}
         </AnimatePresence>
 
-        {/* 메인 타이틀 - 무조건 한 줄 */}
+        {/* 메인 타이틀 */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mb-4"
+          className="mb-6"
         >
-          <h1 
+          <h1
             className="font-bold text-foreground whitespace-nowrap"
             style={{
               fontSize: 'clamp(0.875rem, 2.5vw, 1.5rem)',
@@ -175,66 +161,61 @@ export function AboutContent({ profile }: AboutContentProps) {
           </h1>
         </motion.div>
 
-        {/* 서브 텍스트 - 은은한 스파이시 */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="text-sm text-foreground/50"
-          style={{
-            letterSpacing: '0.15em',
-          }}
-        >
-          긍정적 소통 • 사용자 중심 설계 • 진취적 자기개발
-        </motion.p>
+        {/* 서두 소개글 - DB intro_text, pre-wrap */}
+        {profile.intro_text && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="text-sm text-foreground/60 max-w-xl leading-relaxed"
+            style={{ whiteSpace: 'pre-wrap' }}
+          >
+            {profile.intro_text}
+          </motion.p>
+        )}
       </motion.section>
 
-      {/* 스토리 섹션들 - 내용이 있는 것만 표시 */}
-      {validStorySections.length > 0 && (
-        <div className="space-y-6 mb-8">
-          <motion.h2
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2"
+      {/* About Me 스토리 섹션 — isVisible === true 항목만 */}
+      <AnimatePresence>
+        {visibleStorySections.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="space-y-6 mb-8"
           >
-            <span className="w-1 h-6 bg-foreground/30 rounded-full"></span>
-            About Me
-          </motion.h2>
-
-          {validStorySections.map((section, index) => (
-            <motion.div
-              key={section.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-              className="bg-gradient-to-br from-brand-primary/5 to-brand-secondary/5 p-5 rounded-xl border border-brand-primary/10 shadow-sm hover:shadow-md transition-shadow"
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2"
             >
-              <h3 className="text-base font-bold text-foreground mb-2 flex items-center gap-2">
-                {section.icon && <span className="text-lg">{section.icon}</span>}
-                {section.title}
-              </h3>
-              <p className="text-sm text-foreground/70 leading-relaxed whitespace-pre-line">
-                {section.content}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      )}
+              <span className="w-1 h-6 bg-foreground/30 rounded-full" />
+              About Me
+            </motion.h2>
 
-      {/* 내용이 없을 때 안내 */}
-      {validStorySections.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="bg-foreground/5 rounded-xl p-8 text-center"
-        >
-          <p className="text-foreground/50">
-            스토리 섹션이 아직 작성되지 않았습니다.
-          </p>
-        </motion.div>
-      )}
+            {visibleStorySections.map((section, index) => (
+              <motion.div
+                key={section.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+              >
+                <ThemeCard className="p-5">
+                  <h3 className="text-base font-bold text-foreground mb-2 flex items-center gap-2">
+                    {section.icon && <span className="text-lg">{section.icon}</span>}
+                    {section.title}
+                  </h3>
+                  <p className="text-sm text-foreground/70 leading-relaxed whitespace-pre-line">
+                    {section.content}
+                  </p>
+                </ThemeCard>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

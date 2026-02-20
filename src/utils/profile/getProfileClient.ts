@@ -25,5 +25,5 @@ export async function getProfileClient(): Promise<AboutProfile | null> {
     return null
   }
 
-  return data as AboutProfile
+  return data as unknown as AboutProfile
 }

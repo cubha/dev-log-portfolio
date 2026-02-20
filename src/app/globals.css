@@ -20,24 +20,32 @@
   }
 
   .dark {
-    /* [Dark Mode] 깊이감 있는 배경 */
-    --background: 222 47% 4%;     /* slate-950+ */
-    --foreground: 215 20% 85%;    /* 부드러운 실버 텍스트 */
+    /* [Dark Mode] 차콜 그레이 — 채도 5%로 낮춰 남색/네이비 기운 완전 제거 */
+    --background: 215 5% 12%;     /* 딥 차콜 (거의 중립 그레이) */
+    --foreground: 215 5% 87%;     /* 중립 라이트 그레이 텍스트 (대비 확보) */
 
-    /* 다크모드 실버 광택 - 하이라이트 강화 */
-    --metal-start: 215 20% 30%;
-    --metal-mid: 214 30% 90%;    /* 강력한 실버 포인트 */
-    --metal-end: 215 20% 30%;
+    /* 실버 — 티타늄/건메탈 질감 (채도 최소화로 차가운 금속감 유지) */
+    --metal-start: 215 5% 23%;    /* 짙은 건메탈 섀도 */
+    --metal-mid:   215 6% 64%;    /* 티타늄 하이라이트 */
+    --metal-end:   215 5% 23%;    /* 짙은 건메탈 섀도 */
 
-    --brand-secondary: 199 89% 48%;
+    --brand-secondary: 200 60% 45%;
   }
 }
 
 body {
   color: hsl(var(--foreground));
-  background: hsl(var(--background));
+  /* Light: slate-50 → slate-100 (은은한 메탈 그라데이션) */
+  background: linear-gradient(to bottom, hsl(210, 40%, 98%), hsl(214, 32%, 94%));
+  background-attachment: fixed;
   font-family: 'Pretendard Variable', sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: color 0.3s ease;
+}
+
+.dark body {
+  /* Dark: 딥 차콜 → 다크 차콜 그라데이션 (남색 기운 없음) */
+  background: linear-gradient(to bottom, hsl(215, 5%, 12%), hsl(215, 5%, 17%));
+  background-attachment: fixed;
 }
 
 @layer utilities {
@@ -86,6 +94,52 @@ body {
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* ─── ThemeCard Rim Light 시스템 ───────────────────────────────────────── */
+
+  /* 베벨 림 라이트: 라이트 모드에선 거의 투명하게, 다크 모드에서만 광택 유지 */
+  .border-rim-light {
+    border-top-color: rgba(0, 0, 0, 0.03);
+    border-left-color: rgba(0, 0, 0, 0.01);
+  }
+  .dark .border-rim-light {
+    border-top-color: rgba(255, 255, 255, 0.12);
+    border-left-color: rgba(255, 255, 255, 0.07);
+  }
+
+  /* 카드 표면 그라데이션: ::before 오버레이로 Tailwind gradient와 충돌 없음 */
+  .bg-card-surface::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      transparent 44%
+    );
+    pointer-events: none;
+  }
+
+  /* 선명한 드롭 섀도: 라이트 모드(기본)는 투명도를 대폭 낮춰 마일드하게, 다크 모드만 기존 강도 유지 */
+  .shadow-sharp {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 1px 1px rgba(0, 0, 0, 0.02);
+  }
+  .dark .shadow-sharp {
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.50),
+      0 2px 4px rgba(0, 0, 0, 0.20);
+  }
+
+  /* 호버: 상단 빛 효과 조절 */
+  .hover\:border-rim-intense:hover {
+    border-top-color: rgba(0, 0, 0, 0.08);
+  }
+  .dark .hover\:border-rim-intense:hover {
+    border-top-color: rgba(255, 255, 255, 0.30);
   }
 }
 

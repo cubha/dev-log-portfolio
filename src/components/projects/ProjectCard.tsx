@@ -8,6 +8,7 @@ import { isAdminAtom } from '@/src/store/authAtom'
 import { selectedProjectAtom } from '@/src/store/projectAtom'
 import { ProjectCardActions } from './ProjectCardActions'
 import { motion } from 'framer-motion'
+import { THEME_CARD_CLASS } from '@/src/components/common/ThemeCard'
 
 // Supabase에서 생성된 타입을 사용하여 프로젝트 타입 추출
 type Project = Database['public']['Tables']['projects']['Row']
@@ -57,7 +58,7 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
       whileHover={isActive || onCardClick ? { scale: 1.02 } : {}}
       whileTap={isActive || onCardClick ? { scale: 0.98 } : {}}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-      className={`h-full flex flex-col group bg-background rounded-xl border border-foreground/10 overflow-hidden hover:border-foreground/40 hover:shadow-lg transition-[color,border-color,box-shadow] duration-300 relative ${
+      className={`h-full flex flex-col group overflow-hidden ${THEME_CARD_CLASS} ${
         isActive || onCardClick ? 'cursor-pointer' : ''
       }`}
     >
@@ -75,7 +76,7 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
             src={project.thumbnail_url}
             alt={project.title}
             fill
-            className="object-cover group-hover:scale-110 transition-transform duration-300"
+            className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />
           {project.is_featured && (
             <div className="absolute top-2 left-2">

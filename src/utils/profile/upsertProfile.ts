@@ -34,6 +34,10 @@ export async function upsertProfile(formData: FormData) {
   const introText = formData.get('intro_text') as string
   const profileImageUrl = formData.get('profile_image_url') as string | null
   const storyJsonStr = formData.get('story_json') as string
+  const isIntroVisible = formData.get('is_intro_visible') !== 'false'
+  const showExperience = formData.get('show_experience') !== 'false'
+  const showEducation  = formData.get('show_education')  !== 'false'
+  const showTraining   = formData.get('show_training')   !== 'false'
 
   // 필수 필드 검증
   if (!mainCopy || mainCopy.trim().length === 0) {
@@ -48,7 +52,7 @@ export async function upsertProfile(formData: FormData) {
   let storyJson = []
   try {
     storyJson = JSON.parse(storyJsonStr)
-  } catch (error) {
+  } catch {
     throw new Error('스토리 데이터 형식이 올바르지 않습니다.')
   }
 
@@ -59,6 +63,10 @@ export async function upsertProfile(formData: FormData) {
     intro_text: introText.trim(),
     profile_image_url: profileImageUrl?.trim() || null,
     story_json: storyJson,
+    is_intro_visible: isIntroVisible,
+    show_experience: showExperience,
+    show_education:  showEducation,
+    show_training:   showTraining,
     updated_at: new Date().toISOString(),
   }
 
