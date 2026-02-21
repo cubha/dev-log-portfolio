@@ -93,11 +93,10 @@ export function ProjectList({ projects }: { projects: Project[] }) {
       {/* 프로젝트 상세 모달 */}
       <ProjectDetailModal />
 
-      {/* 페이지 헤더 */}
+      {/* 페이지 헤더 — template.tsx가 페이드인 담당 */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-3xl font-bold text-foreground">프로젝트</h1>
-          {/* 관리자 전용: 새 프로젝트 추가 버튼 */}
           {isAdmin && (
             <Link
               href="/admin/projects"
@@ -114,17 +113,28 @@ export function ProjectList({ projects }: { projects: Project[] }) {
         </p>
       </div>
 
-      {/* 필터 필(Filter Pills) 바 */}
-      <FilterBar
-        activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
-      />
+      {/* 필터 필(Filter Pills) 바 — 페이지 진입 후 살짝 뒤따라 등장 */}
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+      >
+        <FilterBar
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+        />
+      </motion.div>
 
-      {/* 슬라이더 컨테이너 */}
+      {/* 슬라이더 컨테이너 — 필터 바 이후 가장 늦게 등장 */}
       {filteredProjects.length === 0 ? (
         <EmptyFilterState activeFilter={activeFilter} />
       ) : (
-        <div className="relative overflow-x-clip">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.42 }}
+          className="relative overflow-x-clip"
+        >
           {/* 슬라이더 뷰포트 - 중앙 정렬 및 양옆 피크 노출 */}
           <div
             ref={containerRef}
@@ -245,7 +255,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
               />
             </div>
           )}
-        </div>
+        </motion.div>
       )}
     </>
   )

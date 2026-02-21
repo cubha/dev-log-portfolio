@@ -331,7 +331,7 @@ export function TrainingManager() {
                   onChange={(e) => set('title', e.target.value)}
                   placeholder={form.type === 'certification' ? '예: 정보처리기사' : '예: React 심화 과정'}
                   autoFocus
-                  className="w-full h-10 px-3 border border-foreground/10 rounded-lg text-sm text-foreground placeholder:text-foreground/30 bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all"
+                  className="admin-input w-full h-10 px-3 border rounded-lg text-sm transition-all"
                 />
               </div>
 
@@ -345,7 +345,7 @@ export function TrainingManager() {
                   value={form.institution}
                   onChange={(e) => set('institution', e.target.value)}
                   placeholder="예: 한국산업인력공단"
-                  className="w-full h-10 px-3 border border-foreground/10 rounded-lg text-sm text-foreground placeholder:text-foreground/30 bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all"
+                  className="admin-input w-full h-10 px-3 border rounded-lg text-sm transition-all"
                 />
               </div>
 
@@ -399,7 +399,7 @@ export function TrainingManager() {
                   onChange={(e) => set('description', e.target.value || null)}
                   rows={2}
                   placeholder="간단한 설명을 입력하세요..."
-                  className="w-full px-3 py-2 border border-foreground/10 rounded-lg text-sm text-foreground placeholder:text-foreground/30 bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all resize-none"
+                  className="admin-input w-full px-3 py-2 border rounded-lg text-sm transition-all resize-none"
                 />
               </div>
 

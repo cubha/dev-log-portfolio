@@ -91,9 +91,14 @@ function TimelineList({ items }: { items: CardItem[] }) {
         {items.map((item, i) => (
           <motion.div
             key={item.key}
-            initial={{ opacity: 0, x: -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut', delay: i * 0.07 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-30px' }}
+            transition={{
+              duration: 0.6,
+              ease: [0.22, 1, 0.36, 1],
+              delay: i * 0.08,
+            }}
             className="relative"
           >
             {/* Silver Dot */}
@@ -224,10 +229,12 @@ export function ExperienceTabsSection({
   return (
     <section>
       {/* 섹션 헤더 */}
+      <div className="mb-12 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="flex items-center gap-3 mb-8"
       >
         <span className="w-1 h-7 bg-foreground/30 rounded-full" />
@@ -236,9 +243,10 @@ export function ExperienceTabsSection({
 
       {/* ─── 탭 메뉴 ── */}
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
         className="relative flex gap-0 mb-8 border-b border-foreground/10 dark:border-brand-primary/10"
       >
         {tabs.map(({ id, label, Icon }) => {

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react'
+import Image from 'next/image'
 import { X } from 'lucide-react'
 
 /**
@@ -22,10 +23,12 @@ function TechTag({ tech, onRemove, getIconUrl, getTechColor }: TechTagProps) {
     >
       {/* Simple Icons 아이콘 */}
       {!iconError ? (
-        <img
+        <Image
           src={getIconUrl(tech)}
           alt={tech}
-          className="w-4 h-4"
+          width={16}
+          height={16}
+          unoptimized
           onError={() => setIconError(true)}
         />
       ) : (
@@ -309,12 +312,14 @@ export function TechStackInput({ value, onChange }: TechStackInputProps) {
               className="w-full px-4 py-2 text-left hover:bg-foreground/5 flex items-center gap-2 transition-colors group"
             >
               <div className="relative w-4 h-4">
-                <img
+                <Image
                   src={getIconUrl(tech)}
                   alt={tech}
-                  className="w-4 h-4"
+                  width={16}
+                  height={16}
+                  unoptimized
                   onError={(e) => {
-                    ;(e.target as HTMLImageElement).style.display = 'none'
+                    ;(e.currentTarget as HTMLImageElement).style.display = 'none'
                   }}
                 />
               </div>

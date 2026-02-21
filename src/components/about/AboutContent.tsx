@@ -52,20 +52,17 @@ export function AboutContent({ profile }: AboutContentProps) {
 
   return (
     <>
-      {/* 히어로 섹션 */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
+      {/* 히어로 섹션 — PageTransition이 페이드인 담당, 내부 요소만 stagger */}
+      <section
         className="min-h-[70vh] flex flex-col items-center justify-center text-center px-8 py-16 mb-3"
       >
         {/* 프로필 이미지 */}
         <div className="mb-12 flex justify-center">
           {profile.profile_image_url ? (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
               whileHover={{ scale: 1.08 }}
               onClick={() => setIsImageExpanded(true)}
               className="relative w-80 h-80 cursor-pointer rounded-full bg-brand-primary/30 p-[3px]"
@@ -82,9 +79,9 @@ export function AboutContent({ profile }: AboutContentProps) {
             </motion.div>
           ) : (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
               whileHover={{ scale: 1.08 }}
               className="w-80 h-80 rounded-full bg-brand-primary/30 p-[3px]"
             >
@@ -145,9 +142,9 @@ export function AboutContent({ profile }: AboutContentProps) {
 
         {/* 메인 타이틀 */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.45 }}
           className="mb-6"
         >
           <h1
@@ -164,16 +161,16 @@ export function AboutContent({ profile }: AboutContentProps) {
         {/* 서두 소개글 - DB intro_text, pre-wrap */}
         {profile.intro_text && (
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.6 }}
             className="text-sm text-foreground/60 max-w-xl leading-relaxed"
             style={{ whiteSpace: 'pre-wrap' }}
           >
             {profile.intro_text}
           </motion.p>
         )}
-      </motion.section>
+      </section>
 
       {/* About Me 스토리 섹션 — isVisible === true 항목만 */}
       <AnimatePresence>
@@ -187,8 +184,9 @@ export function AboutContent({ profile }: AboutContentProps) {
           >
             <motion.h2
               initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2"
             >
               <span className="w-1 h-6 bg-foreground/30 rounded-full" />
@@ -198,9 +196,14 @@ export function AboutContent({ profile }: AboutContentProps) {
             {visibleStorySections.map((section, index) => (
               <motion.div
                 key={section.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{
+                  duration: 0.6,
+                  ease: [0.22, 1, 0.36, 1],
+                  delay: index * 0.1,
+                }}
               >
                 <ThemeCard className="p-5">
                   <h3 className="text-base font-bold text-foreground mb-2 flex items-center gap-2">

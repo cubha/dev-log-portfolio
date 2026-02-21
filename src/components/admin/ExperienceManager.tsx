@@ -263,7 +263,7 @@ export function ExperienceManager() {
                   onChange={(e) => set('company_name', e.target.value)}
                   placeholder="예: (주)실버테크"
                   autoFocus
-                  className="w-full h-10 px-3 border border-foreground/10 rounded-lg text-sm text-foreground placeholder:text-foreground/30 bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all"
+                  className="admin-input w-full h-10 px-3 border rounded-lg text-sm transition-all"
                 />
               </div>
 
@@ -277,7 +277,7 @@ export function ExperienceManager() {
                   value={form.position}
                   onChange={(e) => set('position', e.target.value)}
                   placeholder="예: 프론트엔드 개발자"
-                  className="w-full h-10 px-3 border border-foreground/10 rounded-lg text-sm text-foreground placeholder:text-foreground/30 bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all"
+                  className="admin-input w-full h-10 px-3 border rounded-lg text-sm transition-all"
                 />
               </div>
 
@@ -330,7 +330,7 @@ export function ExperienceManager() {
                   onChange={(e) => set('description', e.target.value)}
                   rows={3}
                   placeholder="주요 업무와 성과를 간략하게 적어주세요..."
-                  className="w-full px-3 py-2.5 border border-foreground/10 rounded-lg text-sm text-foreground placeholder:text-foreground/30 bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all resize-none"
+                  className="admin-input w-full px-3 py-2.5 border rounded-lg text-sm transition-all resize-none"
                 />
               </div>
 

@@ -150,3 +150,69 @@ body {
   background: hsl(var(--metal-start) / 0.4);
   border-radius: 10px;
 }
+
+/* ─── Hero 전용 Silver 버튼: 기본 3s 지속 shimmer, hover 시 0.65s 고속 ─── */
+/*
+ * animate-shine(hover 전용)와 달리 btn-silver-hero는 항상 shimmer가 흐르며
+ * hover 시 애니메이션 속도가 빠르게 전환됩니다.
+ */
+.btn-silver-hero {
+  background-image: linear-gradient(
+    110deg,
+    hsl(var(--metal-start)) 45%,
+    hsl(var(--metal-mid))   50%,
+    hsl(var(--metal-start)) 55%
+  );
+  background-size: 200% 100%;
+  animation: shine 3s linear infinite;
+}
+.btn-silver-hero:hover {
+  animation: shine 0.65s linear infinite;
+  box-shadow: 0 8px 30px hsl(var(--metal-start) / 0.35);
+}
+
+/* ─── 관리자 폼 공통 인풋 스타일 ─────────────────────────────────────────── */
+
+/*
+ * .admin-input: input, select, textarea 등 관리자 페이지 폼 요소에 적용
+ * - Silver Metal 테마 border (라이트/다크 양방향)
+ * - 포커스 시 brand-primary 기반 은빛 광택 링
+ * - 다크모드 텍스트 대비 확보 (foreground 변수 직접 적용)
+ */
+.admin-input {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--foreground) / 0.15);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.admin-input::placeholder {
+  color: hsl(var(--foreground) / 0.30);
+}
+.admin-input:hover {
+  border-color: hsl(var(--foreground) / 0.28);
+}
+.admin-input:focus {
+  outline: none;
+  border-color: hsl(var(--metal-start) / 0.5);
+  box-shadow: 0 0 0 2px hsl(var(--metal-start) / 0.18);
+}
+
+/* 네이티브 date/datetime-local input 다크모드 달력 아이콘 및 텍스트 보정 */
+input[type="date"],
+input[type="datetime-local"] {
+  color-scheme: light;
+}
+.dark input[type="date"],
+.dark input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
+/* is_ongoing(진행중) 토글 - Silver Metal 팔레트 */
+.toggle-silver[aria-checked="true"] {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--metal-start)) 0%,
+    hsl(var(--metal-mid)) 50%,
+    hsl(var(--metal-end)) 100%
+  );
+}

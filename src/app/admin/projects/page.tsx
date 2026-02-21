@@ -8,6 +8,7 @@ import { FolderKanban, Calendar, Code, Link as LinkIcon, Image as ImageIcon, Ale
 import { createProject } from '@/src/utils/projects/create'
 import { updateProject } from '@/src/utils/projects/update'
 import { TechStackInput } from '@/src/components/admin/TechStackInput'
+import { MonthPickerInput } from '@/src/components/ui/MonthPickerInput'
 import { editingProjectAtom } from '@/src/store/authAtom'
 import { uploadImage } from '@/src/utils/storage/uploadImage'
 
@@ -350,7 +351,7 @@ export default function ProjectFormPage() {
               onChange={handleChange}
               required
               placeholder="예: 포트폴리오 웹사이트"
-              className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
+              className="admin-input w-full px-4 py-3 border rounded-lg transition-all"
             />
           </div>
 
@@ -366,7 +367,7 @@ export default function ProjectFormPage() {
               onChange={handleChange}
               rows={4}
               placeholder="프로젝트에 대한 간략한 소개 및 주요 업무를 작성하세요"
-              className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all resize-none"
+              className="admin-input w-full px-4 py-3 border rounded-lg transition-all resize-none"
             />
           </div>
 
@@ -383,7 +384,7 @@ export default function ProjectFormPage() {
                 value={formData.company_name}
                 onChange={handleChange}
                 placeholder="예: LG CNS, 프리랜서"
-                className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
+                className="admin-input w-full px-4 py-3 border rounded-lg transition-all"
               />
             </div>
             <div>
@@ -397,7 +398,7 @@ export default function ProjectFormPage() {
                 value={formData.project_role}
                 onChange={handleChange}
                 placeholder="예: 풀스택 개발자, 프론트엔드 리드"
-                className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
+                className="admin-input w-full px-4 py-3 border rounded-lg transition-all"
               />
             </div>
           </div>
@@ -416,7 +417,7 @@ export default function ProjectFormPage() {
               min="0"
               placeholder="숫자 입력 또는 드롭다운에서 범위 선택"
               list="team-size-options"
-              className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
+              className="admin-input w-full px-4 py-3 border rounded-lg transition-all"
             />
             <datalist id="team-size-options">
               <option value="0">O (0~9명)</option>
@@ -431,34 +432,29 @@ export default function ProjectFormPage() {
           {/* 기간 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="start_date" className="block text-sm font-medium text-foreground/60 mb-2">
+              <label className="block text-sm font-medium text-foreground/60 mb-2">
                 <Calendar className="w-4 h-4 inline mr-1" />
-                시작 날짜 <span className="text-red-500">*</span>
+                시작 연월 <span className="text-red-500">*</span>
               </label>
-              <input
-                type="date"
-                id="start_date"
-                name="start_date"
-                value={formData.start_date}
-                onChange={(e) => {
-                  const newStartDate = e.target.value
-                  // 시작일이 종료일보다 늦은지 검사
-                  if (formData.end_date && newStartDate && newStartDate > formData.end_date) {
-                    setError('시작 날짜는 종료 날짜보다 늦을 수 없습니다.')
+              <MonthPickerInput
+                value={formData.start_date ? formData.start_date.substring(0, 7) : null}
+                onChange={(yyyyMM) => {
+                  if (yyyyMM && formData.end_date && yyyyMM > formData.end_date.substring(0, 7)) {
+                    setError('시작 연월은 종료 연월보다 늦을 수 없습니다.')
                     return
                   }
                   setError(null)
-                  handleChange(e)
+                  setFormData(prev => ({ ...prev, start_date: yyyyMM ? yyyyMM + '-01' : '' }))
                 }}
-                required
-                className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
+                placeholder="시작 연월 선택"
+                label="시작 연월 선택"
               />
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label htmlFor="end_date" className="block text-sm font-medium text-foreground/60">
+                <label className="block text-sm font-medium text-foreground/60">
                   <Calendar className="w-4 h-4 inline mr-1" />
-                  종료 날짜 {!formData.is_ongoing && <span className="text-red-500">*</span>}
+                  종료 연월 {!formData.is_ongoing && <span className="text-red-500">*</span>}
                 </label>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-foreground/60">진행중</span>
@@ -468,46 +464,37 @@ export default function ProjectFormPage() {
                       setFormData(prev => ({
                         ...prev,
                         is_ongoing: !prev.is_ongoing,
-                        end_date: !prev.is_ongoing ? '' : prev.end_date, // 진행중으로 변경 시 종료일 초기화
+                        end_date: !prev.is_ongoing ? '' : prev.end_date,
                       }))
                     }}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-foreground/30 focus:ring-offset-2 ${
-                      formData.is_ongoing ? 'bg-brand-primary' : 'bg-foreground/20'
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-1 ${
+                      formData.is_ongoing ? 'bg-silver-metal' : 'bg-foreground/20'
                     }`}
                     role="switch"
                     aria-checked={formData.is_ongoing}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
                         formData.is_ongoing ? 'translate-x-6' : 'translate-x-1'
                       }`}
                     />
                   </button>
                 </div>
               </div>
-              <input
-                type="date"
-                id="end_date"
-                name="end_date"
-                value={formData.end_date}
-                onChange={(e) => {
-                  const newEndDate = e.target.value
-                  // 종료일이 시작일보다 빠른지 검사
-                  if (formData.start_date && newEndDate && newEndDate < formData.start_date) {
-                    setError('종료 날짜는 시작 날짜보다 빠를 수 없습니다.')
+              <MonthPickerInput
+                value={formData.end_date ? formData.end_date.substring(0, 7) : null}
+                onChange={(yyyyMM) => {
+                  if (yyyyMM && formData.start_date && yyyyMM < formData.start_date.substring(0, 7)) {
+                    setError('종료 연월은 시작 연월보다 빠를 수 없습니다.')
                     return
                   }
                   setError(null)
-                  handleChange(e)
+                  setFormData(prev => ({ ...prev, end_date: yyyyMM ? yyyyMM + '-01' : '' }))
                 }}
-                min={formData.start_date || undefined}
+                placeholder="종료 연월 선택"
                 disabled={formData.is_ongoing}
-                required={!formData.is_ongoing}
-                className={`w-full px-4 py-3 border border-foreground/10 rounded-lg focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all text-foreground ${
-                  formData.is_ongoing
-                    ? 'bg-foreground/5 cursor-not-allowed opacity-60'
-                    : 'bg-background'
-                }`}
+                disabledText="진행중"
+                label="종료 연월 선택"
               />
             </div>
           </div>
@@ -581,7 +568,7 @@ export default function ProjectFormPage() {
                 value={formData.github_url}
                 onChange={handleChange}
                 placeholder="https://github.com/username/repo"
-                className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
+                className="admin-input w-full px-4 py-3 border rounded-lg transition-all"
               />
             </div>
             <div>
@@ -596,7 +583,7 @@ export default function ProjectFormPage() {
                 value={formData.link_url}
                 onChange={handleChange}
                 placeholder="https://example.com"
-                className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
+                className="admin-input w-full px-4 py-3 border rounded-lg transition-all"
               />
             </div>
           </div>

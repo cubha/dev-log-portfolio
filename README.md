@@ -343,6 +343,36 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 
 ## 📅 최근 업데이트
 
+## 🚀 2025-02-21 업데이트 내역
+
+### 1. HeroSection 레이아웃 및 사이즈 조정
+
+**File:** `src/components/home/HeroSection.tsx`
+
+- **배경**: `max-w-5xl` 컨테이너 밖으로 이동 → 전체 뷰포트 너비로 표시
+- **높이**: 전체 뷰포트 → `80vh`로 축소
+- **크기**: 텍스트·Progress Bar·CTA 버튼 약 20% 확대
+- **레이아웃**: 상단 정렬(`justify-start`), 패딩 조정
+
+---
+
+### 2. AIWorkflowSection 간격 조정
+
+**File:** `src/components/home/AIWorkflowSection.tsx`
+
+- 섹션 헤더·스텝·카드·그리드 간 `gap`·`margin` 확대
+
+---
+
+### 3. 홈페이지 레이아웃 구조 변경
+
+**File:** `src/app/page.tsx`
+
+- HeroSection을 `max-w-5xl` 밖으로 분리 → 전체 너비 배경 적용
+- 메인 패딩·Footer 링크 간격 조정
+
+---
+
 ## 🚀 2026-02-20 업데이트 내역
 
 ### 1. ThemeCard 공통 컴포넌트 디자인 전면 개편

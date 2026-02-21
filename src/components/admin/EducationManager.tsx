@@ -264,7 +264,7 @@ export function EducationManager() {
                   onChange={(e) => set('school_name', e.target.value)}
                   placeholder="예: 한국대학교"
                   autoFocus
-                  className="w-full h-10 px-3 border border-foreground/10 rounded-lg text-sm text-foreground placeholder:text-foreground/30 bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all"
+                  className="admin-input w-full h-10 px-3 border rounded-lg text-sm transition-all"
                 />
               </div>
 
@@ -279,7 +279,7 @@ export function EducationManager() {
                     value={form.major}
                     onChange={(e) => set('major', e.target.value)}
                     placeholder="예: 컴퓨터공학"
-                    className="w-full h-10 px-3 border border-foreground/10 rounded-lg text-sm text-foreground placeholder:text-foreground/30 bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all"
+                    className="admin-input w-full h-10 px-3 border rounded-lg text-sm transition-all"
                   />
                 </div>
                 <div>
@@ -289,7 +289,7 @@ export function EducationManager() {
                   <select
                     value={form.status}
                     onChange={(e) => set('status', e.target.value)}
-                    className="w-full h-10 px-3 border border-foreground/10 rounded-lg text-sm text-foreground bg-background focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all appearance-none cursor-pointer"
+                    className="admin-input w-full h-10 px-3 border rounded-lg text-sm transition-all appearance-none cursor-pointer"
                   >
                     {EDUCATION_STATUS_OPTIONS.map((s) => (
                       <option key={s} value={s}>{s}</option>

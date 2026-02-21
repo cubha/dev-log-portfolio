@@ -40,7 +40,7 @@ export default function RootLayout({
             {/* sticky 헤더: /admin 경로에서는 컴포넌트 내부에서 null 반환 */}
             <Header />
 
-            {/* 페이지 본문: flex-1로 남은 공간 채움 */}
+            {/* 페이지 본문: flex-1로 남은 공간 채움, 트랜지션은 template.tsx → PageTransition이 담당 */}
             <div className="flex-1">
               {children}
             </div>
