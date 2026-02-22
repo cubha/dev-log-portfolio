@@ -17,6 +17,7 @@ interface ProjectCardProps {
   project: Project
   isActive?: boolean // 중앙에 위치한 활성 카드인지 여부
   onCardClick?: () => void // 피크 카드 클릭 시 슬라이더 이동 핸들러
+  priority?: boolean // LCP 개선용 우선 로딩 (첫 번째 카드에 적용)
 }
 
 /**
@@ -31,7 +32,7 @@ interface ProjectCardProps {
  * 
  * Framer Motion의 onTap 이벤트를 사용하여 드래그와 클릭을 명확히 구분합니다.
  */
-export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCardProps) {
+export function ProjectCard({ project, isActive = true, onCardClick, priority = false }: ProjectCardProps) {
   const isAdmin = useAtomValue(isAdminAtom)
   const setSelectedProject = useSetAtom(selectedProjectAtom)
 
@@ -71,11 +72,12 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
 
       {/* 썸네일 이미지 */}
       {project.thumbnail_url ? (
-        <div className="relative h-28 bg-foreground/10 overflow-hidden flex-shrink-0">
+        <div className="relative h-36 bg-foreground/10 overflow-hidden flex-shrink-0">
           <Image
             src={project.thumbnail_url}
             alt={project.title}
             fill
+            priority={priority}
             className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />
           {project.is_featured && (
@@ -87,7 +89,7 @@ export function ProjectCard({ project, isActive = true, onCardClick }: ProjectCa
           )}
         </div>
       ) : (
-        <div className="h-28 bg-foreground/8 flex items-center justify-center flex-shrink-0">
+        <div className="h-36 bg-foreground/8 flex items-center justify-center flex-shrink-0">
           <FolderKanban className="w-10 h-10 text-white opacity-50" />
         </div>
       )}

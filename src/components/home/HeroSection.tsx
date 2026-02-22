@@ -259,6 +259,7 @@ export function HeroSection() {
         >
           <Link
             href="/projects"
+            scroll={false}
             className="group inline-flex items-center gap-5 px-12 py-5
                        bg-silver-metal animate-shine
                        text-white dark:text-slate-100

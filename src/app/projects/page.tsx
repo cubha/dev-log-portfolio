@@ -40,8 +40,7 @@ export default async function ProjectsPage() {
 
     // 단일 return 문으로 통합된 레이아웃
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* 서버에서 확인한 권한 정보를 Jotai atom에 동기화 */}
+      <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
         <AuthStateInitializer isAdmin={isAdmin} />
         {errorMessage ? (
           <ErrorState message={errorMessage} />
@@ -50,7 +49,6 @@ export default async function ProjectsPage() {
         ) : (
           <ProjectList projects={typedProjects} />
         )}
-        {/* 로그인 유저: 우측 하단 플로팅 메뉴 (로그아웃 + 관리자는 대시보드) */}
         {userRole !== 'guest' && <FloatingUserButton isAdmin={isAdmin} />}
       </div>
     )
@@ -108,7 +106,8 @@ function EmptyState({ isAdmin }: { isAdmin: boolean }) {
               첫 번째 프로젝트를 등록해 보세요!
             </p>
             <Link
-              href="/admin/projects"
+              href="/admin/projects?mode=new"
+              scroll={false}
               className="inline-flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg transition-all shadow-md hover:shadow-lg"
             >
               <FolderKanban className="w-5 h-5" />

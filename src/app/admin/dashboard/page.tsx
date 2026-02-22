@@ -82,7 +82,7 @@ export default async function AdminDashboardPage() {
           <h2 className="text-xl font-bold text-foreground mb-4">빠른 액션</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
-              href="/admin/projects"
+              href="/admin/projects?mode=new"
               target="_self"
               className="group flex items-center justify-between p-4 bg-foreground/3 hover:bg-foreground/5 border border-foreground/10 hover:border-foreground/20 rounded-lg transition-all hover:shadow-md"
             >

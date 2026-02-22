@@ -18,6 +18,7 @@ export function ContactLink() {
     >
       <Link
         href="/contact"
+        scroll={false}
         className="group inline-flex items-baseline gap-2 text-sm
                    text-foreground/60 hover:text-foreground transition-colors"
       >

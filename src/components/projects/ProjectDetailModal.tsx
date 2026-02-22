@@ -7,34 +7,32 @@ import Image from 'next/image'
 import { X, Github, ExternalLink, Calendar, FolderKanban, Code } from 'lucide-react'
 import { Database } from '@/src/types/supabase'
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { getTechIcon } from '@/src/utils/techIcons'
 
 type Project = Database['public']['Tables']['projects']['Row']
 
 /**
  * 프로젝트 상세 모달 컴포넌트
- * 
- * 프로젝트 카드 클릭 시 상세 정보를 모달 형태로 표시합니다.
- * - Framer Motion을 활용한 부드러운 애니메이션
- * - 배경 클릭 또는 X 버튼으로 닫기
- * - 스크롤 가능한 콘텐츠
+ *
+ * - Portal로 body에 렌더링하여 진정한 Modal 동작
+ * - 적절한 크기로 콘텐츠 잘림 방지
+ * - 배경 클릭 / ESC / X로 닫기
  */
 export function ProjectDetailModal() {
   const [selectedProject, setSelectedProject] = useAtom(selectedProjectAtom)
 
-  // 모달이 열릴 때 body 스크롤 비활성화
   useEffect(() => {
     if (selectedProject) {
       document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = ''
     }
     return () => {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = ''
     }
   }, [selectedProject])
 
-  // ESC 키로 모달 닫기
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && selectedProject) {
@@ -45,52 +43,50 @@ export function ProjectDetailModal() {
     return () => window.removeEventListener('keydown', handleEsc)
   }, [selectedProject, setSelectedProject])
 
-  const handleClose = () => {
-    setSelectedProject(null)
-  }
+  const handleClose = () => setSelectedProject(null)
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      handleClose()
-    }
+    if (e.target === e.currentTarget) handleClose()
   }
 
-  return (
+  if (typeof document === 'undefined') return null
+
+  return createPortal(
     <AnimatePresence mode="wait">
       {selectedProject && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          onClick={handleBackdropClick}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        onClick={handleBackdropClick}
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-full max-w-2xl max-h-[85vh] bg-background rounded-xl shadow-2xl flex flex-col overflow-hidden"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{
-              type: 'spring',
-              stiffness: 300,
-              damping: 30,
-            }}
-            className="relative w-full max-w-4xl max-h-[90vh] bg-background rounded-2xl shadow-2xl overflow-hidden"
+          {/* 닫기 버튼 */}
+          <button
+            onClick={handleClose}
+            className="absolute top-3 right-3 z-20 p-2 bg-background/95 rounded-full shadow-md hover:bg-foreground/10 transition-colors group"
+            aria-label="모달 닫기"
           >
-            {/* 닫기 버튼 */}
-            <button
-              onClick={handleClose}
-              className="absolute top-4 right-4 z-10 p-2 bg-background/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-foreground/10 transition-colors group"
-              aria-label="모달 닫기"
-            >
-              <X className="w-6 h-6 text-foreground/60 group-hover:text-foreground" />
-            </button>
+            <X className="w-5 h-5 text-foreground/60 group-hover:text-foreground" />
+          </button>
 
-            {/* 스크롤 가능한 콘텐츠 */}
-            <div className="overflow-y-auto max-h-[90vh] custom-scrollbar">
-              {/* 썸네일 이미지 - 더 크게 */}
-              {selectedProject.thumbnail_url ? (
-                <div className="relative w-full h-80 bg-foreground/10">
+          {/* 스크롤 영역 — flex-1로 남은 공간 채움 */}
+          <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+            {/* 썸네일 */}
+            {selectedProject.thumbnail_url ? (
+              <div className="relative w-full h-48 bg-foreground/10 flex-shrink-0">
                   <Image
                     src={selectedProject.thumbnail_url}
                     alt={selectedProject.title}
@@ -98,24 +94,24 @@ export function ProjectDetailModal() {
                     className="object-cover"
                     priority
                   />
-                  {selectedProject.is_featured && (
-                    <div className="absolute top-6 left-6">
-                      <span className="px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 text-sm font-bold rounded-full shadow-lg">
-                        ⭐ 주요 프로젝트
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="w-full h-80 bg-foreground/8 flex items-center justify-center">
-                  <FolderKanban className="w-24 h-24 text-white opacity-50" />
-                </div>
-              )}
+                {selectedProject.is_featured && (
+                  <div className="absolute top-3 left-3">
+                    <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 text-xs font-bold rounded-full shadow-md">
+                      ⭐ 주요
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="w-full h-48 bg-foreground/8 flex items-center justify-center">
+                <FolderKanban className="w-16 h-16 text-foreground/30" />
+              </div>
+            )}
 
-              {/* 본문 콘텐츠 */}
-              <div className="p-8 md:p-10">
+            {/* 본문 */}
+            <div className="p-5 md:p-6">
                 {/* 헤더: 기간 & 회사 정보 */}
-                <div className="flex flex-wrap items-start justify-between gap-4 mb-6 pb-6 border-b-2 border-foreground/10">
+                <div className="flex flex-wrap items-start justify-between gap-3 mb-4 pb-4 border-b border-foreground/10">
                   {/* 좌측: 진행 기간 & 총 개월 수 */}
                   <div className="flex items-center gap-3">
                     {(selectedProject.start_date || selectedProject.end_date) && (
@@ -153,13 +149,13 @@ export function ProjectDetailModal() {
                 </div>
 
                 {/* 프로젝트 제목 */}
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6 leading-tight">
+                <h2 id="modal-title" className="text-xl md:text-2xl font-bold text-foreground mb-4 leading-tight">
                   {selectedProject.title}
                 </h2>
 
                 {/* 카테고리 배지 */}
                 {selectedProject.category && (
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <span className="inline-block px-4 py-1.5 bg-brand-secondary/10 text-brand-secondary text-sm font-semibold rounded-full">
                       {selectedProject.category} 프로젝트
                     </span>
@@ -167,7 +163,7 @@ export function ProjectDetailModal() {
                 )}
 
                 {/* 프로젝트 정보 리스트 */}
-                <div className="mb-8 space-y-4 bg-foreground/5 p-6 rounded-xl border border-foreground/10">
+                <div className="mb-6 space-y-3 bg-foreground/5 p-4 rounded-lg border border-foreground/10">
                   {/* 주요 업무 */}
                   {selectedProject.description && (
                     <div className="flex gap-4">
@@ -242,8 +238,8 @@ export function ProjectDetailModal() {
 
                 {/* 상세 내용 섹션 */}
                 {selectedProject.detailed_tasks && selectedProject.detailed_tasks.length > 0 && (
-                  <div className="mb-8">
-                    <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                  <div className="mb-6">
+                    <h3 className="text-base font-bold text-foreground mb-3 flex items-center gap-2">
                       <span className="w-1 h-6 bg-foreground/30 rounded-full"></span>
                       상세 내용
                     </h3>
@@ -270,16 +266,16 @@ export function ProjectDetailModal() {
 
                 {/* 링크 버튼들 */}
                 {(selectedProject.github_url || selectedProject.link_url) && (
-                  <div className="flex flex-wrap gap-4 pt-6 border-t border-foreground/10">
+                  <div className="flex flex-wrap gap-3 pt-4 border-t border-foreground/10">
                     {selectedProject.link_url && (
                       <a
                         href={selectedProject.link_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
+                        className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 text-sm font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
                       >
-                        <ExternalLink className="w-5 h-5" />
-                        <span>라이브 데모 보기</span>
+                        <ExternalLink className="w-4 h-4" />
+                        <span>라이브 데모</span>
                       </a>
                     )}
                     {selectedProject.github_url && (
@@ -287,10 +283,10 @@ export function ProjectDetailModal() {
                         href={selectedProject.github_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-all shadow-md hover:shadow-lg"
+                        className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-all shadow-md hover:shadow-lg"
                       >
-                        <Github className="w-5 h-5" />
-                        <span>GitHub 저장소</span>
+                        <Github className="w-4 h-4" />
+                        <span>GitHub</span>
                       </a>
                     )}
                   </div>
@@ -300,7 +296,8 @@ export function ProjectDetailModal() {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 

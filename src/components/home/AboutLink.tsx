@@ -16,8 +16,10 @@ export function AboutLink() {
       transition={{ delay: 0.5 }}
       className="text-center"
     >
+      <div className="mb-16" />
       <Link
         href="/about"
+        scroll={false}
         className="group inline-flex items-baseline gap-2 text-sm
                    text-foreground/60 hover:text-foreground transition-colors"
       >

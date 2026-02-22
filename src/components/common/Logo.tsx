@@ -12,6 +12,7 @@ export function Logo() {
   return (
     <Link
       href="/"
+      scroll={false}
       className="group inline-flex items-center gap-2 select-none shrink-0 whitespace-nowrap"
       aria-label="Silver.dev 홈으로 이동"
     >

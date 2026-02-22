@@ -75,6 +75,7 @@ export function AIWorkflowSection() {
 
   return (
     <section className="w-full pt-12 pb-4">
+      <div className="mb-16 mt-12 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
 
       {/* ── 섹션 헤더 ─────────────────────────────────────────────────── */}
       <motion.div
@@ -317,6 +318,8 @@ export function AIWorkflowSection() {
       {/* ══════════════════════════════════════════════════════════════════
           AI & Tech Skills — Ultra-Minimal 태그 형태
       ══════════════════════════════════════════════════════════════════ */}
+
+      <div className="mb-16 mt-20 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}

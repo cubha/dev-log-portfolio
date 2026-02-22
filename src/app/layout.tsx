@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { JotaiProvider } from "@/src/components/providers/JotaiProvider";
 import { ThemeProvider } from "@/src/components/providers/ThemeProvider";
-import { Toaster } from "sonner";
+import { DynamicToaster } from "@/src/components/common/DynamicToaster";
+import { ScrollToTop } from "@/src/components/common/ScrollToTop";
 import { Header } from "@/src/components/layout/Header";
 import { Footer } from "@/src/components/layout/Footer";
 
@@ -37,11 +38,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <JotaiProvider>
+            <ScrollToTop />
             {/* sticky 헤더: /admin 경로에서는 컴포넌트 내부에서 null 반환 */}
             <Header />
 
-            {/* 페이지 본문: flex-1로 남은 공간 채움, 트랜지션은 template.tsx → PageTransition이 담당 */}
-            <div className="flex-1">
+            {/* 페이지 본문: flex-1 + min-h-0, loading.tsx로 첫 진입 체감 속도 개선 */}
+            <div className="flex-1 min-h-0">
               {children}
             </div>
 
@@ -49,8 +51,8 @@ export default function RootLayout({
             <Footer />
           </JotaiProvider>
 
-          {/* 전역 토스트 알림 (sonner) */}
-          <Toaster richColors position="top-right" />
+          {/* 전역 토스트 알림 (dynamic import로 초기 번들 최소화) */}
+          <DynamicToaster />
         </ThemeProvider>
       </body>
     </html>

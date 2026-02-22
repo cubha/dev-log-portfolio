@@ -69,7 +69,7 @@ export function Header() {
                 const isActive = pathname?.startsWith(item.href)
 
                 return (
-                  <Link key={item.href} href={item.href}>
+                  <Link key={item.href} href={item.href} scroll={false}>
                     <motion.div
                       whileHover={{ y: -1 }}
                       whileTap={{ scale: 0.96 }}
@@ -166,6 +166,7 @@ export function Header() {
                     >
                       <Link
                         href={item.href}
+                        scroll={false}
                         className={`flex items-center px-4 py-3 rounded-xl text-base font-medium transition-colors ${
                           isActive
                             ? 'bg-foreground/8 text-foreground font-semibold'

@@ -343,6 +343,51 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 
 ## 📅 최근 업데이트
 
+## 🚀 2026-02-22 업데이트 내역
+
+### 1. 프로젝트 페이지(`/projects`) 레이아웃 개선
+
+**Files:** `src/app/projects/page.tsx`, `src/components/projects/ProjectList.tsx`, `src/components/projects/ProjectCard.tsx`, `src/components/projects/ProjectListSkeleton.tsx`
+
+- **X/Y축 공백 축소**: `max-w-4xl` → `max-w-6xl`, 카드 `240×300` → `280×360`, `gap-16` → `gap-20`
+- **세로 여백**: 페이지 패딩 `py-8` → `py-4 sm:py-6`, 헤더·필터 여백 축소
+- **필터 탭 ↔ 카드**: `mb-4` → `mb-10`
+- **카드 ↔ 페이지네이션**: `mt-6` → `mt-12`, 도트 영역 `py-4`
+- **썸네일**: `h-28` → `h-36`
+
+---
+
+### 2. 프로젝트 상세 모달 개선
+
+**File:** `src/components/projects/ProjectDetailModal.tsx`
+
+- **크기 축소**: `max-w-4xl` → `max-w-2xl`, `max-h-90vh` → `max-h-85vh`, 썸네일 `h-80` → `h-48`
+- **모달 동작**: `createPortal`로 `document.body`에 렌더링하여 부모 overflow/transform 영향 제거
+- **표시**: `z-[9999]`, `role="dialog"`, `aria-modal="true"`로 접근성 및 레이어링 보완
+- **스크롤**: `flex flex-col` + `flex-1 min-h-0 overflow-y-auto`로 스크롤 영역만 스크롤되도록 수정
+
+---
+
+### 3. 새 프로젝트 등록 시 edit 모드 오류 수정
+
+**Files:** `src/app/admin/projects/page.tsx`, `src/components/projects/ProjectList.tsx`, `src/app/projects/page.tsx`, `src/app/admin/dashboard/page.tsx`
+
+- **증상**: "새 프로젝트" 클릭 시에도 `editingProjectAtom` 잔여로 수정 모드로 진입
+- **조치**:
+  - "새 프로젝트" 링크를 `/admin/projects?mode=new`로 변경
+  - `mode=new` 진입 시 `editingProjectAtom` 초기화 후 `router.replace`로 쿼리 제거
+  - `editingProject`가 `null`일 때 폼 데이터를 빈 값으로 리셋하는 `useEffect` 추가
+  - ProjectList에서 클릭 시 `setEditingProject(null)` 호출로 추가 보완
+
+---
+
+**주요 변경 파일:**
+- `src/app/admin/projects/page.tsx` — mode=new 처리, 폼 초기화
+- `src/components/projects/ProjectList.tsx` — 새 프로젝트 링크 및 atom 초기화
+- `src/components/projects/ProjectDetailModal.tsx` — Portal, 크기·접근성 개선
+- `src/app/projects/page.tsx`, `src/app/admin/dashboard/page.tsx` — 새 프로젝트 링크 경로 변경
+
+
 ## 🚀 2025-02-21 업데이트 내역
 
 ### 1. HeroSection 레이아웃 및 사이즈 조정

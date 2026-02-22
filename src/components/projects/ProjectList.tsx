@@ -3,8 +3,8 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import { Database } from '@/src/types/supabase'
 import { Plus } from 'lucide-react'
-import { useAtom, useAtomValue } from 'jotai'
-import { isAdminAtom } from '@/src/store/authAtom'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { isAdminAtom, editingProjectAtom } from '@/src/store/authAtom'
 import { projectFilterAtom, FILTER_OPTIONS, type ProjectFilter } from '@/src/store/filterAtom'
 import { ProjectCard } from './ProjectCard'
 import { ProjectDetailModal } from './ProjectDetailModal'
@@ -13,10 +13,10 @@ import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion'
 
 type Project = Database['public']['Tables']['projects']['Row']
 
-// 슬라이더 설정 상수
-const CARD_WIDTH = 240 // 각 카드의 너비 (px)
-const CARD_HEIGHT = 300 // 각 카드의 높이 (px)
-const CARD_GAP = 16 // 카드 간 간격 (px)
+// 슬라이더 설정 상수 — 화면 꽉 채우기
+const CARD_WIDTH = 280 // 각 카드의 너비 (px)
+const CARD_HEIGHT = 360 // 각 카드의 높이 (px)
+const CARD_GAP = 20 // 카드 간 간격 (px)
 const CARDS_PER_VIEW = 3 // 한 화면에 보이는 중앙 카드 수
 const PEEK_RATIO = 0.2 // 양옆 피크 카드 노출 비율
 const PEEK_OPACITY = 0.4 // 피크 카드 투명도
@@ -32,6 +32,7 @@ const PEEK_SCALE = 0.92 // 피크 카드 크기
  */
 export function ProjectList({ projects }: { projects: Project[] }) {
   const isAdmin = useAtomValue(isAdminAtom)
+  const setEditingProject = useSetAtom(editingProjectAtom)
   const [activeFilter, setActiveFilter] = useAtom(projectFilterAtom)
   const [currentIndex, setCurrentIndex] = useState(0)
   const x = useMotionValue(0)
@@ -47,8 +48,8 @@ export function ProjectList({ projects }: { projects: Project[] }) {
   const totalPages = Math.max(1, Math.ceil(filteredProjects.length / CARDS_PER_VIEW))
   const maxIndex = Math.max(0, filteredProjects.length - CARDS_PER_VIEW)
   // 마지막 페이지 처리: maxIndex에 도달하면 마지막 페이지로 간주
-  const currentPage = currentIndex >= maxIndex 
-    ? totalPages - 1 
+  const currentPage = currentIndex >= maxIndex
+    ? totalPages - 1
     : Math.floor(currentIndex / CARDS_PER_VIEW)
 
   // 필터 변경 시 슬라이더 리셋
@@ -62,7 +63,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
     const maxIndex = Math.max(0, filteredProjects.length - CARDS_PER_VIEW)
     const newIndex = Math.max(0, Math.min(index, maxIndex))
     setCurrentIndex(newIndex)
-    
+
     const targetX = -newIndex * (CARD_WIDTH + CARD_GAP)
     animate(x, targetX, {
       type: 'spring',
@@ -94,12 +95,13 @@ export function ProjectList({ projects }: { projects: Project[] }) {
       <ProjectDetailModal />
 
       {/* 페이지 헤더 — template.tsx가 페이드인 담당 */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-3xl font-bold text-foreground">프로젝트</h1>
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">프로젝트</h1>
           {isAdmin && (
             <Link
-              href="/admin/projects"
+              href="/admin/projects?mode=new"
+              onClick={() => setEditingProject(null)}
               className="group flex items-center gap-2 px-3 py-1.5 text-foreground/70 bg-background border border-foreground/20 rounded-lg hover:bg-foreground/5 hover:border-foreground/40 hover:text-foreground transition-all shadow-sm hover:shadow-md"
               title="새 프로젝트 추가"
             >
@@ -233,8 +235,8 @@ export function ProjectList({ projects }: { projects: Project[] }) {
                         pointerEvents: isInMainView || isPeekCard ? 'auto' : 'none',
                       }}
                     >
-                      <ProjectCard 
-                        project={project} 
+                      <ProjectCard
+                        project={project}
                         isActive={isInMainView}
                         onCardClick={isPeekCard ? handlePeekClick : undefined}
                       />
@@ -247,7 +249,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
 
           {/* 페이지네이션 도트 */}
           {filteredProjects.length > CARDS_PER_VIEW && (
-            <div className="relative z-20 mt-16">
+            <div className="relative z-20 mt-12">
               <PaginationDots
                 totalPages={totalPages}
                 currentPage={currentPage}
@@ -272,7 +274,7 @@ function FilterBar({
   onFilterChange: (filter: ProjectFilter) => void
 }) {
   return (
-    <div className="flex items-center gap-3 mb-8 flex-wrap">
+    <div className="flex items-center gap-3 mb-10 flex-wrap">
       {FILTER_OPTIONS.map((filter) => {
         const isActive = activeFilter === filter
 
@@ -322,7 +324,7 @@ function PaginationDots({
   onPageClick: (page: number) => void
 }) {
   return (
-    <div className="flex items-center justify-center gap-2 mt-12 py-2">
+    <div className="flex items-center justify-center gap-2 py-4">
       {Array.from({ length: totalPages }, (_, i) => {
         const isActive = i === currentPage
 
@@ -367,7 +369,7 @@ function EmptyFilterState({ activeFilter }: { activeFilter: ProjectFilter }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
-      className="text-center py-20"
+      className="text-center py-12"
     >
       <p className="text-foreground/40 text-lg">
         &apos;{activeFilter}&apos; 카테고리에 해당하는 프로젝트가 없습니다.

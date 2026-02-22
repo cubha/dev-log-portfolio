@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import Image from 'next/image'
 import { FolderKanban, Calendar, Code, Link as LinkIcon, Image as ImageIcon, AlertCircle, X, Upload } from 'lucide-react'
@@ -20,8 +20,18 @@ import { uploadImage } from '@/src/utils/storage/uploadImage'
  */
 export default function ProjectFormPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [editingProject, setEditingProject] = useAtom(editingProjectAtom)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // mode=new 진입 시 editingProject 초기화 (새 프로젝트 등록 의도)
+  useEffect(() => {
+    if (searchParams.get('mode') === 'new') {
+      setEditingProject(null)
+      router.replace('/admin/projects', { scroll: false })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mode=new일 때만 1회 실행
+  }, [searchParams])
+
   const [error, setError] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -69,8 +79,28 @@ export default function ProjectFormPage() {
         team_size: editingProject.team_size ?? 0,
         detailed_tasks: editingProject.detailed_tasks || [],
       })
-      // 수정 모드일 때 기존 이미지를 미리보기로 표시
       setPreviewUrl(editingProject.thumbnail_url || null)
+      setSelectedFile(null)
+    } else {
+      // 등록 모드: 폼 초기화
+      setFormData({
+        title: '',
+        description: '',
+        thumbnail_url: '',
+        github_url: '',
+        link_url: '',
+        start_date: '',
+        end_date: '',
+        tech_stack: [],
+        category: '',
+        is_featured: false,
+        is_ongoing: false,
+        company_name: '',
+        project_role: '',
+        team_size: 0,
+        detailed_tasks: [],
+      })
+      setPreviewUrl(null)
       setSelectedFile(null)
     }
   }, [editingProject])
