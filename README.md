@@ -343,6 +343,12 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 
 ## 📅 최근 업데이트
 
+## 🚀 2026-02-25 업데이트 내역
+
+### 1. Claude Code 도입
+- **.cursorrules.md 파일 수정:** `Cursor - Claude 업무 협업을 위한 Rule 재정의`
+- **CLAUDE.md 파일 신규 작성:** `Cursor - Claude 업무 협업을 위한 Claude Rule 신규 작성`
+
 ## 🚀 2026-02-22 업데이트 내역
 
 ### 1. 프로젝트 페이지(`/projects`) 레이아웃 개선
