@@ -3,6 +3,9 @@ import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { ContactInfo } from '@/src/components/contact/ContactInfo'
 import { InquiryForm } from '@/src/components/contact/InquiryForm'
 import { InquiryList } from '@/src/components/contact/InquiryList'
+import { LiveStatusWidget } from '@/src/components/contact/LiveStatusWidget'
+import { GuestbookForm } from '@/src/components/contact/GuestbookForm'
+import { GuestbookList } from '@/src/components/contact/GuestbookList'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { ThemeCard } from '@/src/components/common/ThemeCard'
 import type { ContactLink } from '@/src/types/contact'
@@ -49,14 +52,23 @@ export default async function ContactPage() {
               <ContactInfo initialData={contactLinks} isAdmin={isAdmin} />
             </ThemeCard>
 
-            {/* 우측: Inquiry Form */}
-            <ThemeCard noHoverLift className="p-6">
-              <InquiryForm />
-            </ThemeCard>
+            {/* 우측: Live Status + 방명록 폼 */}
+            <div className="flex flex-col gap-4">
+              <ThemeCard noHoverLift className="p-4">
+                <LiveStatusWidget />
+              </ThemeCard>
+              <ThemeCard noHoverLift className="p-6">
+                <GuestbookForm />
+              </ThemeCard>
+            </div>
+            {/* 기존: Inquiry Form */}
+            {/* <ThemeCard noHoverLift className="p-6"><InquiryForm /></ThemeCard> */}
           </div>
 
-          {/* 하단: 공개된 문의 목록 */}
-          <InquiryList />
+          {/* 하단: 방명록 목록 */}
+          <GuestbookList isAdmin={isAdmin} />
+          {/* 기존: 공개된 문의 목록 */}
+          {/* <InquiryList /> */}
         </div>
       </div>
 

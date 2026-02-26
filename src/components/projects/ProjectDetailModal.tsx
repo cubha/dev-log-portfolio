@@ -4,13 +4,26 @@ import { useAtom } from 'jotai'
 import { selectedProjectAtom } from '@/src/store/projectAtom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
-import { X, Github, ExternalLink, Calendar, FolderKanban, Code } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { X, Github, ExternalLink, Calendar, FolderKanban, Code, FileText } from 'lucide-react'
 import { Database } from '@/src/types/supabase'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { getTechIcon } from '@/src/utils/techIcons'
 
 type Project = Database['public']['Tables']['projects']['Row']
+
+/** 프로젝트 제목 → slug 변환 (예: "My Next.js Project" → "my-nextjs-project") */
+function toSlug(title: string): string {
+  return title
+    .trim()
+    .toLowerCase()
+    .replace(/[^\w\s-가-힣]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '') || 'project'
+}
 
 /**
  * 프로젝트 상세 모달 컴포넌트
@@ -21,6 +34,8 @@ type Project = Database['public']['Tables']['projects']['Row']
  */
 export function ProjectDetailModal() {
   const [selectedProject, setSelectedProject] = useAtom(selectedProjectAtom)
+  const router = useRouter()
+  const pendingPathRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (selectedProject) {
@@ -45,6 +60,21 @@ export function ProjectDetailModal() {
 
   const handleClose = () => setSelectedProject(null)
 
+  const handleViewDetail = () => {
+    if (!selectedProject) return
+    const slug = toSlug(selectedProject.title)
+    pendingPathRef.current = `/projects/${slug}`
+    setSelectedProject(null)
+  }
+
+  const handleExitComplete = () => {
+    if (pendingPathRef.current) {
+      const path = pendingPathRef.current
+      pendingPathRef.current = null
+      router.push(path)
+    }
+  }
+
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) handleClose()
   }
@@ -52,7 +82,7 @@ export function ProjectDetailModal() {
   if (typeof document === 'undefined') return null
 
   return createPortal(
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait" onExitComplete={handleExitComplete}>
       {selectedProject && (
         <motion.div
         initial={{ opacity: 0 }}
@@ -265,32 +295,41 @@ export function ProjectDetailModal() {
                 )}
 
                 {/* 링크 버튼들 */}
-                {(selectedProject.github_url || selectedProject.link_url) && (
-                  <div className="flex flex-wrap gap-3 pt-4 border-t border-foreground/10">
-                    {selectedProject.link_url && (
-                      <a
-                        href={selectedProject.link_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 text-sm font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        <span>라이브 데모</span>
-                      </a>
-                    )}
-                    {selectedProject.github_url && (
-                      <a
-                        href={selectedProject.github_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-all shadow-md hover:shadow-lg"
-                      >
-                        <Github className="w-4 h-4" />
-                        <span>GitHub</span>
-                      </a>
-                    )}
-                  </div>
-                )}
+                <div className="flex flex-wrap gap-3 pt-4 border-t border-foreground/10">
+                  <Link
+                    href={`/projects/${toSlug(selectedProject.title)}`}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handleViewDetail()
+                    }}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-brand-secondary text-white dark:text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>상세 보기</span>
+                  </Link>
+                  {selectedProject.link_url && (
+                    <a
+                      href={selectedProject.link_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 text-sm font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      <span>라이브 데모</span>
+                    </a>
+                  )}
+                  {selectedProject.github_url && (
+                    <a
+                      href={selectedProject.github_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-all shadow-md hover:shadow-lg"
+                    >
+                      <Github className="w-4 h-4" />
+                      <span>GitHub</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>

@@ -10,3 +10,15 @@ export type ContactLinkEditable = Pick<ContactLink, 'value' | 'href'>
 export type ActionResult =
   | { success: true }
   | { success: false; error: string }
+
+/** 방명록(Guestbook) 항목 타입 */
+export type GuestbookEntry = {
+  id: number
+  nickname: string
+  message: string
+  emoji: string
+  created_at: string
+}
+
+/** 방명록 생성 시 필요한 필드 */
+export type CreateGuestbookInput = Pick<GuestbookEntry, 'nickname' | 'message' | 'emoji'>

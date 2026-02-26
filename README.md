@@ -40,6 +40,9 @@ dev-log-portfolio/
 │   │   │   └── page.tsx              # 프로젝트 리스트 (/projects)
 │   │   ├── contact/
 │   │   │   └── page.tsx              # Contact 페이지 (/contact)
+│   │   ├── api/                      # 🔌 Route Handlers
+│   │   │   ├── spotify/now-playing/   # Spotify 현재 재생 트랙
+│   │   │   └── github/stats/          # GitHub 30일 커밋 통계
 │   │   └── admin/                    # 🔐 관리자 영역
 │   │       ├── layout.tsx            # 관리자 전용 레이아웃 (헤더+사이드바)
 │   │       ├── login/
@@ -57,7 +60,11 @@ dev-log-portfolio/
 │   │   │   ├── ContactInfo.tsx       # 연락처 정보 카드
 │   │   │   ├── InquiryForm.tsx       # 문의 작성 폼
 │   │   │   ├── InquiryList.tsx       # 문의 목록 컨테이너
-│   │   │   └── InquiryCard.tsx       # 문의 아이템 (Accordion UI)
+│   │   │   ├── InquiryCard.tsx       # 문의 아이템 (Accordion UI)
+│   │   │   ├── LiveStatusWidget.tsx   # Spotify·GitHub 상태 위젯
+│   │   │   ├── GuestbookForm.tsx     # 방명록 작성 폼
+│   │   │   ├── GuestbookList.tsx     # 방명록 목록 (서버)
+│   │   │   └── GuestbookListClient.tsx # 방명록 항목 + 삭제 (클라이언트)
 │   │   ├── projects/
 │   │   │   ├── ProjectCard.tsx       # 프로젝트 카드 UI
 │   │   │   ├── ProjectList.tsx       # 프로젝트 리스트 (슬라이더 + 필터)
@@ -94,7 +101,8 @@ dev-log-portfolio/
 │   ├── schema.sql                    # 데이터베이스 스키마
 │   └── migrations/
 │       ├── 20260213_create_inquiries.sql  # 문의 테이블 생성
-│       └── 20260214_alter_inquiries_add_columns.sql # 답변 컬럼 추가
+│       ├── 20260214_alter_inquiries_add_columns.sql # 답변 컬럼 추가
+│       └── 20260226_create_guestbook.sql  # 방명록 테이블 + RLS
 │
 ├── .env.local                        # 🔐 환경 변수 (Git에서 제외됨)
 └── package.json                      # 📦 의존성 관리
@@ -342,6 +350,37 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 ---
 
 ## 📅 최근 업데이트
+
+## 🚀 2026-02-26 업데이트 내역
+
+### 1. 방명록(Guestbook) 기능 추가
+- **DB**: `guestbook` 테이블 + RLS 정책 (`supabase/migrations/20260226_create_guestbook.sql`)
+- **타입**: `GuestbookEntry`, `CreateGuestbookInput` (`src/types/contact.ts`)
+- **액션**: `createGuestbookEntry`, `deleteGuestbookEntry` (`src/actions/guestbook.ts`)
+
+### 2. Live Status API Route Handlers
+- **Spotify**: `/api/spotify/now-playing` — 현재 재생 중인 트랙 (30초 폴링용)
+- **GitHub**: `/api/github/stats` — 최근 30일 커밋 통계 (PushEvent 집계)
+- 환경변수: `SPOTIFY_*`, `GITHUB_TOKEN`, `GITHUB_USERNAME`
+
+### 3. Live Status 위젯 + 방명록 UI
+- **LiveStatusWidget**: Spotify·GitHub 상태 표시 (Contact 우측 상단)
+- **GuestbookForm**: 이모지 선택, 닉네임·메시지 입력, silver-metal 버튼
+- **GuestbookList**: 서버 컴포넌트, Framer Motion stagger, 관리자 삭제 버튼
+
+### 4. Contact 페이지 레이아웃 변경
+- **우측**: LiveStatusWidget → GuestbookForm 순서로 배치
+- **하단**: GuestbookList 렌더링 (isAdmin prop 전달)
+- InquiryForm / InquiryList는 주석 처리 (유지)
+
+**주요 변경 파일:**
+- `src/app/contact/page.tsx` — 레이아웃 업데이트
+- `src/components/contact/LiveStatusWidget.tsx` — 신규
+- `src/components/contact/GuestbookForm.tsx` — 신규
+- `src/components/contact/GuestbookList.tsx`, `GuestbookListClient.tsx` — 신규
+- `src/app/api/spotify/now-playing/route.ts`, `src/app/api/github/stats/route.ts` — 신규
+
+---
 
 ## 🚀 2026-02-25 업데이트 내역
 

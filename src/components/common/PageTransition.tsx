@@ -1,13 +1,13 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
 
-const variants = {
+const variants: Variants = {
   enter: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] },
+    transition: { duration: 0.25, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] },
   },
   exit: {
     opacity: 0,

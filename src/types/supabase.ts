@@ -92,6 +92,30 @@ export type Database = {
         }
         Relationships: []
       }
+      guestbook: {
+        Row: {
+          id: number
+          nickname: string
+          message: string
+          emoji: string
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          nickname: string
+          message: string
+          emoji?: string
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          nickname?: string
+          message?: string
+          emoji?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       educations: {
         Row: {
           created_at: string | null
