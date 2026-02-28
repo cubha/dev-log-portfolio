@@ -92,30 +92,6 @@ export type Database = {
         }
         Relationships: []
       }
-      guestbook: {
-        Row: {
-          id: number
-          nickname: string
-          message: string
-          emoji: string
-          created_at: string
-        }
-        Insert: {
-          id?: number
-          nickname: string
-          message: string
-          emoji?: string
-          created_at?: string
-        }
-        Update: {
-          id?: number
-          nickname?: string
-          message?: string
-          emoji?: string
-          created_at?: string
-        }
-        Relationships: []
-      }
       educations: {
         Row: {
           created_at: string | null
@@ -176,6 +152,39 @@ export type Database = {
           is_current?: boolean
           position?: string
           start_date?: string
+        }
+        Relationships: []
+      }
+      guestbook: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          emoji: string
+          id: number
+          is_secret: boolean
+          message: string
+          nickname: string
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          emoji?: string
+          id?: number
+          is_secret?: boolean
+          message: string
+          nickname: string
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          emoji?: string
+          id?: number
+          is_secret?: boolean
+          message?: string
+          nickname?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -294,7 +303,9 @@ export type Database = {
           is_featured: boolean | null
           is_ongoing: boolean | null
           link_url: string | null
+          live_demo_url: string | null
           project_role: string | null
+          project_type: 'work' | 'personal' | 'team' | null
           start_date: string | null
           team_size: number | null
           tech_stack: string[] | null
@@ -313,7 +324,9 @@ export type Database = {
           is_featured?: boolean | null
           is_ongoing?: boolean | null
           link_url?: string | null
+          live_demo_url?: string | null
           project_role?: string | null
+          project_type?: 'work' | 'personal' | 'team' | null
           start_date?: string | null
           team_size?: number | null
           tech_stack?: string[] | null
@@ -332,7 +345,9 @@ export type Database = {
           is_featured?: boolean | null
           is_ongoing?: boolean | null
           link_url?: string | null
+          live_demo_url?: string | null
           project_role?: string | null
+          project_type?: 'work' | 'personal' | 'team' | null
           start_date?: string | null
           team_size?: number | null
           tech_stack?: string[] | null

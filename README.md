@@ -41,6 +41,7 @@ dev-log-portfolio/
 │   │   ├── contact/
 │   │   │   └── page.tsx              # Contact 페이지 (/contact)
 │   │   ├── api/                      # 🔌 Route Handlers
+│   │   │   ├── mdx/[slug]/            # MDX → HTML 변환 (모달 인라인 뷰용)
 │   │   │   ├── spotify/now-playing/   # Spotify 현재 재생 트랙
 │   │   │   └── github/stats/          # GitHub 30일 커밋 통계
 │   │   └── admin/                    # 🔐 관리자 영역
@@ -67,7 +68,8 @@ dev-log-portfolio/
 │   │   │   └── GuestbookListClient.tsx # 방명록 항목 + 삭제 (클라이언트)
 │   │   ├── projects/
 │   │   │   ├── ProjectCard.tsx       # 프로젝트 카드 UI
-│   │   │   ├── ProjectList.tsx       # 프로젝트 리스트 (슬라이더 + 필터)
+│   │   │   ├── ProjectList.tsx       # 프로젝트 리스트 (Grid + 필터)
+│   │   │   ├── ProjectDetailModal.tsx # 프로젝트 상세 모달 + MDX 인라인 뷰
 │   │   │   └── ProjectCardActions.tsx # 관리자 전용 카드 액션 (수정/삭제)
 │   │   └── providers/
 │   │       └── AuthStateInitializer.tsx # 서버 권한 정보를 Jotai atom에 동기화
@@ -350,6 +352,66 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 ---
 
 ## 📅 최근 업데이트
+
+## 🚀 2026-02-28 업데이트 내역
+
+### 1. 프로젝트 타입·라이브 데모 필드 추가
+- **타입**: `project_type` (`'work' | 'personal' | 'team'`), `live_demo_url` (`string | null`)
+- **관리자 폼**: project_type 라디오, live_demo_url 입력 (work가 아닐 때만 노출)
+- **모달 CTA**: LIVE DEMO 버튼 — `project_type !== 'work'` && `live_demo_url` 있을 때만 표시
+
+### 2. 프로젝트 리스트 레이아웃 전환
+- **슬라이더 → Grid**: X축 드래그 제거, `grid-cols-1 md:grid-cols-2 lg:grid-cols-3` CSS Grid
+- **애니메이션**: Framer Motion `whileInView`로 카드 fade-up (stagger delay)
+- **스켈레톤**: Grid 형태 6개 카드 + 필터 바
+
+### 3. 모달 MDX 인라인 뷰
+- **상세 보기**: 페이지 이동 대신 모달 내 MDX 콘텐츠 렌더링
+- **API**: `GET /api/mdx/[slug]` — MDX → HTML 변환 후 JSON 응답
+- **Next.js 대응**: `react-dom/server` 동적 import로 Route Handler 빌드 제한 회피
+
+### 4. MDX 샘플 파일
+- `content/projects/dev-log-portfolio.mdx` — 포트폴리오 사이트 개발 회고
+<!-- - `content/projects/live-coding-challenge.mdx` — 실시간 코딩 챌린지 앱 회고 -->
+
+**주요 변경 파일:** `src/types/supabase.ts`, `create.ts`, `update.ts`, `admin/projects/page.tsx`, `ProjectCard.tsx`, `ProjectList.tsx`, `ProjectListSkeleton.tsx`, `ProjectDetailModal.tsx`, `api/mdx/[slug]/route.ts`
+
+---
+
+## 🚀 2026-02-27 업데이트 내역
+
+### 1. GitHub Stats API 개선
+- **페이지네이션**: `per_page=100`, 최대 3페이지(300건) 순회
+- **Private 레포 대응**: `payload.size` 없을 때 `commits.length` 폴백
+- **헤더**: `X-GitHub-Api-Version: 2022-11-28` 명시
+- 30일 cutoff 이후 이벤트 도달 시 루프 조기 종료
+
+### 2. 방명록 OAuth + 비밀글 연동
+- **타입 확장**: `GuestbookEntry`에 `is_secret`, `user_id`, `avatar_url` 추가
+- **비밀글 규칙**: 익명 유저 `is_secret=true` 시 서버 차단
+- **createGuestbookEntry**: 로그인 시 `user_metadata`에서 nickname·avatar 자동 주입
+- **auth/callback**: GitHub OAuth 코드 교환 후 `/contact` 리다이렉트
+
+### 3. GuestbookForm 전면 수정
+- **Props**: `user: User | null` 추가
+- **익명**: 닉네임 입력 + "🔒 비밀글은 GitHub 로그인 후 작성 가능" 버튼 → `signInWithOAuth`
+- **로그인**: GitHub 프로필(아바타 + user_name) + Framer Motion 비밀글 토글
+- **클라이언트 이중 잠금**: `user === null`이면 `is_secret` 강제 false
+
+### 4. GuestbookList + ListClient 연동
+- **currentUserId** prop: 본인 글 구분용
+- **비밀글 뱃지**: `내 비밀글`(본인), `비밀글`(관리자)
+- **아바타**: `avatar_url` 있으면 `next/image` 28×28, 없으면 emoji
+
+**주요 변경 파일:**
+- `src/app/contact/page.tsx` — user/currentUserId 전달
+- `src/app/auth/callback/route.ts` — 신규 (OAuth 콜백)
+- `src/components/contact/GuestbookForm.tsx` — 익명/로그인 분기, 비밀글 토글
+- `src/components/contact/GuestbookList.tsx`, `GuestbookListClient.tsx` — 뱃지, 아바타
+- `src/app/api/github/stats/route.ts` — 페이지네이션, Private 대응
+- `src/types/contact.ts`, `src/actions/guestbook.ts` — is_secret/user_id/avatar_url
+
+---
 
 ## 🚀 2026-02-26 업데이트 내역
 

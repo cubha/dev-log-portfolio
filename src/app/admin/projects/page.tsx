@@ -57,6 +57,8 @@ export default function ProjectFormPage() {
     project_role: editingProject?.project_role || '',
     team_size: editingProject?.team_size ?? 0,
     detailed_tasks: editingProject?.detailed_tasks || [],
+    project_type: (editingProject?.project_type ?? 'personal') as 'work' | 'personal' | 'team',
+    live_demo_url: editingProject?.live_demo_url ?? '',
   })
 
   // editingProjectAtom이 변경되면 폼 데이터 업데이트
@@ -78,6 +80,8 @@ export default function ProjectFormPage() {
         project_role: editingProject.project_role || '',
         team_size: editingProject.team_size ?? 0,
         detailed_tasks: editingProject.detailed_tasks || [],
+        project_type: (editingProject.project_type ?? 'personal') as 'work' | 'personal' | 'team',
+        live_demo_url: editingProject.live_demo_url ?? '',
       })
       setPreviewUrl(editingProject.thumbnail_url || null)
       setSelectedFile(null)
@@ -99,6 +103,8 @@ export default function ProjectFormPage() {
         project_role: '',
         team_size: 0,
         detailed_tasks: [],
+        project_type: 'personal' as 'work' | 'personal' | 'team',
+        live_demo_url: '',
       })
       setPreviewUrl(null)
       setSelectedFile(null)
@@ -156,6 +162,8 @@ export default function ProjectFormPage() {
       formDataToSend.append('project_role', formData.project_role)
       formDataToSend.append('team_size', formData.team_size.toString())
       formDataToSend.append('detailed_tasks', formData.detailed_tasks.join('|||'))
+      formDataToSend.append('project_type', formData.project_type)
+      formDataToSend.append('live_demo_url', formData.live_demo_url)
 
       if (isEditMode && editingProject) {
         // 수정 모드
@@ -190,6 +198,10 @@ export default function ProjectFormPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target
+    if (name === 'project_type' && ['work', 'personal', 'team'].includes(value)) {
+      setFormData(prev => ({ ...prev, project_type: value as 'work' | 'personal' | 'team' }))
+      return
+    }
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
@@ -583,6 +595,58 @@ export default function ProjectFormPage() {
               프로젝트에서 수행한 구체적인 업무 내용을 항목별로 추가하세요.
             </p>
           </div>
+
+          {/* 프로젝트 유형 (LIVE DEMO 버튼 노출 조건) */}
+          <div>
+            <label className="block text-sm font-medium text-foreground/60 mb-2">
+              프로젝트 유형 (LIVE DEMO 버튼 노출 조건)
+            </label>
+            <div className="flex flex-wrap gap-4">
+              {[
+                { value: 'work' as const, label: '업무형' },
+                { value: 'personal' as const, label: '개인' },
+                { value: 'team' as const, label: '팀' },
+              ].map((type) => (
+                <label
+                  key={type.value}
+                  className={`flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer transition-colors ${
+                    formData.project_type === type.value
+                      ? 'border-foreground/40 bg-foreground/8'
+                      : 'border-foreground/10 hover:bg-foreground/5'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="project_type"
+                    value={type.value}
+                    checked={formData.project_type === type.value}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-brand-primary border-foreground/20 focus:ring-foreground/30"
+                  />
+                  <span className="text-sm text-foreground/70">{type.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* 라이브 데모 URL (project_type이 work가 아닌 경우에만 노출) */}
+          {formData.project_type !== 'work' && (
+            <div>
+              <label htmlFor="live_demo_url" className="block text-sm font-medium text-foreground/60 mb-2">
+                <LinkIcon className="w-4 h-4 inline mr-1" />
+                라이브 데모 URL (project_type이 work가 아닌 경우에만 노출)
+              </label>
+              <input
+                type="url"
+                id="live_demo_url"
+                name="live_demo_url"
+                value={formData.live_demo_url}
+                onChange={handleChange}
+                placeholder="https://demo.example.com"
+                className="admin-input w-full px-4 py-3 border rounded-lg transition-all"
+              />
+            </div>
+          )}
 
           {/* 링크 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

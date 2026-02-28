@@ -3,13 +3,15 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { compile, run } from '@mdx-js/mdx'
+import * as runtime from 'react/jsx-runtime'
 import {
-  getMdxContent,
-  mdxSerializeOptions,
+  getRawMdxContent,
+  rehypeShiki,
   getAllMdxSlugs,
 } from '@/src/utils/mdx'
 import { mdxComponents } from '@/src/components/mdx/MdxComponents'
+import type { MDXContent } from 'mdx/types'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -24,8 +26,21 @@ export async function generateStaticParams() {
 export default async function ProjectDetailPage({ params }: PageProps) {
   const { slug } = await params
 
-  const content = await getMdxContent(slug)
-  if (!content) notFound()
+  const raw = await getRawMdxContent(slug)
+  if (!raw) notFound()
+
+  // MDX → function-body 컴파일
+  const compiled = await compile(raw, {
+    outputFormat: 'function-body',
+    rehypePlugins: [rehypeShiki],
+  })
+
+  // Next.js와 동일한 React 인스턴스로 실행 (ESM import)
+  const { default: Content } = await run(String(compiled), {
+    ...(runtime as Parameters<typeof run>[1]),
+    baseUrl: import.meta.url,
+  })
+  const MDXComponent = Content as MDXContent
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
@@ -45,13 +60,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         </h1>
       </header>
 
-      {/* MDX 콘텐츠 영역 (최대 너비 컨테이너) */}
+      {/* MDX 콘텐츠 영역 */}
       <article className="max-w-3xl">
-        <MDXRemote
-          source={content.raw}
-          options={mdxSerializeOptions}
-          components={mdxComponents}
-        />
+        <MDXComponent components={mdxComponents} />
       </article>
     </div>
   )

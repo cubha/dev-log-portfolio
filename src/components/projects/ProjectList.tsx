@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useEffect, useRef } from 'react'
+import { useMemo } from 'react'
 import { Database } from '@/src/types/supabase'
 import { Plus } from 'lucide-react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -9,34 +9,20 @@ import { projectFilterAtom, FILTER_OPTIONS, type ProjectFilter } from '@/src/sto
 import { ProjectCard } from './ProjectCard'
 import { ProjectDetailModal } from './ProjectDetailModal'
 import Link from 'next/link'
-import { motion, AnimatePresence, useMotionValue, animate } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 type Project = Database['public']['Tables']['projects']['Row']
 
-// 슬라이더 설정 상수 — 화면 꽉 채우기
-const CARD_WIDTH = 280 // 각 카드의 너비 (px)
-const CARD_HEIGHT = 360 // 각 카드의 높이 (px)
-const CARD_GAP = 20 // 카드 간 간격 (px)
-const CARDS_PER_VIEW = 3 // 한 화면에 보이는 중앙 카드 수
-const PEEK_RATIO = 0.2 // 양옆 피크 카드 노출 비율
-const PEEK_OPACITY = 0.4 // 피크 카드 투명도
-const PEEK_SCALE = 0.92 // 피크 카드 크기
-
 /**
- * 프로젝트 리스트 컴포넌트 (클라이언트 컴포넌트)
+ * 프로젝트 리스트 컴포넌트
  *
- * 가로 슬라이더 방식으로 프로젝트를 표시합니다.
- * - 중앙에 3개의 메인 카드, 양옆에 피크 효과
- * - 드래그 & 화살표 네비게이션
- * - 하단 페이지네이션 도트
+ * CSS Grid 레이아웃으로 프로젝트를 표시합니다.
+ * 스크롤 시 각 카드가 whileInView로 fade-up 애니메이션 적용.
  */
 export function ProjectList({ projects }: { projects: Project[] }) {
   const isAdmin = useAtomValue(isAdminAtom)
   const setEditingProject = useSetAtom(editingProjectAtom)
   const [activeFilter, setActiveFilter] = useAtom(projectFilterAtom)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const x = useMotionValue(0)
-  const containerRef = useRef<HTMLDivElement>(null)
 
   // 필터링된 프로젝트 목록
   const filteredProjects = useMemo(() => {
@@ -44,57 +30,11 @@ export function ProjectList({ projects }: { projects: Project[] }) {
     return projects.filter((project) => project.category === activeFilter)
   }, [projects, activeFilter])
 
-  // 페이지네이션 계산
-  const totalPages = Math.max(1, Math.ceil(filteredProjects.length / CARDS_PER_VIEW))
-  const maxIndex = Math.max(0, filteredProjects.length - CARDS_PER_VIEW)
-  // 마지막 페이지 처리: maxIndex에 도달하면 마지막 페이지로 간주
-  const currentPage = currentIndex >= maxIndex
-    ? totalPages - 1
-    : Math.floor(currentIndex / CARDS_PER_VIEW)
-
-  // 필터 변경 시 슬라이더 리셋
-  useEffect(() => {
-    setCurrentIndex(0)
-    x.set(0)
-  }, [activeFilter, x])
-
-  // 슬라이드 이동 함수
-  const goToSlide = (index: number) => {
-    const maxIndex = Math.max(0, filteredProjects.length - CARDS_PER_VIEW)
-    const newIndex = Math.max(0, Math.min(index, maxIndex))
-    setCurrentIndex(newIndex)
-
-    const targetX = -newIndex * (CARD_WIDTH + CARD_GAP)
-    animate(x, targetX, {
-      type: 'spring',
-      stiffness: 300,
-      damping: 30,
-    })
-  }
-
-  // 페이지 단위 이동
-  const goToPage = (page: number) => {
-    goToSlide(page * CARDS_PER_VIEW)
-  }
-
-  const handlePrev = () => {
-    goToSlide(Math.max(0, currentIndex - CARDS_PER_VIEW))
-  }
-
-  const handleNext = () => {
-    const maxIndex = Math.max(0, filteredProjects.length - CARDS_PER_VIEW)
-    goToSlide(Math.min(maxIndex, currentIndex + CARDS_PER_VIEW))
-  }
-
-  // 드래그 제약 조건 계산
-  const maxDrag = Math.max(0, filteredProjects.length - CARDS_PER_VIEW) * (CARD_WIDTH + CARD_GAP)
-
   return (
     <>
-      {/* 프로젝트 상세 모달 */}
       <ProjectDetailModal />
 
-      {/* 페이지 헤더 — template.tsx가 페이드인 담당 */}
+      {/* 페이지 헤더 */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-1">
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">프로젝트</h1>
@@ -115,7 +55,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
         </p>
       </div>
 
-      {/* 필터 필(Filter Pills) 바 — 페이지 진입 후 살짝 뒤따라 등장 */}
+      {/* FilterBar */}
       <motion.div
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
@@ -127,145 +67,29 @@ export function ProjectList({ projects }: { projects: Project[] }) {
         />
       </motion.div>
 
-      {/* 슬라이더 컨테이너 — 필터 바 이후 가장 늦게 등장 */}
-      {filteredProjects.length === 0 ? (
-        <EmptyFilterState activeFilter={activeFilter} />
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.42 }}
-          className="relative overflow-x-clip"
-        >
-          {/* 슬라이더 뷰포트 - 중앙 정렬 및 양옆 피크 노출 */}
-          <div
-            ref={containerRef}
-            className="relative mx-auto"
-            style={{
-              width: '100%',
-              maxWidth: `${CARDS_PER_VIEW * CARD_WIDTH + (CARDS_PER_VIEW - 1) * CARD_GAP + CARD_WIDTH * PEEK_RATIO * 2}px`,
-            }}
-          >
-            {/* 드래그 가능한 카드 컨테이너 */}
-            <motion.div
-              className="flex"
-              style={{
-                x,
-                gap: `${CARD_GAP}px`,
-                paddingLeft: `${CARD_WIDTH * PEEK_RATIO}px`,
-                paddingRight: `${CARD_WIDTH * PEEK_RATIO}px`,
-              }}
-              drag="x"
-              dragConstraints={{
-                left: -maxDrag,
-                right: 0,
-              }}
-              dragElastic={0.1}
-              dragMomentum={false}
-              dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
-              onDragEnd={(_, info) => {
-                const offset = info.offset.x
-                const velocity = info.velocity.x
-
-                // 빠른 스와이프
-                if (Math.abs(velocity) > 500) {
-                  if (velocity > 0) {
-                    handlePrev()
-                  } else {
-                    handleNext()
-                  }
-                  return
-                }
-
-                // 일정 거리 이상 드래그
-                const dragThreshold = CARD_WIDTH / 3
-                if (Math.abs(offset) > dragThreshold) {
-                  if (offset > 0) {
-                    handlePrev()
-                  } else {
-                    handleNext()
-                  }
-                } else {
-                  // 원위치
-                  goToSlide(currentIndex)
-                }
-              }}
-            >
-              <AnimatePresence mode="popLayout">
-                {filteredProjects.map((project, index) => {
-                  // 현재 위치 계산
-                  const isInMainView =
-                    index >= currentIndex && index < currentIndex + CARDS_PER_VIEW
-                  const isLeftPeek = index === currentIndex - 1
-                  const isRightPeek = index === currentIndex + CARDS_PER_VIEW
-                  const isPeekCard = isLeftPeek || isRightPeek
-
-                  // 피크 카드 클릭 핸들러
-                  const handlePeekClick = () => {
-                    if (isLeftPeek && currentIndex > 0) {
-                      handlePrev()
-                    } else if (isRightPeek && currentIndex < filteredProjects.length - CARDS_PER_VIEW) {
-                      handleNext()
-                    }
-                  }
-
-                  return (
-                    <motion.div
-                      key={project.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{
-                        opacity: isInMainView ? 1 : isPeekCard ? PEEK_OPACITY : 0.1,
-                        scale: isInMainView ? 1 : isPeekCard ? PEEK_SCALE : 0.85,
-                      }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{
-                        opacity: { duration: 0.3 },
-                        scale: { duration: 0.3 },
-                        layout: {
-                          type: 'spring',
-                          stiffness: 250,
-                          damping: 25,
-                        },
-                      }}
-                      style={{
-                        width: `${CARD_WIDTH}px`,
-                        height: `${CARD_HEIGHT}px`,
-                        flexShrink: 0,
-                        pointerEvents: isInMainView || isPeekCard ? 'auto' : 'none',
-                      }}
-                    >
-                      <ProjectCard
-                        project={project}
-                        isActive={isInMainView}
-                        onCardClick={isPeekCard ? handlePeekClick : undefined}
-                      />
-                    </motion.div>
-                  )
-                })}
-              </AnimatePresence>
-            </motion.div>
-          </div>
-
-          {/* 페이지네이션 도트 */}
-          {filteredProjects.length > CARDS_PER_VIEW && (
-            <div className="relative z-20 mt-12">
-              <PaginationDots
-                totalPages={totalPages}
-                currentPage={currentPage}
-                onPageClick={goToPage}
-              />
+      {/* CSS Grid */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.42 }}
+        className="w-full"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProjects.length === 0 ? (
+            <div className="col-span-full">
+              <EmptyFilterState activeFilter={activeFilter} />
             </div>
+          ) : (
+            filteredProjects.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} />
+            ))
           )}
-        </motion.div>
-      )}
+        </div>
+      </motion.div>
     </>
   )
 }
 
-/**
- * 필터 필(Filter Pills) 바 컴포넌트
- */
 function FilterBar({
   activeFilter,
   onFilterChange,
@@ -296,7 +120,6 @@ function FilterBar({
             `}
           >
             {filter}
-            {/* 활성 인디케이터 dot */}
             {isActive && (
               <motion.span
                 layoutId="filterIndicator"
@@ -311,57 +134,6 @@ function FilterBar({
   )
 }
 
-/**
- * 페이지네이션 도트 컴포넌트
- */
-function PaginationDots({
-  totalPages,
-  currentPage,
-  onPageClick,
-}: {
-  totalPages: number
-  currentPage: number
-  onPageClick: (page: number) => void
-}) {
-  return (
-    <div className="flex items-center justify-center gap-2 py-4">
-      {Array.from({ length: totalPages }, (_, i) => {
-        const isActive = i === currentPage
-
-        return (
-          <motion.button
-            key={i}
-            type="button"
-            onClick={() => onPageClick(i)}
-            whileTap={{ scale: 0.9 }}
-            className={`
-              rounded-full cursor-pointer transition-all duration-200
-              ${
-                isActive
-                  ? 'w-10 h-3 bg-silver-metal shadow-md'
-                  : 'w-3 h-3 bg-foreground/20 hover:bg-brand-primary hover:scale-110'
-              }
-            `}
-            aria-label={`${i + 1}페이지로 이동`}
-          >
-            {/* 활성 도트 애니메이션 */}
-            {isActive && (
-              <motion.div
-                layoutId="activeDot"
-                className="w-full h-full rounded-full bg-silver-metal"
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              />
-            )}
-          </motion.button>
-        )
-      })}
-    </div>
-  )
-}
-
-/**
- * 빈 필터 결과 상태 컴포넌트
- */
 function EmptyFilterState({ activeFilter }: { activeFilter: ProjectFilter }) {
   return (
     <motion.div

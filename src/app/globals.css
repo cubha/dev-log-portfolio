@@ -143,6 +143,27 @@ body {
   }
 }
 
+/* ─── MDX 모달 콘텐츠 보조 스타일 ───────────────────────────────────────── */
+/*
+ * MdxComponents.tsx의 Tailwind 클래스가 renderToStaticMarkup으로 인라인 출력되므로
+ * 대부분의 스타일은 이미 적용됨. 아래는 MdxComponents에서 정의하지 않은 요소 보완.
+ */
+.mdx-modal-content hr {
+  border: none;
+  border-top: 1px solid hsl(var(--foreground) / 0.12);
+  margin: 1.5rem 0;
+}
+.mdx-modal-content ol {
+  list-style-type: decimal;
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+  color: hsl(var(--foreground));
+}
+.mdx-modal-content ol li {
+  line-height: 1.75;
+  padding-left: 0.25rem;
+}
+
 /* 커스텀 스크롤바 */
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: hsl(var(--background)); }

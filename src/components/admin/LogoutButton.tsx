@@ -24,7 +24,7 @@ export function LogoutButton({ variant = 'default' }: { variant?: 'default' | 'c
       console.error('로그아웃 오류:', error)
       // redirect()가 내부적으로 에러를 throw하므로 여기로 올 수 있음
       // 실제 에러 시 fallback
-      window.location.href = '/login'
+      window.location.href = '/'
     }
   }
 

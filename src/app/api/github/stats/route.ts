@@ -1,40 +1,69 @@
 /**
- * GitHub 최근 30일 커밋 통계 조회
+ * GitHub 최근 30일 커밋 통계 조회 (GraphQL — Private 포함)
  * GET /api/github/stats
  */
 
 const MS_30_DAYS = 30 * 24 * 60 * 60 * 1000
 
-type GitHubEvent = {
-  type?: string
-  created_at?: string
-  repo?: { name?: string }
-  payload?: { size?: number }
+type ContributionByRepo = {
+  repository: { nameWithOwner: string }
+  contributions: { totalCount: number }
 }
+
+type GitHubGraphQLResponse = {
+  data?: {
+    viewer?: {
+      contributionsCollection?: {
+        totalCommitContributions?: number
+        commitContributionsByRepository?: ContributionByRepo[]
+      }
+    }
+  }
+}
+
+const GRAPHQL_QUERY = `
+  query ($from: DateTime!, $to: DateTime!) {
+    viewer {
+      contributionsCollection(from: $from, to: $to) {
+        totalCommitContributions
+        commitContributionsByRepository(maxRepositories: 100) {
+          repository {
+            nameWithOwner
+          }
+          contributions {
+            totalCount
+          }
+        }
+      }
+    }
+  }
+`
 
 export async function GET() {
   const headers = new Headers()
   headers.set('Cache-Control', 'max-age=3600')
 
   const token = process.env.GITHUB_TOKEN
-  const username = process.env.GITHUB_USERNAME
 
-  if (!token || !username) {
+  if (!token) {
     return Response.json(
       { totalCommits: 0, topRepo: null, lastActiveDate: null },
       { headers }
     )
   }
 
-  const res = await fetch(
-    `https://api.github.com/users/${encodeURIComponent(username)}/events`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github+json',
-      },
-    }
-  ).catch(() => null)
+  const to = new Date().toISOString()
+  const from = new Date(Date.now() - MS_30_DAYS).toISOString()
+
+  const res = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    body: JSON.stringify({ query: GRAPHQL_QUERY, variables: { from, to } }),
+  }).catch(() => null)
 
   if (!res?.ok) {
     return Response.json(
@@ -43,57 +72,28 @@ export async function GET() {
     )
   }
 
-  const events = (await res.json()) as GitHubEvent[]
+  const json = (await res.json()) as GitHubGraphQLResponse
+  const collection = json.data?.viewer?.contributionsCollection
 
-  if (!Array.isArray(events)) {
+  if (!collection) {
     return Response.json(
       { totalCommits: 0, topRepo: null, lastActiveDate: null },
       { headers }
     )
   }
 
-  const cutoff = new Date(Date.now() - MS_30_DAYS)
-  const repoCounts: Record<string, number> = {}
-  let totalCommits = 0
-  let lastActiveDate: string | null = null
+  const totalCommits = collection.totalCommitContributions ?? 0
 
-  for (const event of events) {
-    if (event.type !== 'PushEvent') continue
-
-    const createdAt = event.created_at ? new Date(event.created_at) : null
-    if (createdAt && createdAt < cutoff) continue
-
-    const size = event.payload?.size ?? 0
-    totalCommits += size
-
-    const repoName = event.repo?.name ?? ''
-    if (repoName) {
-      repoCounts[repoName] = (repoCounts[repoName] ?? 0) + size
-    }
-
-    if (event.created_at) {
-      if (
-        !lastActiveDate ||
-        new Date(event.created_at) > new Date(lastActiveDate)
-      ) {
-        lastActiveDate = event.created_at
-      }
-    }
-  }
-
+  const repos = collection.commitContributionsByRepository ?? []
   const topRepo =
-    Object.keys(repoCounts).length > 0
-      ? Object.entries(repoCounts).reduce((a, b) =>
-          a[1] >= b[1] ? a : b
-        )[0]
+    repos.length > 0
+      ? repos.reduce((a, b) =>
+          a.contributions.totalCount >= b.contributions.totalCount ? a : b
+        ).repository.nameWithOwner
       : null
 
   return Response.json(
-    {
-      totalCommits,
-      topRepo,
-      lastActiveDate,
-    },
+    { totalCommits, topRepo, lastActiveDate: null },
     { headers }
   )
 }

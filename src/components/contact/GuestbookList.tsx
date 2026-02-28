@@ -4,6 +4,7 @@ import type { GuestbookEntry } from '@/src/types/contact'
 
 interface GuestbookListProps {
   isAdmin: boolean
+  currentUserId: string | null
 }
 
 /**
@@ -11,7 +12,10 @@ interface GuestbookListProps {
  *
  * guestbook 테이블을 최신순으로 조회하고, 관리자에게 삭제 버튼을 노출합니다.
  */
-export async function GuestbookList({ isAdmin }: GuestbookListProps) {
+export async function GuestbookList({
+  isAdmin,
+  currentUserId,
+}: GuestbookListProps) {
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -30,6 +34,9 @@ export async function GuestbookList({ isAdmin }: GuestbookListProps) {
     message: row.message,
     emoji: row.emoji,
     created_at: row.created_at,
+    is_secret: row.is_secret ?? false,
+    user_id: row.user_id ?? null,
+    avatar_url: row.avatar_url ?? null,
   }))
 
   return (
@@ -46,7 +53,11 @@ export async function GuestbookList({ isAdmin }: GuestbookListProps) {
         </div>
       ) : (
         <div className="bg-background border-[0.5px] border-foreground/10 rounded-2xl overflow-hidden px-4">
-          <GuestbookListClient entries={entries} isAdmin={isAdmin} />
+          <GuestbookListClient
+            entries={entries}
+            isAdmin={isAdmin}
+            currentUserId={currentUserId}
+          />
         </div>
       )}
     </section>

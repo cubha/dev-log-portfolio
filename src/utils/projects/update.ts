@@ -61,6 +61,17 @@ export async function updateProject(projectId: number, formData: FormData) {
     ? detailedTasksInput.split('|||').map(task => task.trim()).filter(task => task.length > 0)
     : null
 
+  // project_type: 'work' | 'personal' | 'team' | null
+  const projectTypeRaw = formData.get('project_type') as string | null
+  const VALID_PROJECT_TYPES = ['work', 'personal', 'team'] as const
+  const projectType: 'work' | 'personal' | 'team' | null =
+    projectTypeRaw && VALID_PROJECT_TYPES.includes(projectTypeRaw as (typeof VALID_PROJECT_TYPES)[number])
+      ? (projectTypeRaw as 'work' | 'personal' | 'team')
+      : null
+
+  // live_demo_url: string | null
+  const liveDemoUrl = (formData.get('live_demo_url') as string | null)?.trim() || null
+
   // 필수 필드 검증
   if (!title || title.trim().length === 0) {
     throw new Error('제목은 필수 입력 항목입니다.')
@@ -96,6 +107,8 @@ export async function updateProject(projectId: number, formData: FormData) {
     project_role: projectRole?.trim() || null,
     team_size: teamSize || null,
     detailed_tasks: detailedTasks && detailedTasks.length > 0 ? detailedTasks : null,
+    project_type: projectType,
+    live_demo_url: liveDemoUrl,
   }
 
   // Supabase에서 프로젝트 업데이트

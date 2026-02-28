@@ -18,7 +18,13 @@ export type GuestbookEntry = {
   message: string
   emoji: string
   created_at: string
+  is_secret: boolean
+  user_id: string | null
+  avatar_url: string | null
 }
 
 /** 방명록 생성 시 필요한 필드 */
-export type CreateGuestbookInput = Pick<GuestbookEntry, 'nickname' | 'message' | 'emoji'>
+export type CreateGuestbookInput = Pick<
+  GuestbookEntry,
+  'nickname' | 'message' | 'emoji'
+> & { is_secret: boolean }

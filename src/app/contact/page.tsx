@@ -19,7 +19,7 @@ import type { ContactLink } from '@/src/types/contact'
  */
 export default async function ContactPage() {
   // ── 1. 관리자 권한 확인 (공통 유틸리티) ──────────────────
-  const { role, isAdmin } = await getCurrentUserRole()
+  const { user, role, isAdmin } = await getCurrentUserRole()
 
   // ── 2. contact_links 데이터 fetch ────────────────────────
   const supabase = await createClient()
@@ -58,7 +58,7 @@ export default async function ContactPage() {
                 <LiveStatusWidget />
               </ThemeCard>
               <ThemeCard noHoverLift className="p-6">
-                <GuestbookForm />
+                <GuestbookForm user={user} />
               </ThemeCard>
             </div>
             {/* 기존: Inquiry Form */}
@@ -66,7 +66,10 @@ export default async function ContactPage() {
           </div>
 
           {/* 하단: 방명록 목록 */}
-          <GuestbookList isAdmin={isAdmin} />
+          <GuestbookList
+            isAdmin={isAdmin}
+            currentUserId={user?.id ?? null}
+          />
           {/* 기존: 공개된 문의 목록 */}
           {/* <InquiryList /> */}
         </div>

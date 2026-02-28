@@ -3,8 +3,6 @@
 import { readdir, readFile } from 'node:fs/promises'
 import type { Dirent } from 'node:fs'
 import { join } from 'node:path'
-import { serialize } from 'next-mdx-remote/serialize'
-import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { visit } from 'unist-util-visit'
 import { codeToHast } from 'shiki'
 import type { Root, Element } from 'hast'
@@ -12,11 +10,8 @@ import type { Root, Element } from 'hast'
 /** content/projects 기준 경로 (프로젝트 루트 relative) */
 const CONTENT_DIR = join(process.cwd(), 'content', 'projects')
 
-/** MDX 컴파일 결과 타입 */
-export type MdxContent = MDXRemoteSerializeResult<Record<string, unknown>, Record<string, unknown>>
-
-/** RSC용: raw + serialize 옵션 포함 */
-export type MdxContentWithRaw = MdxContent & { raw: string }
+/** RSC MDXRemote용 콘텐츠 타입 */
+export type MdxContentWithRaw = { raw: string }
 
 /**
  * pre > code 블록을 shiki로 하이라이트하는 rehype 플러그인
@@ -72,11 +67,6 @@ export function rehypeShiki() {
   }
 }
 
-/** RSC MDXRemote용 serialize 옵션 (shiki 포함) */
-export const mdxSerializeOptions = {
-  mdxOptions: { rehypePlugins: [rehypeShiki] },
-}
-
 /**
  * slug에 해당하는 MDX raw 문자열 반환. (RSC MDXRemote용)
  * 파일이 없으면 null.
@@ -91,25 +81,15 @@ export async function getRawMdxContent(slug: string): Promise<string | null> {
 }
 
 /**
- * slug에 해당하는 MDX 파일을 읽고 컴파일해 반환.
+ * slug에 해당하는 MDX 파일을 읽어 raw 문자열로 반환.
  * 파일이 없으면 null (에러 throw 금지)
- * RSC MDXRemote용 raw 문자열도 함께 반환
  */
 export async function getMdxContent(
   slug: string
 ): Promise<MdxContentWithRaw | null> {
   const raw = await getRawMdxContent(slug)
   if (!raw) return null
-
-  try {
-    const result = await serialize<Record<string, unknown>, Record<string, unknown>>(
-      raw,
-      mdxSerializeOptions
-    )
-    return { ...result, raw }
-  } catch {
-    return null
-  }
+  return { raw }
 }
 
 /**
