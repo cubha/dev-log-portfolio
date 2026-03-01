@@ -1,113 +1,114 @@
-import * as SimpleIcons from 'react-icons/si'
-import { IconType } from 'react-icons'
+import React from 'react'
+import * as si from 'simple-icons'
+import type { SimpleIcon } from 'simple-icons'
 
 /**
  * 기술 스택 아이콘 매핑 유틸리티
  *
- * 기술명을 react-icons/si (Simple Icons) 아이콘 컴포넌트로 매핑합니다.
+ * 기술명을 simple-icons 아이콘으로 매핑합니다.
  * 매칭되지 않는 기술은 null을 반환하여 호출부에서 폴백 처리합니다.
  */
 
-// 매핑 타입 정의
-type IconMapping = { key: keyof typeof SimpleIcons; color: string }
+// simple-icons의 named export 키 형식: 'si' + PascalCase (예: siReact, siNextdotjs)
+type IconMapping = { key: string; color: string }
 
 const ICON_MAP: Record<string, IconMapping> = {
   // ── Frontend ──────────────────────────
-  'nextjs':           { key: 'SiNextdotjs',        color: '#000000' },
-  'next':             { key: 'SiNextdotjs',        color: '#000000' },
-  'nextjs15':         { key: 'SiNextdotjs',        color: '#000000' },
-  'react':            { key: 'SiReact',            color: '#61DAFB' },
-  'reactjs':          { key: 'SiReact',            color: '#61DAFB' },
-  'reactnative':      { key: 'SiReact',            color: '#61DAFB' },
-  'vue':              { key: 'SiVuedotjs',         color: '#4FC08D' },
-  'vuejs':            { key: 'SiVuedotjs',         color: '#4FC08D' },
-  'angular':          { key: 'SiAngular',          color: '#DD0031' },
-  'svelte':           { key: 'SiSvelte',           color: '#FF3E00' },
+  nextjs: { key: 'nextdotjs', color: '#000000' },
+  next: { key: 'nextdotjs', color: '#000000' },
+  nextjs15: { key: 'nextdotjs', color: '#000000' },
+  react: { key: 'react', color: '#61DAFB' },
+  reactjs: { key: 'react', color: '#61DAFB' },
+  reactnative: { key: 'react', color: '#61DAFB' },
+  vue: { key: 'vuedotjs', color: '#4FC08D' },
+  vuejs: { key: 'vuedotjs', color: '#4FC08D' },
+  angular: { key: 'angular', color: '#DD0031' },
+  svelte: { key: 'svelte', color: '#FF3E00' },
 
   // ── Languages ─────────────────────────
-  'typescript':       { key: 'SiTypescript',       color: '#3178C6' },
-  'javascript':       { key: 'SiJavascript',       color: '#F7DF1E' },
-  'python':           { key: 'SiPython',           color: '#3776AB' },
-  'java':             { key: 'SiOpenjdk',          color: '#007396' },
-  'csharp':           { key: 'SiSharp',            color: '#239120' },
-  'c#':               { key: 'SiSharp',            color: '#239120' },
-  'go':               { key: 'SiGo',               color: '#00ADD8' },
-  'golang':           { key: 'SiGo',               color: '#00ADD8' },
-  'rust':             { key: 'SiRust',             color: '#000000' },
-  'php':              { key: 'SiPhp',              color: '#777BB4' },
-  'ruby':             { key: 'SiRuby',             color: '#CC342D' },
-  'kotlin':           { key: 'SiKotlin',           color: '#7F52FF' },
-  'swift':            { key: 'SiSwift',            color: '#FA7343' },
+  typescript: { key: 'typescript', color: '#3178C6' },
+  javascript: { key: 'javascript', color: '#F7DF1E' },
+  python: { key: 'python', color: '#3776AB' },
+  java: { key: 'openjdk', color: '#007396' },
+  csharp: { key: 'csharp', color: '#239120' },
+  'c#': { key: 'csharp', color: '#239120' },
+  go: { key: 'go', color: '#00ADD8' },
+  golang: { key: 'go', color: '#00ADD8' },
+  rust: { key: 'rust', color: '#000000' },
+  php: { key: 'php', color: '#777BB4' },
+  ruby: { key: 'ruby', color: '#CC342D' },
+  kotlin: { key: 'kotlin', color: '#7F52FF' },
+  swift: { key: 'swift', color: '#FA7343' },
 
   // ── Backend & Frameworks ──────────────
-  'nodejs':           { key: 'SiNodedotjs',        color: '#339933' },
-  'node':             { key: 'SiNodedotjs',        color: '#339933' },
-  'express':          { key: 'SiExpress',          color: '#000000' },
-  'expressjs':        { key: 'SiExpress',          color: '#000000' },
-  'nestjs':           { key: 'SiNestjs',           color: '#E0234E' },
-  'nest':             { key: 'SiNestjs',           color: '#E0234E' },
-  'django':           { key: 'SiDjango',           color: '#092E20' },
-  'flask':            { key: 'SiFlask',            color: '#000000' },
-  'fastapi':          { key: 'SiFastapi',          color: '#009688' },
-  'spring':           { key: 'SiSpring',           color: '#6DB33F' },
-  'springboot':       { key: 'SiSpringboot',       color: '#6DB33F' },
-  'laravel':          { key: 'SiLaravel',          color: '#FF2D20' },
-  'rails':            { key: 'SiRubyonrails',      color: '#CC0000' },
-  'rubyonrails':      { key: 'SiRubyonrails',      color: '#CC0000' },
+  nodejs: { key: 'nodedotjs', color: '#339933' },
+  node: { key: 'nodedotjs', color: '#339933' },
+  express: { key: 'express', color: '#000000' },
+  expressjs: { key: 'express', color: '#000000' },
+  nestjs: { key: 'nestjs', color: '#E0234E' },
+  nest: { key: 'nestjs', color: '#E0234E' },
+  django: { key: 'django', color: '#092E20' },
+  flask: { key: 'flask', color: '#000000' },
+  fastapi: { key: 'fastapi', color: '#009688' },
+  spring: { key: 'spring', color: '#6DB33F' },
+  springboot: { key: 'springboot', color: '#6DB33F' },
+  laravel: { key: 'laravel', color: '#FF2D20' },
+  rails: { key: 'rubyonrails', color: '#CC0000' },
+  rubyonrails: { key: 'rubyonrails', color: '#CC0000' },
 
   // ── Databases ─────────────────────────
-  'supabase':         { key: 'SiSupabase',         color: '#3ECF8E' },
-  'postgresql':       { key: 'SiPostgresql',       color: '#4169E1' },
-  'postgres':         { key: 'SiPostgresql',       color: '#4169E1' },
-  'mysql':            { key: 'SiMysql',            color: '#4479A1' },
-  'mongodb':          { key: 'SiMongodb',          color: '#47A248' },
-  'mongo':            { key: 'SiMongodb',          color: '#47A248' },
-  'redis':            { key: 'SiRedis',            color: '#DC382D' },
-  'sqlite':           { key: 'SiSqlite',           color: '#003B57' },
-  'mariadb':          { key: 'SiMariadb',          color: '#003545' },
-  'oracle':           { key: 'SiOracle',           color: '#F80000' },
-  'firebase':         { key: 'SiFirebase',         color: '#FFCA28' },
+  supabase: { key: 'supabase', color: '#3ECF8E' },
+  postgresql: { key: 'postgresql', color: '#4169E1' },
+  postgres: { key: 'postgresql', color: '#4169E1' },
+  mysql: { key: 'mysql', color: '#4479A1' },
+  mongodb: { key: 'mongodb', color: '#47A248' },
+  mongo: { key: 'mongodb', color: '#47A248' },
+  redis: { key: 'redis', color: '#DC382D' },
+  sqlite: { key: 'sqlite', color: '#003B57' },
+  mariadb: { key: 'mariadb', color: '#003545' },
+  oracle: { key: 'oracle', color: '#F80000' },
+  firebase: { key: 'firebase', color: '#FFCA28' },
 
   // ── Styling ───────────────────────────
-  'tailwindcss':      { key: 'SiTailwindcss',      color: '#06B6D4' },
-  'tailwind':         { key: 'SiTailwindcss',      color: '#06B6D4' },
-  'sass':             { key: 'SiSass',             color: '#CC6699' },
-  'scss':             { key: 'SiSass',             color: '#CC6699' },
-  'css':              { key: 'SiCss3',             color: '#1572B6' },
-  'html':             { key: 'SiHtml5',            color: '#E34F26' },
-  'styledcomponents':  { key: 'SiStyledcomponents',  color: '#DB7093' },
+  tailwindcss: { key: 'tailwindcss', color: '#06B6D4' },
+  tailwind: { key: 'tailwindcss', color: '#06B6D4' },
+  sass: { key: 'sass', color: '#CC6699' },
+  scss: { key: 'sass', color: '#CC6699' },
+  css: { key: 'css3', color: '#1572B6' },
+  html: { key: 'html5', color: '#E34F26' },
+  styledcomponents: { key: 'styledcomponents', color: '#DB7093' },
 
   // ── Tools & Platforms ─────────────────
-  'docker':           { key: 'SiDocker',           color: '#2496ED' },
-  'kubernetes':       { key: 'SiKubernetes',       color: '#326CE5' },
-  'k8s':              { key: 'SiKubernetes',       color: '#326CE5' },
-  'aws':              { key: 'SiAmazonwebservices', color: '#FF9900' },
-  'gcp':              { key: 'SiGooglecloud',      color: '#4285F4' },
-  'vercel':           { key: 'SiVercel',           color: '#000000' },
-  'netlify':          { key: 'SiNetlify',          color: '#00C7B7' },
-  'heroku':           { key: 'SiHeroku',           color: '#430098' },
-  'git':              { key: 'SiGit',              color: '#F05032' },
-  'github':           { key: 'SiGithub',           color: '#181717' },
-  'gitlab':           { key: 'SiGitlab',           color: '#FC6D26' },
-  'bitbucket':        { key: 'SiBitbucket',        color: '#0052CC' },
-  'figma':            { key: 'SiFigma',            color: '#F24E1E' },
-  'notion':           { key: 'SiNotion',           color: '#000000' },
-  'slack':            { key: 'SiSlack',            color: '#4A154B' },
-  'jira':             { key: 'SiJira',             color: '#0052CC' },
+  docker: { key: 'docker', color: '#2496ED' },
+  kubernetes: { key: 'kubernetes', color: '#326CE5' },
+  k8s: { key: 'kubernetes', color: '#326CE5' },
+  aws: { key: 'amazonwebservices', color: '#FF9900' },
+  gcp: { key: 'googlecloud', color: '#4285F4' },
+  vercel: { key: 'vercel', color: '#000000' },
+  netlify: { key: 'netlify', color: '#00C7B7' },
+  heroku: { key: 'heroku', color: '#430098' },
+  git: { key: 'git', color: '#F05032' },
+  github: { key: 'github', color: '#181717' },
+  gitlab: { key: 'gitlab', color: '#FC6D26' },
+  bitbucket: { key: 'bitbucket', color: '#0052CC' },
+  figma: { key: 'figma', color: '#F24E1E' },
+  notion: { key: 'notion', color: '#000000' },
+  slack: { key: 'slack', color: '#4A154B' },
+  jira: { key: 'jira', color: '#0052CC' },
 
   // ── Animation & Motion ────────────────
-  'framermotion':     { key: 'SiFramer',           color: '#0055FF' },
-  'framer':           { key: 'SiFramer',           color: '#0055FF' },
+  framermotion: { key: 'framer', color: '#0055FF' },
+  framer: { key: 'framer', color: '#0055FF' },
 
   // ── State Management ──────────────────
-  'redux':            { key: 'SiRedux',            color: '#764ABC' },
-  'mobx':             { key: 'SiMobx',             color: '#FF9955' },
-  'recoil':           { key: 'SiRecoil',           color: '#3578E5' },
-  'jotai':            { key: 'SiReact',            color: '#000000' },
+  redux: { key: 'redux', color: '#764ABC' },
+  mobx: { key: 'mobx', color: '#FF9955' },
+  recoil: { key: 'recoil', color: '#3578E5' },
+  jotai: { key: 'react', color: '#000000' },
 
   // ── Testing ───────────────────────────
-  'jest':             { key: 'SiJest',             color: '#C21325' },
-  'cypress':          { key: 'SiCypress',          color: '#17202C' },
+  jest: { key: 'jest', color: '#C21325' },
+  cypress: { key: 'cypress', color: '#17202C' },
 }
 
 /**
@@ -116,16 +117,37 @@ const ICON_MAP: Record<string, IconMapping> = {
  * @param techName - 기술 스택 이름 (예: "Next.js 15", "TypeScript")
  * @returns `{ icon, color }` 또는 매칭 실패 시 `null`
  */
-export function getTechIcon(techName: string): { icon: IconType; color: string } | null {
+export function getTechIcon(
+  techName: string
+): { icon: React.FC<{ className?: string; style?: React.CSSProperties }>; color: string } | null {
   const normalized = techName.toLowerCase().replace(/[.\s\-_0-9]/g, '')
   const mapping = ICON_MAP[normalized]
+  if (!mapping) return null
 
-  if (mapping) {
-    const IconComponent = SimpleIcons[mapping.key] as IconType | undefined
-    if (IconComponent) {
-      return { icon: IconComponent, color: mapping.color }
-    }
-  }
+  // simple-icons의 named export 키: 'si' + mapping.key (첫 글자 대문자로 변환)
+  const iconKey =
+    'si' + mapping.key.charAt(0).toUpperCase() + mapping.key.slice(1)
+  const simpleIcon = (si as Record<string, SimpleIcon>)[iconKey]
+  if (!simpleIcon) return null
 
-  return null
+  // SVG path → React 인라인 컴포넌트 생성
+  const Icon: React.FC<{
+    className?: string
+    style?: React.CSSProperties
+  }> = ({ className, style }) =>
+    React.createElement(
+      'svg',
+      {
+        role: 'img',
+        viewBox: '0 0 24 24',
+        xmlns: 'http://www.w3.org/2000/svg',
+        className,
+        style,
+        fill: 'currentColor',
+      },
+      React.createElement('path', { d: simpleIcon.path })
+    )
+  Icon.displayName = simpleIcon.title
+
+  return { icon: Icon, color: mapping.color }
 }

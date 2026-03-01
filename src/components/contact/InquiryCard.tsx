@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
-import { HiOutlineTrash, HiOutlineLockClosed, HiChevronDown, HiCheckCircle, HiClock } from 'react-icons/hi'
+import { Trash2, Lock, ChevronDown, CheckCircle, Clock } from 'lucide-react'
 import { deleteInquiry } from '../../utils/inquiries/delete'
 import { verifyInquiryPassword } from '../../utils/inquiries/verify'
 
@@ -117,11 +117,11 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
           <div className="flex-shrink-0">
             {hasReply ? (
               <div className="w-8 h-8 rounded-lg bg-silver-metal flex items-center justify-center">
-                <HiCheckCircle className="w-4 h-4 text-white" />
+                <CheckCircle className="w-4 h-4 text-white" />
               </div>
             ) : (
               <div className="w-8 h-8 rounded-lg bg-foreground/10 flex items-center justify-center">
-                <HiClock className="w-4 h-4 text-foreground/40" />
+                <Clock className="w-4 h-4 text-foreground/40" />
               </div>
             )}
           </div>
@@ -130,7 +130,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 mb-1">
               {isPrivate && !isUnlocked && (
-                <HiOutlineLockClosed className="flex-shrink-0 w-4 h-4 text-foreground/40" />
+                <Lock className="flex-shrink-0 w-4 h-4 text-foreground/40" />
               )}
               <h3 className="text-sm font-semibold text-foreground truncate">{inquiry.title}</h3>
               {hasReply && (
@@ -163,14 +163,14 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
               className="p-1.5 text-foreground/40 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
               title="삭제"
             >
-              <HiOutlineTrash className="w-4 h-4" />
+              <Trash2 className="w-4 h-4" />
             </button>
             <motion.div
               animate={{ rotate: isOpen ? 180 : 0 }}
               transition={{ duration: 0.3 }}
               className="text-foreground/40"
             >
-              <HiChevronDown className="w-5 h-5" />
+              <ChevronDown className="w-5 h-5" />
             </motion.div>
           </div>
         </div>
@@ -234,7 +234,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-silver-metal flex items-center justify-center">
-                  <HiOutlineLockClosed className="w-6 h-6 text-white" />
+                  <Lock className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-foreground">비공개 문의</h3>
@@ -246,7 +246,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
 
               <div className="mb-6">
                 <div className="relative">
-                  <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
                   <input
                     type="password"
                     value={password}
@@ -306,7 +306,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <HiOutlineTrash className="w-6 h-6 text-red-600" />
+                  <Trash2 className="w-6 h-6 text-red-600" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-foreground">문의 삭제</h3>
@@ -319,7 +319,7 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
               {!isAdmin && (
                 <div className="mb-6">
                   <div className="relative">
-                    <HiOutlineLockClosed className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
                     <input
                       type="password"
                       value={password}

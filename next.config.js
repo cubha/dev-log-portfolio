@@ -3,6 +3,7 @@ const nextConfig = {
   serverExternalPackages: ['next-mdx-remote'],
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',

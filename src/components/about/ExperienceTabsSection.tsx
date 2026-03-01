@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Briefcase, GraduationCap, Award, BookOpen } from 'lucide-react'
 import { ThemeCard } from '@/src/components/common/ThemeCard'
+import { StatusBadge } from '@/src/components/common/StatusBadge'
 import type { Experience, Education, Training } from '@/src/types/profile'
 
 // ─── 날짜 유틸 ───────────────────────────────────────────────────────────────
@@ -112,9 +113,7 @@ function TimelineList({ items }: { items: CardItem[] }) {
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold text-foreground">{item.title}</h3>
                     {item.isCurrent && (
-                      <span className="px-2 py-0.5 bg-brand-secondary/10 text-brand-secondary text-xs rounded-full font-medium">
-                        재직중
-                      </span>
+                      <StatusBadge size="sm">재직중</StatusBadge>
                     )}
                     {item.badge && (
                       <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${item.badge.className}`}>

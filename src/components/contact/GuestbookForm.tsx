@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import type { User } from '@supabase/supabase-js'
 import { createClient } from '@/src/utils/supabase/client'
+import { SilverButton } from '@/src/components/common/SilverButton'
 import { createGuestbookEntry } from '@/src/actions/guestbook'
 import type { CreateGuestbookInput } from '@/src/types/contact'
 
@@ -207,13 +208,14 @@ export function GuestbookForm({ user }: GuestbookFormProps) {
         )}
 
         {/* 등록 버튼 */}
-        <button
+        <SilverButton
           type="submit"
+          size="form"
+          fullWidth
           disabled={isLoading}
-          className="w-full px-4 py-2 bg-silver-metal animate-shine text-white dark:text-slate-950 text-base font-semibold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? '등록 중...' : '등록'}
-        </button>
+        </SilverButton>
       </form>
     </motion.section>
   )

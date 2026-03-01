@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Briefcase, GraduationCap, Award, BookOpen } from 'lucide-react'
 import type { Experience, Education, Training } from '@/src/types/profile'
+import { StatusBadge } from '@/src/components/common/StatusBadge'
 
 // ─── 날짜 유틸 ───────────────────────────────────────────────────────────────
 function fmt(d: string | null): string {
@@ -161,9 +162,7 @@ export function TimelineSection({
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-semibold text-foreground">{item.title}</h3>
                         {item.isCurrent && (
-                          <span className="px-2 py-0.5 bg-brand-secondary/10 text-brand-secondary text-xs rounded-full font-medium">
-                            재직중
-                          </span>
+                          <StatusBadge size="sm">재직중</StatusBadge>
                         )}
                         {item.type === 'training-cert' && (
                           <span className="px-2 py-0.5 bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 text-xs rounded-full font-medium">

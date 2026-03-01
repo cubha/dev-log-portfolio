@@ -3,7 +3,7 @@
  */
 export default function AboutLoading() {
   return (
-    <main className="min-h-screen max-w-4xl mx-auto px-4 py-8 animate-pulse">
+    <main className="max-w-4xl mx-auto px-4 py-8 animate-pulse">
       <div className="flex flex-col items-center py-16">
         <div className="w-80 h-80 rounded-full bg-foreground/10 mb-12" />
         <div className="h-6 w-48 bg-foreground/10 rounded mb-4" />

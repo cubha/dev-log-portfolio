@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Pencil, Trash2, X, Check, AlertCircle, GraduationCap } from 'lucide-react'
+import { SilverButton } from '@/src/components/common/SilverButton'
 import { MonthPickerInput } from '@/src/components/ui/MonthPickerInput'
 import {
   fetchEducations,
@@ -146,13 +147,10 @@ export function EducationManager() {
           <h2 className="text-xl font-bold text-foreground">학력 관리</h2>
           <p className="text-sm text-foreground/50 mt-0.5">학력 사항을 추가하고 관리합니다.</p>
         </div>
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg text-sm hover:shadow-md transition-all"
-        >
+        <SilverButton type="button" size="md" onClick={openAdd} className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
           학력 추가
-        </button>
+        </SilverButton>
       </div>
 
       {/* 에러 */}
@@ -341,13 +339,14 @@ export function EducationManager() {
                 >
                   취소
                 </button>
-                <button
+                <SilverButton
                   type="submit"
+                  size="md"
                   disabled={isSaving}
-                  className="flex-1 py-2.5 text-sm font-semibold bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1"
                 >
                   {isSaving ? '저장 중...' : editing ? '수정 완료' : '추가하기'}
-                </button>
+                </SilverButton>
               </div>
             </form>
           </div>

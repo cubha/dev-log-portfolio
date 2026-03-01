@@ -1,79 +1,73 @@
-## 프로젝트 개요
+# 🚀 개인 포트폴리오 (Next.js 15 & Supabase)
 
-Next.js 15 App Router와 Supabase를 기반으로 구축한 개인 포트폴리오 사이트입니다.
-단순 소개 페이지를 넘어 실시간 GitHub 활동, Spotify Now Playing, 방명록, 관리자 CRUD 대시보드까지 갖춘 풀스택 프로젝트입니다.
+> **단순 소개 페이지를 넘어선 풀스택 포트폴리오**
+> 실시간 GitHub 활동, Spotify Now Playing, 방명록, 관리자 대시보드까지 완벽하게 통합한 프로젝트입니다.
 
-## 핵심 구현 내용
+---
 
-### 1. GitHub Live Status (GraphQL API)
+## ✨ 핵심 구현 내용
 
-GitHub REST Events API 대신 GraphQL `contributionsCollection`을 사용하여 Private 레포 커밋까지 포함한 정확한 기여도 집계를 구현했습니다.
-
+### 1. 🐙 GitHub Live Status (GraphQL API)
+REST API의 한계를 극복하고, Private 레포지토리 커밋까지 포함한 **정확한 기여도 집계**를 구현했습니다.
 - `repo` + `read:user` 스코프 PAT 발급
 - `contributionsCollection.totalCommitContributions` 필드로 연간 커밋 수 조회
-- 서버사이드 전용 호출로 토큰 클라이언트 노출 방지
+- 서버사이드 전용 호출로 클라이언트 토큰 노출 완벽 차단
 
-### 2. Supabase 인증 및 관리자 시스템
+### 2. 🔐 Supabase 인증 및 관리자 시스템
+- **JWT 기반 인증:** Supabase Auth 이메일/패스워드 로그인 및 세션 발급
+- **권한 분리:** `profiles` 테이블 `role` 컬럼으로 관리자 권한 제어
+- **보안 라우팅:** Next.js 15 Middleware에서 JWT 검증 및 role 기반 라우트 가드 적용
+- **소셜 연동:** GitHub OAuth를 활용한 방명록 소셜 로그인 지원
 
-- Supabase Auth 이메일/패스워드 로그인 → JWT 세션 발급
-- `profiles` 테이블 `role` 컬럼으로 관리자 권한 분리
-- Next.js 15 Middleware에서 JWT 검증 + role 기반 라우트 가드
-- GitHub OAuth 연동 (방명록 소셜 로그인)
+### 3. 🛠 프로젝트 CRUD 관리자 대시보드
+- 관리자 전용 프로젝트 등록/수정/삭제 기능
+- **Storage 관리:** Supabase Storage 이미지 업로드 (드래그 앤 드롭 지원, 5MB 제한)
+- **동적 데이터 처리:** `detailed_tasks` 리스트 입력 (`|||` 구분자 배열 처리)
+- **UI 최적화:** `project_type` 기반 'LIVE DEMO' 버튼 조건부 노출
 
-### 3. 프로젝트 CRUD 관리자 대시보드
+### 4. 📝 방명록 (Guestbook)
+- 익명 / GitHub OAuth / 관리자 3가지 인증 모드 지원
+- **데이터 보안:** Supabase RLS(Row Level Security) 정책으로 삭제 권한 엄격 제어
+- **UX 개선:** 페이지네이션 (10개/페이지) 및 Server Action 기반 CRUD 구현
 
-- 관리자 전용 프로젝트 등록/수정/삭제
-- Supabase Storage 이미지 업로드 (드래그 앤 드롭 지원, 5MB 제한)
-- `detailed_tasks` 동적 리스트 입력 (`|||` 구분자 배열 처리)
-- `project_type` 기반 LIVE DEMO 버튼 조건부 노출
-
-### 4. 방명록 (Guestbook)
-
-- 익명 / GitHub OAuth / 관리자 세 가지 인증 모드
-- Supabase RLS(Row Level Security) 정책으로 삭제 권한 제어
-- 페이지네이션 (10개/페이지), Server Action 기반 CRUD
-
-### 5. 프로젝트 리스트 UI 고도화
-
-- X축 드래그 슬라이더 → Y축 반응형 CSS Grid 전환 (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`)
-- Framer Motion `whileInView` Fade-up 애니메이션 (스크롤 진입 시 순차 노출)
-- 카테고리 필터 (Jotai `projectFilterAtom`)
-- 프로젝트 모달 → MDX 상세 페이지 라우팅
-
-### 6. 3-AI 협업 개발 구조
-
-- **Claude Code** — 컨트롤러 (분석·설계·프롬프트 작성·코드 검증)
-- **Cursor** — 구현 전담
-- **Gemini** — 외부 리서치 (라이브러리 비교, 트렌드 조사)
-
-## 트러블슈팅
-
-### 문제: GitHub Private 레포 커밋 집계 불가
-
-**원인**: REST Events API(`/users/{username}/events`)는 Private 레포 `PushEvent`에서 `payload.size`, `payload.commits` 필드를 모두 제거(strip)함.
-
-**해결**: GitHub GraphQL API의 `viewer.contributionsCollection.totalCommitContributions`로 대체. Private 포함 정확한 연간 커밋 수 반환.
+### 5. 🎨 프로젝트 리스트 UI 고도화
+- **반응형 레이아웃:** X축 드래그 슬라이더에서 Y축 반응형 CSS Grid로 전환 (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`)
+- **인터랙션:** Framer Motion `whileInView` Fade-up 애니메이션 적용 (스크롤 진입 시 순차 노출)
+- **상태 관리:** Jotai `projectFilterAtom`을 활용한 카테고리 필터링
+- **라우팅:** 프로젝트 모달에서 MDX 기반 상세 페이지로 부드러운 전환
 
 ---
 
-### 문제: Supabase RLS SELECT 정책 무력화
+## 🚨 트러블슈팅
 
-**원인**: `USING(true)` 정책이 하나라도 존재하면 OR 합산으로 다른 제한 정책이 무효화됨.
+### 1️⃣ GitHub Private 레포 커밋 집계 불가
+* **문제 상황:** REST Events API(`/users/{username}/events`)는 Private 레포 `PushEvent`에서 `payload.size`, `payload.commits` 필드를 모두 제거함
+* **원인 분석:** REST API의 보안 및 프라이버시 정책으로 인한 페이로드 누락
+* **해결 방안:** **GitHub GraphQL API**의 `viewer.contributionsCollection`으로 대체하여 Private 포함 정확한 연간 커밋 수 확보
 
-**해결**: 공개/비공개 분리 정책 조합 방식으로 재설계. 단일 `USING(true)` 남용 방지.
+### 2️⃣ Supabase RLS SELECT 정책 무력화
+* **문제 상황:** `USING(true)` 정책이 하나라도 존재하면 OR 연산으로 인해 다른 제한 정책이 무효화됨
+* **원인 분석:** Supabase(PostgreSQL) RLS의 정책 평가 방식이 다중 정책을 OR 조건으로 합산하기 때문
+* **해결 방안:** 공개/비공개 **분리 정책 조합 방식**으로 재설계하여 단일 `USING(true)` 남용 방지 및 권한 제어 강화
+
+### 3️⃣ Framer Motion 신규 카드 미작동
+* **문제 상황:** 이미 마운트된 부모 내에 새로 추가된 자식 컴포넌트는 부모의 variant 전파를 받지 못함
+* **원인 분석:** React 생명주기와 Framer Motion의 DOM 진입 감지 시점 불일치
+* **해결 방안:** 각 카드 컴포넌트에 `initial` / `whileInView`를 **명시적으로 직접 선언**하여 독립적으로 동작하도록 수정
 
 ---
 
-### 문제: Framer Motion `whileInView` 신규 카드 미작동
+## 🤖 3-AI 협업 개발 구조
+각 AI의 강점을 극대화한 효율적인 개발 파이프라인을 구축하여 프로젝트를 진행했습니다.
 
-**원인**: 이미 마운트된 부모 내에 새로 추가된 자식 컴포넌트는 부모 variant 전파를 받지 못함.
+- **Claude Code (Controller):** 요구사항 분석, 아키텍처 설계, 프롬프트 작성, 코드 검증
+- **Cursor (Implementer):** 실질적인 코드 구현 전담
+- **Gemini (Researcher):** 외부 리서치 (라이브러리 비교, 최신 기술 트렌드 조사)
 
-**해결**: 각 카드에 `initial` / `whileInView`를 명시적으로 직접 선언하여 독립 동작하도록 수정.
+---
 
-## 회고
+## 💡 회고
 
-3-AI 협업 구조를 처음 도입해본 프로젝트입니다.
-역할 분리가 명확해질수록 각 AI의 강점이 극대화되는 것을 체감했고, 프롬프트 설계 능력이 개발 속도에 직결된다는 점을 깊이 느꼈습니다.
+3-AI 협업 구조를 처음 도입하며 역할 분리가 명확해질수록 개발 속도와 품질이 극대화되는 것을 체감했습니다. 특히, 프롬프트 설계 능력이 전체 개발 생산성에 직결된다는 점을 깊이 배웠습니다.
 
-Next.js 15의 RSC / Server Action / Middleware 레이어를 실전으로 다루면서 서버와 클라이언트 경계 설계의 중요성을 재확인했습니다.
-향후 Spotify Now Playing 배포 환경 연동, SEO 최적화, 성능 개선을 지속적으로 진행할 예정입니다.
+Next.js 15의 RSC(React Server Components), Server Action, Middleware 레이어를 실전에서 다루며 서버와 클라이언트 간의 경계 설계의 중요성을 재확인했습니다. 

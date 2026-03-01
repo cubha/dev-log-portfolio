@@ -98,7 +98,7 @@ while IFS= read -r file; do
 
   # 2-4. 불필요한 use client (이벤트/훅 없는 파일)
   if grep -q "^'use client'" "$file" 2>/dev/null; then
-    if ! grep -qE 'useState|useEffect|useRef|onClick|onChange|onSubmit|useAtom|useRouter|usePathname|useSearchParams' "$file" 2>/dev/null; then
+    if ! grep -qE 'useState|useEffect|useRef|onClick|onChange|onSubmit|useAtom|useRouter|usePathname|useSearchParams|motion' "$file" 2>/dev/null; then
       warn "불필요한 'use client' 가능성: $file (이벤트/훅 없음)"
     fi
   fi
@@ -164,8 +164,8 @@ fi
 if [ "$AI_MODE" = true ]; then
   header "Claude AI 분석 (--ai)"
 
-  if ! command -v cc &> /dev/null; then
-    warn "cc (Claude Code CLI) 를 찾을 수 없습니다."
+  if ! command -v claude &> /dev/null; then
+    warn "claude (Claude Code CLI) 를 찾을 수 없습니다."
   else
     DIFF=$(git diff HEAD -- $CHANGED 2>/dev/null | head -400)
     SPEC=$(cat CLAUDE.md 2>/dev/null || echo "CLAUDE.md 없음")
@@ -192,7 +192,7 @@ EOF
 )
 
     echo ""
-    echo "$PROMPT" | cc --print
+    echo "$PROMPT" | claude --print
   fi
 fi
 

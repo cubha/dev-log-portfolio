@@ -30,7 +30,8 @@ export default async function ProjectsPage() {
     const { data: projects, error } = await supabase
       .from('projects')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('is_ongoing', { ascending: false })
+      .order('end_date', { ascending: false, nullsFirst: false })
 
     // 에러 메시지 추출 (Supabase 에러 또는 일반 에러)
     const errorMessage = error?.message || null

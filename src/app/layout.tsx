@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   description: "Next.js & Supabase 기반 개발 블로그 포트폴리오",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 /**
  * 루트 레이아웃
  *

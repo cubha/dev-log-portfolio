@@ -44,6 +44,22 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       onClick={handleCardClick}
       className="group relative flex flex-col bg-background border border-foreground/10 rounded-xl shadow-sm hover:shadow-md hover:border-foreground/20 cursor-pointer transition-shadow overflow-hidden"
     >
+      {/* 좌측 상단 태그 컨테이너 */}
+      {(project.is_ongoing || project.is_featured) && (
+        <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+          {project.is_ongoing && (
+            <span className="px-2 py-0.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-[10px] font-bold rounded-full shadow-md">
+              🟢 진행중
+            </span>
+          )}
+          {project.is_featured && (
+            <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 text-[10px] font-bold rounded-full shadow-md">
+              ⭐ 주요
+            </span>
+          )}
+        </div>
+      )}
+
       {/* 관리자 전용 설정 버튼 */}
       {isAdmin && (
         <div className="absolute top-2 right-2 z-10">
@@ -61,13 +77,6 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             priority={priority}
             className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />
-          {project.is_featured && (
-            <div className="absolute top-2 left-2">
-              <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 text-[10px] font-bold rounded-full shadow-md">
-                ⭐ 주요
-              </span>
-            </div>
-          )}
         </div>
       ) : (
         <div className="relative w-full aspect-video bg-foreground/8 flex items-center justify-center flex-shrink-0">

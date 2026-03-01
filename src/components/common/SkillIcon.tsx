@@ -13,7 +13,7 @@ interface SkillIconProps {
  * 기술 스택 아이콘 렌더러
  *
  * 1. icon_name(또는 name)을 techIcons.ts 맵에서 탐색
- * 2. 매핑된 react-icons/si 아이콘 렌더링
+ * 2. 매핑된 simple-icons 아이콘 렌더링
  * 3. 매핑 실패 시 기술명 첫 두 글자 텍스트 폴백
  *
  * 서버/클라이언트 컴포넌트 모두에서 사용 가능합니다.

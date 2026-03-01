@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
-import { HiOutlineTrash, HiChevronLeft, HiChevronRight } from 'react-icons/hi'
+import { Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { deleteGuestbookEntry } from '@/src/actions/guestbook'
 import type { GuestbookEntry } from '@/src/types/contact'
 
@@ -97,7 +97,7 @@ function GuestbookItem({
                 className="p-1 text-foreground/40 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded transition-colors"
                 title="삭제"
               >
-                <HiOutlineTrash className="w-4 h-4" />
+                <Trash2 className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -148,7 +148,7 @@ export function GuestbookListClient({
             className="p-1.5 rounded-lg text-foreground/50 hover:text-foreground hover:bg-foreground/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             aria-label="이전 페이지"
           >
-            <HiChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
 
           <span className="text-xs text-foreground/50 tabular-nums">
@@ -162,7 +162,7 @@ export function GuestbookListClient({
             className="p-1.5 rounded-lg text-foreground/50 hover:text-foreground hover:bg-foreground/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             aria-label="다음 페이지"
           >
-            <HiChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       )}

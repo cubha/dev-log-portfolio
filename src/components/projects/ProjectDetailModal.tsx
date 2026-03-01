@@ -9,6 +9,7 @@ import { Database } from '@/src/types/supabase'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { getTechIcon } from '@/src/utils/techIcons'
+import { StatusBadge } from '@/src/components/common/StatusBadge'
 type Project = Database['public']['Tables']['projects']['Row']
 
 /** 프로젝트 제목 → slug 변환 */
@@ -250,9 +251,9 @@ export function ProjectDetailModal() {
                     {/* 카테고리 배지 */}
                     {selectedProject.category && (
                       <div className="mb-4">
-                        <span className="inline-block px-4 py-1.5 bg-brand-secondary/10 text-brand-secondary text-sm font-semibold rounded-full">
+                        <StatusBadge size="md">
                           {selectedProject.category} 프로젝트
-                        </span>
+                        </StatusBadge>
                       </div>
                     )}
 
@@ -360,13 +361,15 @@ export function ProjectDetailModal() {
 
                     {/* 링크 버튼들 */}
                     <div className="flex flex-wrap gap-3 pt-4 border-t border-foreground/10">
-                      <button
-                        onClick={handleViewDetail}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-brand-secondary text-white dark:text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
-                      >
-                        <FileText className="w-4 h-4" />
-                        <span>상세 보기</span>
-                      </button>
+                      {selectedProject.project_type !== 'work' && (
+                        <button
+                          onClick={handleViewDetail}
+                          className="flex items-center gap-2 px-4 py-2.5 bg-brand-secondary text-white dark:text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
+                        >
+                          <FileText className="w-4 h-4" />
+                          <span>상세 보기</span>
+                        </button>
+                      )}
                       {selectedProject.project_type !== 'work' && selectedProject.live_demo_url && (
                         <a
                           href={selectedProject.live_demo_url}
