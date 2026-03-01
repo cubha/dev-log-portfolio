@@ -50,23 +50,27 @@ export async function createGuestbookEntry(
   const validationError = validateInput(input, !!user)
   if (validationError) return { success: false, error: validationError }
 
-  // 로그인 유저 닉네임 결정: GitHub OAuth vs 이메일/패스워드 로그인 분기
+  // 로그인 유저 닉네임 결정: 관리자 > GitHub OAuth > 이메일 순
   let loggedInNickname = 'User'
   if (user != null) {
-    const isGitHub = user.app_metadata?.provider === 'github'
-    if (isGitHub) {
-      loggedInNickname =
-        (user.user_metadata?.user_name as string | undefined) ??
-        (user.user_metadata?.name as string | undefined) ??
-        'GitHub User'
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('user_id, role')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.role === 'admin') {
+      loggedInNickname = 'Admin'
     } else {
-      // 이메일/패스워드 로그인 (관리자) → profiles.user_id 사용
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('user_id')
-        .eq('id', user.id)
-        .single()
-      loggedInNickname = profile?.user_id ?? user.email?.split('@')[0] ?? 'User'
+      const isGitHub = user.app_metadata?.provider === 'github'
+      if (isGitHub) {
+        loggedInNickname =
+          (user.user_metadata?.user_name as string | undefined) ??
+          (user.user_metadata?.name as string | undefined) ??
+          'GitHub User'
+      } else {
+        loggedInNickname = profile?.user_id ?? user.email?.split('@')[0] ?? 'User'
+      }
     }
   }
 
