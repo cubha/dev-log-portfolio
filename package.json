@@ -13,6 +13,7 @@
     "dev:watch": "concurrently \"next dev\" \"npm run gen:types:watch\""
   },
   "dependencies": {
+    "@mdx-js/mdx": "^3.1.1",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.3",
