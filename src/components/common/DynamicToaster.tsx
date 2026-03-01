@@ -1,16 +1,24 @@
 'use client'
 
-import dynamic from 'next/dynamic'
+import { useState, useEffect } from 'react'
+import { Toaster } from 'sonner'
 
 /**
- * Toaster를 dynamic import로 분리하여 초기 번들 크기 감소
- * ssr: false — 토스트는 클라이언트 상호작용 후에만 필요
+ * Toaster 클라이언트 전용 렌더러
+ *
+ * Next.js 15.5.x에서 `dynamic({ ssr: false })`를 root layout에서 사용하면
+ * BailoutToCSR 에러가 root layout까지 전파되어 화면 전체가 렌더링되지 않는
+ * 문제가 발생합니다. useState + useEffect 패턴으로 동일한 효과를 구현합니다.
+ * (서버에서는 null 반환 → 클라이언트 마운트 후 Toaster 렌더)
  */
-const Toaster = dynamic(
-  () => import('sonner').then((mod) => mod.Toaster),
-  { ssr: false }
-)
-
 export function DynamicToaster() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   return <Toaster richColors position="top-right" />
 }
