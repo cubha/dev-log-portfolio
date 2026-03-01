@@ -9,7 +9,6 @@ export async function fetchSkills(): Promise<{ data: Skill[] | null; error: stri
       .from('skills')
       .select('*')
       .order('category', { ascending: true })
-      .order('proficiency', { ascending: false })
 
     if (error) return { data: null, error: error.message }
     return { data: data as Skill[], error: null }

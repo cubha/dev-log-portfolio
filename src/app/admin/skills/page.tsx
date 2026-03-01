@@ -20,7 +20,6 @@ import { POPULAR_TECHS } from '@/src/components/admin/TechStackInput'
 const EMPTY_FORM: SkillInsert = {
   name: '',
   category: 'Frontend',
-  proficiency: 80,
   icon_name: '',
 }
 
@@ -67,8 +66,8 @@ export default function AdminSkillsPage() {
   // 삭제 2단계 확인
   const [deletingId, setDeletingId] = useState<number | null>(null)
 
-  // ── 정렬 (category 오름차순 → proficiency 내림차순 기본)
-  const [sortField, setSortField]       = useState<'name' | 'category' | 'proficiency'>('category')
+  // ── 정렬 (category 오름차순 기본)
+  const [sortField, setSortField]       = useState<'name' | 'category'>('category')
   const [sortAsc, setSortAsc]           = useState(true)
 
   // ─── 데이터 로드 ──────────────────────────────────────────────────────────
@@ -152,10 +151,9 @@ export default function AdminSkillsPage() {
   function openEditModal(skill: Skill) {
     setEditingSkill(skill)
     setFormData({
-      name:        skill.name,
-      category:    skill.category || 'Frontend',
-      proficiency: skill.proficiency ?? 80,
-      icon_name:   skill.icon_name ?? '',
+      name:      skill.name,
+      category:  skill.category || 'Frontend',
+      icon_name: skill.icon_name ?? '',
     })
     setFormError(null)
     setIsModalOpen(true)
@@ -313,9 +311,8 @@ export default function AdminSkillsPage() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-foreground/50 uppercase tracking-wider w-14">
                     아이콘
                   </th>
-                  <SortTh field="name"        label="기술명"   />
-                  <SortTh field="category"    label="카테고리" />
-                  <SortTh field="proficiency" label="숙련도"   className="w-44" />
+                  <SortTh field="name"     label="기술명"   />
+                  <SortTh field="category" label="카테고리" />
                   <th className="px-4 py-3 text-right text-xs font-semibold text-foreground/50 uppercase tracking-wider">
                     액션
                   </th>
@@ -342,21 +339,6 @@ export default function AdminSkillsPage() {
                       <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full ${categoryColor(skill.category ?? '')}`}>
                         {skill.category ?? '-'}
                       </span>
-                    </td>
-
-                    {/* 숙련도 */}
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2.5">
-                        <div className="flex-1 h-1.5 bg-foreground/8 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-silver-metal rounded-full"
-                            style={{ width: `${skill.proficiency}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-foreground/50 tabular-nums w-9 text-right">
-                          {skill.proficiency}%
-                        </span>
-                      </div>
                     </td>
 
                     {/* 액션 */}
@@ -491,31 +473,6 @@ export default function AdminSkillsPage() {
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
-              </div>
-
-              {/* 숙련도 슬라이더 */}
-              <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
-                  숙련도&nbsp;
-                  <span className="normal-case font-bold text-foreground tracking-normal">
-                    {formData.proficiency}%
-                  </span>
-                </label>
-                <input
-                  type="range"
-                  min={1}
-                  max={100}
-                  value={formData.proficiency}
-                  onChange={(e) => setFormData((p) => ({ ...p, proficiency: Number(e.target.value) }))}
-                  className="w-full accent-foreground/60 cursor-pointer"
-                />
-                {/* 시각적 프리뷰 */}
-                <div className="h-2 bg-foreground/8 rounded-full mt-2 overflow-hidden">
-                  <div
-                    className="h-full bg-silver-metal rounded-full transition-all duration-150"
-                    style={{ width: `${formData.proficiency}%` }}
-                  />
-                </div>
               </div>
 
               {/* 아이콘 키 + 실시간 미리보기 */}

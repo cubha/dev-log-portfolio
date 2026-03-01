@@ -52,6 +52,9 @@ const ICON_MAP: Record<string, IconMapping> = {
   fastapi: { key: 'fastapi', color: '#009688' },
   spring: { key: 'spring', color: '#6DB33F' },
   springboot: { key: 'springboot', color: '#6DB33F' },
+  gradle: { key: 'gradle', color: '#02303A' },
+  maven: { key: 'apachemaven', color: '#C71A36' },
+  apachemaven: { key: 'apachemaven', color: '#C71A36' },
   laravel: { key: 'laravel', color: '#FF2D20' },
   rails: { key: 'rubyonrails', color: '#CC0000' },
   rubyonrails: { key: 'rubyonrails', color: '#CC0000' },
@@ -67,6 +70,8 @@ const ICON_MAP: Record<string, IconMapping> = {
   sqlite: { key: 'sqlite', color: '#003B57' },
   mariadb: { key: 'mariadb', color: '#003545' },
   oracle: { key: 'oracle', color: '#F80000' },
+  mssql: { key: 'microsoftsqlserver', color: '#CC2927' },
+  microsoftsqlserver: { key: 'microsoftsqlserver', color: '#CC2927' },
   firebase: { key: 'firebase', color: '#FFCA28' },
 
   // ── Styling ───────────────────────────
@@ -76,6 +81,8 @@ const ICON_MAP: Record<string, IconMapping> = {
   scss: { key: 'sass', color: '#CC6699' },
   css: { key: 'css3', color: '#1572B6' },
   html: { key: 'html5', color: '#E34F26' },
+  axios: { key: 'axios', color: '#5A29E4' },
+  bootstrap: { key: 'bootstrap', color: '#7952B3' },
   styledcomponents: { key: 'styledcomponents', color: '#DB7093' },
 
   // ── Tools & Platforms ─────────────────
@@ -83,6 +90,13 @@ const ICON_MAP: Record<string, IconMapping> = {
   kubernetes: { key: 'kubernetes', color: '#326CE5' },
   k8s: { key: 'kubernetes', color: '#326CE5' },
   aws: { key: 'amazonwebservices', color: '#FF9900' },
+  amazons: { key: 'amazons3', color: '#FF9900' }, // Amazon S3 (name 정규화: 숫자 제거)
+  androidstudio: { key: 'androidstudio', color: '#3DDC84' },
+  uipath: { key: 'uipath', color: '#FA4616' },
+  unity: { key: 'unity', color: '#000000' },
+  filezilla: { key: 'filezilla', color: '#BF0000' },
+  svn: { key: 'subversion', color: '#809CC9' },
+  subversion: { key: 'subversion', color: '#809CC9' },
   gcp: { key: 'googlecloud', color: '#4285F4' },
   vercel: { key: 'vercel', color: '#000000' },
   netlify: { key: 'netlify', color: '#00C7B7' },

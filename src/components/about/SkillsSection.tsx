@@ -142,20 +142,16 @@ function groupByCategory(skills: Skill[]): [string, Skill[]][] {
 }
 
 /**
- * 각 카테고리에서 숙련도가 가장 높은 기술 1개씩 뽑아 반환.
+ * 각 카테고리별 첫 번째 항목(배열 순서 기준)을 반환.
  * 결과는 category 오름차순 정렬.
  */
 function pickBestPerCategory(skills: Skill[]): Skill[] {
-  const bestMap = skills.reduce<Map<string, Skill>>((acc, skill) => {
+  const firstMap = new Map<string, Skill>()
+  for (const skill of skills) {
     const cat = skill.category || 'Other'
-    const prev = acc.get(cat)
-    if (!prev || (skill.proficiency ?? 0) > (prev.proficiency ?? 0)) {
-      acc.set(cat, skill)
-    }
-    return acc
-  }, new Map())
-
-  return Array.from(bestMap.values()).sort(
+    if (!firstMap.has(cat)) firstMap.set(cat, skill)
+  }
+  return Array.from(firstMap.values()).sort(
     (a, b) => (a.category ?? '').localeCompare(b.category ?? '')
   )
 }
@@ -181,7 +177,7 @@ const expandVariants = {
 /**
  * About 페이지 Technical Skills 섹션
  *
- * - 초기(Collapsed): 카테고리별 최고 숙련도 기술 1개씩 컴팩트 배지로 표시
+ * - 초기(Collapsed): 카테고리별 첫 번째 기술 1개씩 컴팩트 배지로 표시
  * - "모든 기술 보기" 클릭 시 framer-motion 애니메이션으로 전체 확장
  */
 export function SkillsSection({ skills }: SkillsSectionProps) {
@@ -189,7 +185,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
 
   if (!skills.length) return null
 
-  // 카테고리별 최고 숙련도 기술 1개씩 (collapsed 뷰용)
+  // 카테고리별 첫 번째 기술 1개씩 (collapsed 뷰용)
   const bestSkills = pickBestPerCategory(skills)
   const hiddenCount = skills.length - bestSkills.length
 
@@ -232,7 +228,6 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
           >
             <SkillIcon name={skill.name} iconName={skill.icon_name} size={16} />
             <span className="text-sm font-medium text-foreground/80">{skill.name}</span>
-            <span className="text-xs text-foreground/40 tabular-nums ml-0.5">{skill.proficiency ?? 0}%</span>
           </ThemeCard>
         ))}
         {hiddenCount > 0 && !isExpanded && (
@@ -294,22 +289,9 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
                             <SkillIcon name={skill.name} iconName={skill.icon_name} size={22} />
                           </div>
 
-                          {/* 이름 + 숙련도 바 */}
+                          {/* 이름 */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1.5">
-                              <span className="text-sm font-medium text-foreground truncate">{skill.name}</span>
-                              <span className="text-xs text-foreground/40 ml-2 flex-shrink-0 tabular-nums">
-                                {skill.proficiency ?? 0}%
-                              </span>
-                            </div>
-                            <div className="h-1.5 bg-foreground/8 rounded-full overflow-hidden">
-                              <motion.div
-                                className="h-full bg-silver-metal rounded-full"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${skill.proficiency ?? 0}%` }}
-                                transition={{ duration: 0.9, ease: 'easeOut', delay: 0.1 + idx * 0.02 }}
-                              />
-                            </div>
+                            <span className="text-sm font-medium text-foreground truncate">{skill.name}</span>
                           </div>
                         </motion.div>
                       )

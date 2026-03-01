@@ -6,7 +6,7 @@
 # 사용법:
 #   ./verify.sh              # Cursor가 바꾼 파일 감지 + 전체 검증
 #   ./verify.sh --ts-only    # TypeScript 검사만
-#   ./verify.sh --ai         # Claude AI 분석 포함 (cc 필요)
+#   ./verify.sh --ai         # Claude AI 분석 포함 (claude 필요)
 #   ./verify.sh --staged     # staged 파일만 검사
 # ================================================================
 
