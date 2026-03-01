@@ -353,6 +353,56 @@ npx supabase gen types typescript --project-id krnuicpyqlqhqeehdprd --schema pub
 
 ## 📅 최근 업데이트
 
+## 🚀 2026-03-01 업데이트 내역
+
+### 1. Vercel 배포 완료 🎉
+- **배포 URL**: https://dev-log-portfolio-y2sl.vercel.app
+- **GitHub 자동 배포 연동**: `main` 브랜치 push → Vercel 자동 빌드 및 배포
+- **환경변수 7개 설정**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `GITHUB_TOKEN`, `GITHUB_USERNAME`, `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`
+- **보안 취약점 제거**: `next-mdx-remote@5.0.0` (CVE-2026-0969) 미사용 패키지 완전 제거
+- **@mdx-js/mdx 명시적 의존성 추가**: `next-mdx-remote` 제거 시 함께 삭제된 패키지 재설치
+
+### 2. 전역 리팩토링 및 성능 최적화
+- **페이지 트랜지션 개선** (`src/app/template.tsx`): blur 효과 제거 → fade-up으로 교체, 모듈 레벨 `isFirstRender` 변수로 첫 진입 Hydration 블랭크 이슈 해결
+- **공통 컴포넌트 분리**
+  - `SilverButton.tsx` 신규 생성: 실버 메탈 버튼 공통화 (`size`, `fullWidth` prop 지원)
+  - `StatusBadge.tsx` 신규 생성: 상태 뱃지 공통화 (`size` prop 지원, 서버 컴포넌트)
+- **react-icons 완전 제거**: `lucide-react` + `simple-icons` 직접 사용으로 번들 최적화
+  - `HiOutlineTrash` → `Trash2`, `HiChevronLeft/Right` → `ChevronLeft/ChevronRight`
+  - `SiGithub` 등 → `simple-icons` 패키지 직접 import
+- **데드코드 제거**: 미사용 `PageTransition.tsx` 삭제
+- **next.config.js 개선**: `images.formats: ['image/avif', 'image/webp']` 추가로 이미지 최적화 포맷 명시
+- **loading.tsx 통일**: 각 페이지의 loading.tsx 레이아웃을 page.tsx와 일치하도록 정비
+- **globals.css 정리**: Tailwind 3.4.1 내장 `.text-balance` 중복 제거
+
+### 3. 프로젝트 리스트 UX 개선
+- **정렬 변경**: `created_at DESC` → `is_ongoing DESC` + `end_date DESC` (진행중 프로젝트 상단 우선 표시)
+- **진행중/주요 태그**: thumbnail 유무와 무관하게 카드 좌상단 고정 표시 (`🟢 진행중`, `⭐ 주요`)
+- **업무 프로젝트 상세보기 숨김**: `project_type === 'work'`인 경우 상세보기 버튼 조건부 미표시
+
+### 4. 버그 수정
+- **관리자 방명록 닉네임**: `GitHub User` → `Admin` 고정 표시 (`profiles.role === 'admin'` 우선 체크)
+- **관리자 방명록 폼 표시명**: `GuestbookForm`에 `isAdmin` prop 추가, 폼 내 표시명도 `Admin`으로 통일
+- **로그아웃 리다이렉트**: `FloatingAdminButton` catch 블록의 fallback을 `/login` → `/`로 수정
+
+### 5. Spotify Now Playing
+- **Free 계정 제한 확인**: Spotify Web API는 Premium 계정 전용으로 변경됨
+- **오프라인 상태 유지**: API 호출 실패 시 `isPlaying: false` 반환 → 위젯 자동 숨김 처리로 UX 영향 없음
+
+**주요 변경 파일:**
+- `src/app/template.tsx` — 트랜지션 개선 + Hydration 블랭크 해결
+- `src/components/common/SilverButton.tsx` — 신규
+- `src/components/common/StatusBadge.tsx` — 신규
+- `src/components/common/PageTransition.tsx` — 삭제
+- `src/components/common/FloatingAdminButton.tsx` — 로그아웃 리다이렉트 수정
+- `src/components/projects/ProjectCard.tsx` — 태그 표시 개선
+- `src/components/projects/ProjectDetailModal.tsx` — work 프로젝트 상세보기 숨김
+- `src/actions/guestbook.ts` — 관리자 닉네임 Admin 고정
+- `src/components/contact/GuestbookForm.tsx` — isAdmin prop 추가
+- `src/utils/contact/iconMap.ts`, `src/utils/techIcons.ts` — react-icons → lucide-react/simple-icons
+- `next.config.js` — WebP/AVIF 이미지 포맷 추가
+- `package.json` — react-icons 제거, @mdx-js/mdx 명시적 추가
+
 ## 🚀 2026-02-28 업데이트 내역
 
 ### 1. 프로젝트 타입·라이브 데모 필드 추가

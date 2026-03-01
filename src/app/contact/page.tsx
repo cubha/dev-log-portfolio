@@ -58,7 +58,7 @@ export default async function ContactPage() {
                 <LiveStatusWidget />
               </ThemeCard>
               <ThemeCard noHoverLift className="p-6">
-                <GuestbookForm user={user} />
+                <GuestbookForm user={user} isAdmin={isAdmin} />
               </ThemeCard>
             </div>
             {/* 기존: Inquiry Form */}

@@ -15,9 +15,10 @@ const EMOJI_OPTIONS = ['👋', '🔥', '💻', '✨', '🚀', '🎉', '👍', '�
 
 interface GuestbookFormProps {
   user: User | null
+  isAdmin?: boolean
 }
 
-export function GuestbookForm({ user }: GuestbookFormProps) {
+export function GuestbookForm({ user, isAdmin = false }: GuestbookFormProps) {
   const router = useRouter()
   const [formData, setFormData] = useState<CreateGuestbookInput>({
     emoji: '👋',
@@ -56,9 +57,11 @@ export function GuestbookForm({ user }: GuestbookFormProps) {
   }
 
   const displayName =
-    (user?.user_metadata?.user_name as string | undefined) ??
-    (user?.user_metadata?.name as string | undefined) ??
-    'GitHub User'
+    isAdmin === true
+      ? 'Admin'
+      : (user?.user_metadata?.user_name as string | undefined) ??
+        (user?.user_metadata?.name as string | undefined) ??
+        'GitHub User'
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined
 
   return (
