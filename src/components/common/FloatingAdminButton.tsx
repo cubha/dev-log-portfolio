@@ -26,7 +26,7 @@ export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
     try {
       await logoutUser()
     } catch {
-      window.location.href = '/login'
+      window.location.href = '/'
     }
   }
 
