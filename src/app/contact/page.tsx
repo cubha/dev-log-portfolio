@@ -47,20 +47,20 @@ export default async function ContactPage() {
 
           {/* 2열 레이아웃 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-            {/* 좌측: Contact Info */}
-            <ThemeCard noHoverLift className="p-6">
-              <ContactInfo initialData={contactLinks} isAdmin={isAdmin} />
-            </ThemeCard>
-
-            {/* 우측: Live Status + 방명록 폼 */}
+            {/* 좌측: Contact Info + Live Status */}
             <div className="flex flex-col gap-4">
+              <ThemeCard noHoverLift className="p-6">
+                <ContactInfo initialData={contactLinks} isAdmin={isAdmin} />
+              </ThemeCard>
               <ThemeCard noHoverLift className="p-4">
                 <LiveStatusWidget />
               </ThemeCard>
-              <ThemeCard noHoverLift className="p-6">
-                <GuestbookForm user={user} isAdmin={isAdmin} />
-              </ThemeCard>
             </div>
+
+            {/* 우측: 방명록 폼 */}
+            <ThemeCard noHoverLift className="p-6 h-full">
+              <GuestbookForm user={user} isAdmin={isAdmin} />
+            </ThemeCard>
             {/* 기존: Inquiry Form */}
             {/* <ThemeCard noHoverLift className="p-6"><InquiryForm /></ThemeCard> */}
           </div>

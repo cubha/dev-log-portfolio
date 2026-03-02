@@ -10,7 +10,7 @@ type SpotifyResponse =
 
 type GitHubResponse = {
   totalCommits: number
-  topRepo: string | null
+  repos: { name: string; commits: number }[]
   lastActiveDate: string | null
 }
 
@@ -55,23 +55,55 @@ function SpotifyStatus() {
 
 function GitHubStatus() {
   const [data, setData] = useState<GitHubResponse | null>(null)
-  const [error, setError] = useState(false)
 
   useEffect(() => {
     fetch('/api/github/stats')
       .then((res) => res.json())
       .then((json: GitHubResponse) => setData(json))
-      .catch(() => setError(true))
+      .catch(() => {})
   }, [])
 
-  if (error || data === null) return null
+  // 로딩 스켈레톤 (API 호출 중): min-h 동기화로 CLS 방지
+  if (data === null) {
+    return (
+      <div className="flex flex-col gap-1 min-h-[5.5rem]">
+        <div className="h-4 w-40 animate-pulse rounded bg-foreground/10" />
+        <div className="min-h-[5.5rem] flex flex-col gap-1">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="h-3 w-full max-w-[90%] animate-pulse rounded bg-foreground/10"
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
-  const parts = [`최근 30일 ${data.totalCommits}회 커밋`]
-  if (data.topRepo) parts.push(`· ${data.topRepo}`)
+  if (data.repos.length === 0) return null
+
+  const displayedRepos = data.repos.slice(0, 5)
 
   return (
-    <div className="text-foreground/70 truncate" title={parts.join(' ')}>
-      💻 {parts.join(' ')}
+    <div className="flex flex-col gap-1">
+      <div className="text-foreground/80 text-sm font-medium">
+        💻 최근 30일 {data.totalCommits}회 커밋
+      </div>
+      <div className="min-h-[5.5rem] flex flex-col gap-1">
+        {displayedRepos.map((repo) => (
+          <div
+            key={repo.name}
+            className="flex items-center justify-between gap-2 pl-1"
+          >
+            <span className="text-foreground/65 text-xs truncate">
+              · {repo.name}
+            </span>
+            <span className="text-foreground/50 text-xs flex-shrink-0">
+              {repo.commits}회
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -88,7 +120,7 @@ export function LiveStatusWidget() {
           aria-hidden
         />
       </div>
-      <div className="mt-2 flex flex-col gap-1.5 text-sm">
+      <div className="mt-2 flex flex-col gap-1.5 text-sm min-h-[9rem]">
         <SpotifyStatus />
         <GitHubStatus />
       </div>

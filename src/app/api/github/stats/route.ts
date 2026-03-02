@@ -47,7 +47,7 @@ export async function GET() {
 
   if (!token) {
     return Response.json(
-      { totalCommits: 0, topRepo: null, lastActiveDate: null },
+      { totalCommits: 0, repos: [], lastActiveDate: null },
       { headers }
     )
   }
@@ -67,7 +67,7 @@ export async function GET() {
 
   if (!res?.ok) {
     return Response.json(
-      { totalCommits: 0, topRepo: null, lastActiveDate: null },
+      { totalCommits: 0, repos: [], lastActiveDate: null },
       { headers }
     )
   }
@@ -77,23 +77,24 @@ export async function GET() {
 
   if (!collection) {
     return Response.json(
-      { totalCommits: 0, topRepo: null, lastActiveDate: null },
+      { totalCommits: 0, repos: [], lastActiveDate: null },
       { headers }
     )
   }
 
   const totalCommits = collection.totalCommitContributions ?? 0
 
-  const repos = collection.commitContributionsByRepository ?? []
-  const topRepo =
-    repos.length > 0
-      ? repos.reduce((a, b) =>
-          a.contributions.totalCount >= b.contributions.totalCount ? a : b
-        ).repository.nameWithOwner
-      : null
+  const rawRepos = collection.commitContributionsByRepository ?? []
+  const repos = rawRepos
+    .filter((r) => (r.contributions?.totalCount ?? 0) > 0)
+    .map((r) => ({
+      name: r.repository.nameWithOwner,
+      commits: r.contributions?.totalCount ?? 0,
+    }))
+    .sort((a, b) => b.commits - a.commits)
 
   return Response.json(
-    { totalCommits, topRepo, lastActiveDate: null },
+    { totalCommits, repos, lastActiveDate: null },
     { headers }
   )
 }

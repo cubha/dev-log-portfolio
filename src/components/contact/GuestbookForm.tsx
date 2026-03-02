@@ -157,7 +157,7 @@ export function GuestbookForm({ user, isAdmin = false }: GuestbookFormProps) {
               setFormData((prev) => ({ ...prev, message: e.target.value }))
             }
             maxLength={200}
-            rows={3}
+            rows={10}
             className="w-full flex-1 px-3 py-2 bg-brand-primary/5 border border-brand-primary/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-secondary/20 focus:border-brand-secondary transition-all resize-none text-sm text-foreground placeholder:text-foreground/30"
             placeholder="방명록을 남겨주세요 (최대 200자)"
           />
