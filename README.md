@@ -448,6 +448,20 @@ chmod +x verify.sh
 - 페이지 트랜지션 개선: blur 제거 → fade-up, 첫 진입 Hydration 블랭크 이슈 해결
 - 관리자 방명록 닉네임 `GitHub User` → `Admin` 고정
 
+### v1.0.1 — 2026-03-02
+
+**번들 최적화**
+- `techIcons.ts`: `import * as si from 'simple-icons'` 제거 → ICON_MAP에 사용 중인 아이콘 59개만 개별 named import
+- First Load JS 대폭 감소 (simple-icons 3,000+ 아이콘 전체 번들 제외)
+
+**Live Status 위젯**
+- GitHub 섹션 하드코딩 mock 데이터 제거 (FORCE_MOCK_GITHUB, MOCK_REPOS 등)
+- `/api/github/stats` API 응답만 사용, `repos` 없을 시 섹션 숨김
+
+**빌드 안정화**
+- `projects`, `contact`, `admin/dashboard` 페이지에 `export const dynamic = 'force-dynamic'` 추가
+- 빌드 타임 `DYNAMIC_SERVER_USAGE` 에러 노이즈 제거
+
 ---
 
 ## 🔧 트러블슈팅

@@ -1,6 +1,76 @@
+// src/utils/techIcons.ts
+
 import React from 'react'
-import * as si from 'simple-icons'
 import type { SimpleIcon } from 'simple-icons'
+
+// ICON_MAP에 사용되는 아이콘만 개별 named import (번들 최적화)
+import {
+  siNextdotjs,
+  siReact,
+  siVuedotjs,
+  siAngular,
+  siSvelte,
+  siTypescript,
+  siJavascript,
+  siPython,
+  siOpenjdk,
+  siGo,
+  siRust,
+  siPhp,
+  siRuby,
+  siKotlin,
+  siSwift,
+  siNodedotjs,
+  siExpress,
+  siNestjs,
+  siDjango,
+  siFlask,
+  siFastapi,
+  siSpring,
+  siSpringboot,
+  siGradle,
+  siApachemaven,
+  siLaravel,
+  siRubyonrails,
+  siSupabase,
+  siPostgresql,
+  siMysql,
+  siMongodb,
+  siRedis,
+  siSqlite,
+  siMariadb,
+  siFirebase,
+  siTailwindcss,
+  siSass,
+  siCss,
+  siHtml5,
+  siAxios,
+  siBootstrap,
+  siStyledcomponents,
+  siDocker,
+  siKubernetes,
+  siAndroidstudio,
+  siUipath,
+  siUnity,
+  siFilezilla,
+  siSubversion,
+  siGooglecloud,
+  siVercel,
+  siNetlify,
+  siGit,
+  siGithub,
+  siGitlab,
+  siBitbucket,
+  siFigma,
+  siNotion,
+  siJira,
+  siFramer,
+  siRedux,
+  siMobx,
+  siRecoil,
+  siJest,
+  siCypress,
+} from 'simple-icons'
 
 /**
  * 기술 스택 아이콘 매핑 유틸리티
@@ -9,7 +79,6 @@ import type { SimpleIcon } from 'simple-icons'
  * 매칭되지 않는 기술은 null을 반환하여 호출부에서 폴백 처리합니다.
  */
 
-// simple-icons의 named export 키 형식: 'si' + PascalCase (예: siReact, siNextdotjs)
 type IconMapping = { key: string; color: string }
 
 const ICON_MAP: Record<string, IconMapping> = {
@@ -125,6 +194,77 @@ const ICON_MAP: Record<string, IconMapping> = {
   cypress: { key: 'cypress', color: '#17202C' },
 }
 
+// simple-icons v16.8.0에서 실제 export된 아이콘만 매핑
+// csharp, oracle, microsoftsqlserver, amazonwebservices, amazons3, heroku, slack: 패키지에 없음 → null 반환
+// css3: siCss3 없음 → siCss로 폴백
+const SI_LOOKUP: Record<string, SimpleIcon> = {
+  nextdotjs: siNextdotjs,
+  react: siReact,
+  vuedotjs: siVuedotjs,
+  angular: siAngular,
+  svelte: siSvelte,
+  typescript: siTypescript,
+  javascript: siJavascript,
+  python: siPython,
+  openjdk: siOpenjdk,
+  go: siGo,
+  rust: siRust,
+  php: siPhp,
+  ruby: siRuby,
+  kotlin: siKotlin,
+  swift: siSwift,
+  nodedotjs: siNodedotjs,
+  express: siExpress,
+  nestjs: siNestjs,
+  django: siDjango,
+  flask: siFlask,
+  fastapi: siFastapi,
+  spring: siSpring,
+  springboot: siSpringboot,
+  gradle: siGradle,
+  apachemaven: siApachemaven,
+  laravel: siLaravel,
+  rubyonrails: siRubyonrails,
+  supabase: siSupabase,
+  postgresql: siPostgresql,
+  mysql: siMysql,
+  mongodb: siMongodb,
+  redis: siRedis,
+  sqlite: siSqlite,
+  mariadb: siMariadb,
+  firebase: siFirebase,
+  tailwindcss: siTailwindcss,
+  sass: siSass,
+  css3: siCss,
+  html5: siHtml5,
+  axios: siAxios,
+  bootstrap: siBootstrap,
+  styledcomponents: siStyledcomponents,
+  docker: siDocker,
+  kubernetes: siKubernetes,
+  androidstudio: siAndroidstudio,
+  uipath: siUipath,
+  unity: siUnity,
+  filezilla: siFilezilla,
+  subversion: siSubversion,
+  googlecloud: siGooglecloud,
+  vercel: siVercel,
+  netlify: siNetlify,
+  git: siGit,
+  github: siGithub,
+  gitlab: siGitlab,
+  bitbucket: siBitbucket,
+  figma: siFigma,
+  notion: siNotion,
+  jira: siJira,
+  framer: siFramer,
+  redux: siRedux,
+  mobx: siMobx,
+  recoil: siRecoil,
+  jest: siJest,
+  cypress: siCypress,
+}
+
 /**
  * 기술명으로 아이콘과 브랜드 색상을 조회합니다.
  *
@@ -138,13 +278,9 @@ export function getTechIcon(
   const mapping = ICON_MAP[normalized]
   if (!mapping) return null
 
-  // simple-icons의 named export 키: 'si' + mapping.key (첫 글자 대문자로 변환)
-  const iconKey =
-    'si' + mapping.key.charAt(0).toUpperCase() + mapping.key.slice(1)
-  const simpleIcon = (si as Record<string, SimpleIcon>)[iconKey]
+  const simpleIcon = SI_LOOKUP[mapping.key]
   if (!simpleIcon) return null
 
-  // SVG path → React 인라인 컴포넌트 생성
   const Icon: React.FC<{
     className?: string
     style?: React.CSSProperties

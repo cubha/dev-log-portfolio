@@ -2,6 +2,8 @@ import { createClient } from '@/src/utils/supabase/server'
 import { FolderKanban, Code2, TrendingUp, ArrowRight, User } from 'lucide-react'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * 관리자 대시보드 메인 페이지
  * 

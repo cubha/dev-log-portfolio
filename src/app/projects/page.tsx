@@ -7,6 +7,8 @@ import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * 프로젝트 리스트 페이지 (공개 페이지)
  *

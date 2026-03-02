@@ -10,6 +10,8 @@ import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { ThemeCard } from '@/src/components/common/ThemeCard'
 import type { ContactLink } from '@/src/types/contact'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Contact 페이지 (Server Component)
  *
