@@ -1,5 +1,6 @@
 import { createClient } from '@/src/utils/supabase/server'
 import { InquiryCard } from './InquiryCard'
+import { InquiryReplyCard } from '@/src/components/admin/InquiryReplyCard'
 
 /**
  * Inquiry List 컴포넌트
@@ -59,7 +60,10 @@ export async function InquiryList() {
         <div className="space-y-0 bg-background border-[0.5px] border-foreground/10 rounded-2xl overflow-hidden">
           {inquiries.map((inquiry, index) => (
             <div key={inquiry.id}>
-              <InquiryCard inquiry={inquiry} isAdmin={isAdmin} />
+              {isAdmin
+                ? <InquiryReplyCard inquiry={inquiry} />
+                : <InquiryCard inquiry={inquiry} isAdmin={false} />
+              }
               {index < inquiries.length - 1 && (
                 <div className="border-t border-foreground/8" />
               )}

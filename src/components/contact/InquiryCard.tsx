@@ -14,6 +14,7 @@ interface InquiryCardProps {
     content: string
     reply: string | null
     replied_at: string | null
+    reply_is_public: boolean | null
     created_at: string
     is_public: boolean | null
   }
@@ -34,7 +35,8 @@ export function InquiryCard({ inquiry, isAdmin }: InquiryCardProps) {
   const [isVerifying, setIsVerifying] = useState(false)
   const [isUnlocked, setIsUnlocked] = useState(isAdmin || inquiry.is_public)
 
-  const hasReply = !!inquiry.reply
+  // 비밀 답변(reply_is_public=false)은 일반 사용자에게 숨김
+  const hasReply = !!inquiry.reply && (inquiry.reply_is_public !== false || isAdmin)
   const isPrivate = !inquiry.is_public
 
   const handleCardClick = () => {

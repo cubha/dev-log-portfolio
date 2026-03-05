@@ -198,6 +198,7 @@ export type Database = {
           password_hash: string
           replied_at: string | null
           reply: string | null
+          reply_is_public: boolean | null
           title: string
           updated_at: string
         }
@@ -210,6 +211,7 @@ export type Database = {
           password_hash?: string
           replied_at?: string | null
           reply?: string | null
+          reply_is_public?: boolean | null
           title: string
           updated_at?: string
         }
@@ -222,6 +224,7 @@ export type Database = {
           password_hash?: string
           replied_at?: string | null
           reply?: string | null
+          reply_is_public?: boolean | null
           title?: string
           updated_at?: string
         }
