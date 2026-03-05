@@ -11,6 +11,16 @@ export type ActionResult =
   | { success: true }
   | { success: false; error: string }
 
+/** 문의(Inquiry) 항목 타입 */
+export type Inquiry = Database['public']['Tables']['inquiries']['Row']
+
+/** 관리자 답변 저장 시 필요한 필드 */
+export type ReplyInquiryInput = {
+  inquiryId: string
+  reply: string
+  replyIsPublic: boolean
+}
+
 /** 방명록(Guestbook) 항목 타입 */
 export type GuestbookEntry = {
   id: number

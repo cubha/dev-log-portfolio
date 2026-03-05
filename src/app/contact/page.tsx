@@ -72,8 +72,8 @@ export default async function ContactPage() {
             isAdmin={isAdmin}
             currentUserId={user?.id ?? null}
           />
-          {/* 기존: 공개된 문의 목록 */}
-          {/* <InquiryList /> */}
+          {/* 문의 목록 */}
+          <InquiryList />
         </div>
       </div>
 
