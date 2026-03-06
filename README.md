@@ -50,7 +50,7 @@ dev-log-portfolio/
 │   │   ├── about/
 │   │   │   └── page.tsx              # About 페이지 (/about)
 │   │   ├── contact/
-│   │   │   └── page.tsx              # Contact 페이지 (/contact) — 방명록 + 문의
+│   │   │   └── page.tsx              # Contact 페이지 (/contact) — 방명록 + 댓글
 │   │   ├── projects/
 │   │   │   └── page.tsx              # 프로젝트 리스트 (/projects)
 │   │   ├── login/
@@ -84,7 +84,7 @@ dev-log-portfolio/
 │   │   │   ├── AdminHeader.tsx       # 관리자 헤더 + 사이드바 (클라이언트)
 │   │   │   ├── LogoutButton.tsx      # 로그아웃 버튼
 │   │   │   ├── TrainingManager.tsx   # 교육/자격증 관리
-│   │   │   └── ...
+│   │   │   └── ...                  # (InquiryReplyCard 제거됨)
 │   │   ├── home/                     # 홈페이지 섹션 컴포넌트
 │   │   │   ├── HeroSection.tsx
 │   │   │   ├── AIWorkflowSection.tsx
@@ -98,11 +98,9 @@ dev-log-portfolio/
 │   │   │   ├── ContactInfo.tsx       # 연락처 정보 (DB 연동 + 인라인 에딧)
 │   │   │   ├── LiveStatusWidget.tsx  # Spotify·GitHub 라이브 상태 위젯
 │   │   │   ├── GuestbookForm.tsx     # 방명록 작성 폼 (익명/GitHub OAuth)
-│   │   │   ├── GuestbookList.tsx     # 방명록 목록 (서버)
-│   │   │   ├── GuestbookListClient.tsx # 방명록 항목 + 삭제 (클라이언트)
-│   │   │   ├── InquiryForm.tsx       # 문의 작성 폼
-│   │   │   ├── InquiryList.tsx       # 문의 목록 컨테이너
-│   │   │   └── InquiryCard.tsx       # 문의 아이템 (Accordion UI)
+│   │   │   ├── GuestbookList.tsx     # 방명록 목록 (서버, 서버사이드 페이지네이션)
+│   │   │   ├── GuestbookListClient.tsx # 방명록 항목 + 페이지 번호 UI (클라이언트)
+│   │   │   └── GuestbookCommentSection.tsx # 방명록 댓글 + 좋아요 (클라이언트)
 │   │   ├── projects/
 │   │   │   ├── ProjectCard.tsx       # 프로젝트 카드 UI
 │   │   │   ├── ProjectList.tsx       # 프로젝트 Grid + 필터
@@ -118,7 +116,7 @@ dev-log-portfolio/
 │   │
 │   ├── actions/                      # ⚡ Server Actions
 │   │   ├── contact.ts                # Contact 링크 업데이트
-│   │   └── guestbook.ts              # 방명록 생성/삭제
+│   │   └── guestbook.ts              # 방명록 CRUD + 댓글/좋아요
 │   │
 │   ├── utils/                        # 🔧 유틸리티 함수
 │   │   ├── supabase/
@@ -131,10 +129,6 @@ dev-log-portfolio/
 │   │   │   └── serverAuth.ts         # 공통 인증 유틸 (getCurrentUserRole)
 │   │   ├── contact/
 │   │   │   └── iconMap.ts            # icon_key → lucide-react 컴포넌트 매핑
-│   │   ├── inquiries/
-│   │   │   ├── create.ts             # 문의 생성 (SHA-256 해싱)
-│   │   │   ├── verify.ts             # 비밀번호 검증
-│   │   │   └── delete.ts             # 문의 삭제
 │   │   ├── storage/
 │   │   │   └── uploadImage.ts        # 이미지 업로드/삭제 (Supabase Storage)
 │   │   ├── mdx.ts                    # MDX → HTML 변환 유틸
@@ -163,7 +157,8 @@ dev-log-portfolio/
 │       ├── 20260213_create_inquiries.sql
 │       ├── 20260214_alter_inquiries_add_columns.sql
 │       ├── 20260220_trainings_add_date_range.sql
-│       └── 20260226_create_guestbook.sql
+│       ├── 20260226_create_guestbook.sql
+│       └── 20260305_create_guestbook_comments_and_likes.sql
 │
 ├── verify.sh                         # 🔍 Cursor 변경 자동 검증 스크립트
 ├── .env.local                        # 🔐 환경 변수 (Git에서 제외됨)
@@ -228,8 +223,10 @@ Claude Code + Cursor 협업 워크플로우에서 Cursor가 수정한 코드를 
 | `profiles` | 사용자 프로필 (역할, GitHub·LinkedIn 링크) |
 | `projects` | 프로젝트 (제목, 설명, 기술 스택, 기간, 상태) |
 | `skills` | 기술 스택 (카테고리별 분류, 아이콘) |
-| `inquiries` | 문의 내역 (SHA-256 비밀번호, 공개 여부, 답변) |
-| `guestbook` | 방명록 (익명·GitHub OAuth, 비밀글 지원) |
+| ~~`inquiries`~~ | ~~문의 내역~~ (v1.1.0에서 제거 — 댓글 시스템으로 대체) |
+| `guestbook` | 방명록 (익명·GitHub OAuth, 비밀글, 서버사이드 페이지네이션) |
+| `guestbook_comments` | 방명록 댓글 (익명·로그인 허용, FK → guestbook) |
+| `guestbook_comment_likes` | 댓글 좋아요 (로그인 유저 전용, UNIQUE 제약) |
 | `contact_links` | 연락처 정보 (관리자 인라인 에딧) |
 | `trainings` | 교육/자격증 이력 (날짜 범위 지원) |
 
@@ -378,10 +375,13 @@ chmod +x verify.sh
   - [x] 역할 기반 접근 제어 (admin/user)
   - [x] 역방향 가드 (로그인 시 `/login` 접근 차단)
 - [x] **Contact 페이지**
-  - [x] 문의 시스템 (SHA-256 비밀번호, 공개/비공개, Accordion UI)
-  - [x] 방명록 (익명·GitHub OAuth·관리자, 비밀글, 아바타, 페이지네이션)
+  - [x] 방명록 (익명·GitHub OAuth·관리자, 비밀글, 아바타)
+  - [x] 방명록 서버사이드 페이지네이션 (Supabase range + count, URL searchParams, 페이지 번호 UI)
+  - [x] 방명록 댓글 시스템 (익명·로그인 허용, 인라인 펼침형 UI)
+  - [x] 댓글 좋아요 (로그인 유저 토글, 낙관적 업데이트, DB 저장)
   - [x] 연락처 정보 (DB 연동 + 관리자 인라인 에딧)
   - [x] Live Status 위젯 (GitHub 30일 커밋, Spotify 현재 재생)
+  - ~~문의 시스템 (v1.1.0에서 제거 — 댓글 시스템으로 대체)~~
 - [x] **UI/UX**
   - [x] 다크/라이트 모드 (next-themes)
   - [x] Silver SH 브랜드 로고 + 컬러 시스템
@@ -396,9 +396,12 @@ chmod +x verify.sh
 
 ### 🚧 개발 예정
 
-- [ ] 방명록 페이지네이션 (무한 스크롤 또는 더보기)
+- [x] ~~방명록 페이지네이션~~ → v1.1.0에서 서버사이드 페이지네이션으로 구현 완료
+- [x] ~~관리자 문의 답변 기능~~ → v1.1.0에서 방명록 댓글 시스템으로 대체
+- [ ] 사용자 로그인 기능 통합 (GitHub 로그인 버튼 별도 추가, 비밀글 토글은 로그인 유저만 On 가능)
+- [ ] 방명록/댓글 닉네임 체계 정리 (관리자→Admin, 일반사용자→닉네임 지정, GitHub 로그인→GitHub 닉네임)
+- [ ] 전체 UI/UX 업데이트
 - [ ] 프로젝트 검색 기능
-- [ ] 관리자 문의 답변 기능
 - [ ] 관리자 대시보드 방문자 통계
 
 ---
@@ -423,9 +426,29 @@ chmod +x verify.sh
 ### Phase 6: 배포 및 최적화 ✅ (2026-03-01)
 - Vercel 배포 완료, 공통 컴포넌트 리팩토링, 보안 취약점 제거
 
+### Phase 7: 방명록 댓글/좋아요 + 페이지네이션 ✅ (2026-03-05)
+- 문의내역(Inquiry) 시스템 제거 → 방명록 댓글 시스템으로 대체
+- 방명록 댓글 + 좋아요(Like 토글) 기능 추가
+- 서버사이드 페이지네이션 (Supabase range + count, URL searchParams)
+
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v1.1.0 — 2026-03-05 (방명록 댓글/좋아요 + 페이지네이션)
+
+**기능 변경:**
+- 문의내역(Inquiry) 시스템 전체 제거 — InquiryForm, InquiryList, InquiryCard, InquiryReplyCard, inquiries 액션/유틸 삭제
+- 방명록 댓글 시스템 신규 구축 (`guestbook_comments` 테이블, 익명·로그인 댓글 허용)
+- 댓글 좋아요(Like) 기능 (`guestbook_comment_likes` 테이블, 로그인 유저 토글, 낙관적 업데이트)
+- 방명록 서버사이드 페이지네이션 (기존 클라이언트 slice → Supabase `range()` + `count`)
+- URL 기반 페이지 상태 관리 (`?guestbookPage=N`, `useTransition` 로딩 처리)
+- 페이지 번호 UI (ellipsis 포함, 기존 prev/next + 페이지 번호 버튼)
+
+**DB 변경:**
+- `guestbook_comments` 테이블 추가 (FK → guestbook, RLS: 공개 읽기/쓰기, 관리자·본인 삭제)
+- `guestbook_comment_likes` 테이블 추가 (UNIQUE 제약, RLS: 인증 유저만 생성/삭제)
+- `inquiries` 테이블 — 코드에서 참조 제거 (DB 마이그레이션 파일은 히스토리로 유지)
 
 ### v1.0.0 — 2026-03-01 (초기 배포)
 

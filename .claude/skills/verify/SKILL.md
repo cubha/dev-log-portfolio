@@ -1,8 +1,7 @@
 ---
 name: verify
-description: "Cursor가 구현한 코드를 검증할 때 사용. '검증해줘', '체크리스트 확인', '코드 리뷰' 등 언급 시 호출"
+description: "구현한 코드를 검증할 때 사용. '검증해줘', '체크리스트 확인', '코드 리뷰' 등 언급 시 호출"
 argument-hint: "[검증할 파일경로 또는 기능명]"
-disable-model-invocation: false
 ---
 
 # dev-log-portfolio 코드 검증
