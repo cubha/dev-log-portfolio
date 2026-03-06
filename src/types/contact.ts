@@ -11,16 +11,6 @@ export type ActionResult =
   | { success: true }
   | { success: false; error: string }
 
-/** 문의(Inquiry) 항목 타입 */
-export type Inquiry = Database['public']['Tables']['inquiries']['Row']
-
-/** 관리자 답변 저장 시 필요한 필드 */
-export type ReplyInquiryInput = {
-  inquiryId: string
-  reply: string
-  replyIsPublic: boolean
-}
-
 /** 방명록(Guestbook) 항목 타입 */
 export type GuestbookEntry = {
   id: number
@@ -38,3 +28,23 @@ export type CreateGuestbookInput = Pick<
   GuestbookEntry,
   'nickname' | 'message' | 'emoji'
 > & { is_secret: boolean }
+
+/** 방명록 댓글 타입 */
+export type GuestbookComment = {
+  id: number
+  guestbook_id: number
+  user_id: string | null
+  nickname: string
+  message: string
+  avatar_url: string | null
+  created_at: string
+  like_count: number
+  liked_by_me: boolean
+}
+
+/** 댓글 생성 시 필요한 필드 */
+export type CreateCommentInput = {
+  guestbook_id: number
+  nickname?: string
+  message: string
+}

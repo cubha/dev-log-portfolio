@@ -188,6 +188,73 @@ export type Database = {
         }
         Relationships: []
       }
+      guestbook_comments: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          guestbook_id: number
+          id: number
+          message: string
+          nickname: string
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          guestbook_id: number
+          id?: number
+          message: string
+          nickname: string
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          guestbook_id?: number
+          id?: number
+          message?: string
+          nickname?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guestbook_comments_guestbook_id_fkey"
+            columns: ["guestbook_id"]
+            isOneToOne: false
+            referencedRelation: "guestbook"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      guestbook_comment_likes: {
+        Row: {
+          comment_id: number
+          created_at: string
+          id: number
+          user_id: string
+        }
+        Insert: {
+          comment_id: number
+          created_at?: string
+          id?: number
+          user_id: string
+        }
+        Update: {
+          comment_id?: number
+          created_at?: string
+          id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guestbook_comment_likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "guestbook_comments"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       inquiries: {
         Row: {
           content: string
