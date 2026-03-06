@@ -426,6 +426,27 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          id: number
+          path: string
+          visitor_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          path: string
+          visitor_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          path?: string
+          visitor_id?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       skills: {
         Row: {
           category: string | null

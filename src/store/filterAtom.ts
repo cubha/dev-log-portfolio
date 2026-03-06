@@ -20,3 +20,11 @@ export const projectFilterAtom = atom<ProjectFilter>('전체')
  * 사용 가능한 필터 옵션 목록
  */
 export const FILTER_OPTIONS: ProjectFilter[] = ['전체', '업무', '개인', '팀']
+
+/**
+ * 프로젝트 검색어 Atom
+ *
+ * title, description, tech_stack, company_name, project_role 필드에 대해
+ * 클라이언트사이드 검색을 수행합니다.
+ */
+export const searchQueryAtom = atom<string>('')

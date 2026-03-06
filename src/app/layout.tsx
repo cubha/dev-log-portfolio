@@ -3,7 +3,8 @@ import "./globals.css";
 import { JotaiProvider } from "@/src/components/providers/JotaiProvider";
 import { ThemeProvider } from "@/src/components/providers/ThemeProvider";
 import { DynamicToaster } from "@/src/components/common/DynamicToaster";
-import { ScrollToTop } from "@/src/components/common/ScrollToTop";
+import { ScrollToTop } from "@/src/components/common/ScrollToTop"
+import { PageViewTracker } from "@/src/components/common/PageViewTracker";
 import { Header } from "@/src/components/layout/Header";
 import { Footer } from "@/src/components/layout/Footer";
 
@@ -43,6 +44,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <JotaiProvider>
+            <PageViewTracker />
             <ScrollToTop />
             {/* sticky 헤더: /admin 경로에서는 컴포넌트 내부에서 null 반환 */}
             <Header />

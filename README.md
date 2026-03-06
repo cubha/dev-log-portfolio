@@ -60,7 +60,8 @@ dev-log-portfolio/
 │   │   ├── api/                      # 🔌 Route Handlers
 │   │   │   ├── github/stats/         # GitHub 30일 커밋 통계 (GraphQL)
 │   │   │   ├── spotify/now-playing/  # Spotify 현재 재생 트랙
-│   │   │   └── mdx/[slug]/           # MDX → HTML 변환 (모달 인라인 뷰)
+│   │   │   ├── mdx/[slug]/           # MDX → HTML 변환 (모달 인라인 뷰)
+│   │   │   └── page-view/route.ts    # 방문 기록 수집 (POST, visitor_id + path)
 │   │   └── admin/                    # 🔐 관리자 영역
 │   │       ├── layout.tsx            # 관리자 전용 레이아웃 (AdminHeader + 사이드바)
 │   │       ├── dashboard/page.tsx    # 대시보드 (/admin/dashboard)
@@ -74,6 +75,7 @@ dev-log-portfolio/
 │   │   │   ├── DynamicToaster.tsx    # SSR 호환 Sonner Toaster (useState+useEffect)
 │   │   │   ├── FloatingAdminButton.tsx # 플로팅 유저 메뉴 (대시보드 바로가기·로그아웃)
 │   │   │   ├── Logo.tsx              # Silver SH 브랜드 로고
+│   │   │   ├── PageViewTracker.tsx   # 방문 자동 기록 (useEffect → /api/page-view)
 │   │   │   ├── ScrollToTop.tsx       # 스크롤 상단 이동 버튼
 │   │   │   ├── SilverButton.tsx      # 실버 메탈 공통 버튼 (size, fullWidth prop)
 │   │   │   ├── SkillIcon.tsx         # 기술 스택 아이콘 (Simple Icons 기반)
@@ -123,12 +125,16 @@ dev-log-portfolio/
 │   │   │   ├── server.ts             # 서버 컴포넌트용 Supabase 클라이언트
 │   │   │   ├── client.ts             # 클라이언트 컴포넌트용 Supabase 클라이언트
 │   │   │   └── middleware.ts         # JWT 검증 + 권한 검사 로직
+│   │   ├── analytics/
+│   │   │   └── getPageViewStats.ts   # 방문자 통계 집계 (오늘/주간/누적/차트/TOP5)
 │   │   ├── auth/
 │   │   │   ├── login.ts              # 서버 액션: 로그인 처리
 │   │   │   ├── logout.ts             # 서버 액션: 로그아웃 처리
 │   │   │   └── serverAuth.ts         # 공통 인증 유틸 (getCurrentUserRole)
 │   │   ├── contact/
 │   │   │   └── iconMap.ts            # icon_key → lucide-react 컴포넌트 매핑
+│   │   ├── nickname/
+│   │   │   └── generateNickname.ts   # 비회원 닉네임 자동생성 (localStorage UUID 기반)
 │   │   ├── storage/
 │   │   │   └── uploadImage.ts        # 이미지 업로드/삭제 (Supabase Storage)
 │   │   ├── mdx.ts                    # MDX → HTML 변환 유틸
@@ -158,7 +164,8 @@ dev-log-portfolio/
 │       ├── 20260214_alter_inquiries_add_columns.sql
 │       ├── 20260220_trainings_add_date_range.sql
 │       ├── 20260226_create_guestbook.sql
-│       └── 20260305_create_guestbook_comments_and_likes.sql
+│       ├── 20260305_create_guestbook_comments_and_likes.sql
+│       └── 20260307_create_page_views.sql
 │
 ├── verify.sh                         # 🔍 Cursor 변경 자동 검증 스크립트
 ├── .env.local                        # 🔐 환경 변수 (Git에서 제외됨)
@@ -227,6 +234,7 @@ Claude Code + Cursor 협업 워크플로우에서 Cursor가 수정한 코드를 
 | `guestbook` | 방명록 (익명·GitHub OAuth, 비밀글, 서버사이드 페이지네이션) |
 | `guestbook_comments` | 방명록 댓글 (익명·로그인 허용, FK → guestbook) |
 | `guestbook_comment_likes` | 댓글 좋아요 (로그인 유저 전용, UNIQUE 제약) |
+| `page_views` | 방문 기록 (path, visitor_id, 타임스탬프 — 관리자 전용 조회) |
 | `contact_links` | 연락처 정보 (관리자 인라인 에딧) |
 | `trainings` | 교육/자격증 이력 (날짜 범위 지원) |
 
@@ -398,11 +406,11 @@ chmod +x verify.sh
 
 - [x] ~~방명록 페이지네이션~~ → v1.1.0에서 서버사이드 페이지네이션으로 구현 완료
 - [x] ~~관리자 문의 답변 기능~~ → v1.1.0에서 방명록 댓글 시스템으로 대체
-- [ ] 사용자 로그인 기능 통합 (GitHub 로그인 버튼 별도 추가, 비밀글 토글은 로그인 유저만 On 가능)
-- [ ] 방명록/댓글 닉네임 체계 정리 (관리자→Admin, 일반사용자→닉네임 지정, GitHub 로그인→GitHub 닉네임)
+- [x] ~~사용자 로그인 기능 통합~~ → GitHub 로그인 버튼 방명록 폼/댓글 영역에 독립 배치 완료 (v1.2.0)
+- [x] ~~방명록/댓글 닉네임 체계 정리~~ → Admin/GitHub OAuth/이메일 우선순위 정렬, 비회원 자동생성 닉네임 완료 (v1.2.0)
+- [x] ~~관리자 대시보드 방문자 통계~~ → page_views 수집 + 통합 Analytics 카드 (v1.2.0)
 - [ ] 전체 UI/UX 업데이트
 - [ ] 프로젝트 검색 기능
-- [ ] 관리자 대시보드 방문자 통계
 
 ---
 
@@ -431,9 +439,29 @@ chmod +x verify.sh
 - 방명록 댓글 + 좋아요(Like 토글) 기능 추가
 - 서버사이드 페이지네이션 (Supabase range + count, URL searchParams)
 
+### Phase 8: 닉네임 체계 + 방문자 통계 ✅ (2026-03-07)
+- 닉네임 결정 우선순위 통합 (Admin → GitHub OAuth → 이메일 → 비회원 자동생성)
+- 비회원 자동생성 닉네임 UX (localStorage 기반, 재롤링 지원)
+- `page_views` 테이블 기반 방문 추적 인프라 구축
+- 관리자 대시보드 Visitor Analytics 통합 카드 (수치·7일 바차트·인기페이지 TOP5)
+
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v1.2.0 — 2026-03-07 (닉네임 체계 정리 + 방문자 분석)
+
+**기능 추가:**
+- 방문자 추적 인프라: `page_views` 테이블 (RLS: 삽입=공개, 조회=인증 유저), `PageViewTracker` 클라이언트 컴포넌트 (루트 레이아웃 연결, `/admin·/login·/api` 경로 제외)
+- 관리자 대시보드 Visitor Analytics 통합 카드: 오늘/이번주/누적 방문 수치 + 최근 7일 SVG 바차트 + 인기페이지 TOP5
+- 비회원 닉네임 자동생성 UX: localStorage UUID 기반 닉네임 생성·복원, 재롤링 버튼, 직접 수정 모드
+- GitHub 로그인 버튼 독립 배치: 방명록 폼 닉네임 우측 + 댓글 폼 하단
+
+**버그 수정:**
+- 이메일 로그인 유저가 'GitHub User'로 잘못 표시되던 닉네임 버그 수정 (서버에서 계산 후 props 전달)
+
+**DB 변경:**
+- `page_views` 테이블 추가 (path, visitor_id, created_at, 복합 인덱스)
 
 ### v1.1.0 — 2026-03-05 (방명록 댓글/좋아요 + 페이지네이션)
 
