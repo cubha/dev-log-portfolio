@@ -96,8 +96,8 @@ export function GuestbookForm({ user, isAdmin = false, displayName, avatarUrl }:
                 className={`w-10 h-10 flex items-center justify-center text-xl rounded-xl transition-all
                   ${
                     formData.emoji === emoji
-                      ? 'ring-2 ring-brand-primary bg-brand-primary/10'
-                      : 'bg-brand-primary/5 hover:bg-brand-primary/10'
+                      ? 'ring-2 ring-brand-secondary/30 bg-brand-secondary/10'
+                      : 'bg-foreground/[0.04] hover:bg-foreground/[0.08]'
                   }`}
               >
                 {emoji}
@@ -125,7 +125,7 @@ export function GuestbookForm({ user, isAdmin = false, displayName, avatarUrl }:
                     setFormData((prev) => ({ ...prev, nickname: e.target.value }))
                   }
                   maxLength={20}
-                  className="w-full h-11 pl-3 pr-9 bg-brand-primary/5 border border-brand-primary/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-secondary/20 focus:border-brand-secondary transition-all text-sm text-foreground placeholder:text-foreground/30"
+                  className="w-full h-11 pl-3 pr-9 bg-surface border border-foreground/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-secondary/20 focus:border-brand-secondary/40 transition-all text-sm text-foreground placeholder:text-foreground/30"
                   placeholder="닉네임 (최대 20자)"
                 />
                 <button
@@ -188,8 +188,8 @@ export function GuestbookForm({ user, isAdmin = false, displayName, avatarUrl }:
               setFormData((prev) => ({ ...prev, message: e.target.value }))
             }
             maxLength={200}
-            rows={10}
-            className="w-full flex-1 px-3 py-2 bg-brand-primary/5 border border-brand-primary/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-secondary/20 focus:border-brand-secondary transition-all resize-none text-sm text-foreground placeholder:text-foreground/30"
+            rows={12}
+            className="w-full flex-1 px-3 py-2 bg-surface border border-foreground/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-secondary/20 focus:border-brand-secondary/40 transition-all resize-none text-sm text-foreground placeholder:text-foreground/30"
             placeholder="방명록을 남겨주세요 (최대 200자)"
           />
         </div>

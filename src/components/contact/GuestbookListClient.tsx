@@ -1,17 +1,23 @@
 'use client'
 
-import { useCallback, useTransition } from 'react'
+import { useCallback, useState, useTransition } from 'react'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
-import { Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
-import { deleteGuestbookEntry } from '@/src/actions/guestbook'
+import { Heart, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { deleteGuestbookEntry, toggleEntryLike } from '@/src/actions/guestbook'
 import { GuestbookCommentSection } from './GuestbookCommentSection'
+import { THEME_CARD_CLASS } from '@/src/components/common/ThemeCard'
 import type { GuestbookEntry } from '@/src/types/contact'
 
 const containerVariants = {
   show: { transition: { staggerChildren: 0.05 } },
+}
+
+interface EntryLikeState {
+  count: number
+  likedByMe: boolean
 }
 
 interface GuestbookListClientProps {
@@ -40,12 +46,16 @@ function GuestbookItem({
   currentUserId,
   currentUserName,
   commentCount,
+  likeState,
+  onLike,
 }: {
   entry: GuestbookEntry
   isAdmin: boolean
   currentUserId: string | null
   currentUserName: string | null
   commentCount: number
+  likeState: EntryLikeState
+  onLike: () => void
 }) {
   const router = useRouter()
 
@@ -71,19 +81,19 @@ function GuestbookItem({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="flex gap-3 py-3 border-b border-foreground/5 last:border-b-0"
+      className={`${THEME_CARD_CLASS} flex gap-3 p-4`}
     >
       {entry.avatar_url ? (
         <Image
           src={entry.avatar_url}
           alt=""
-          width={28}
-          height={28}
+          width={32}
+          height={32}
           unoptimized
           className="flex-shrink-0 rounded-full"
         />
       ) : (
-        <span className="flex-shrink-0 text-xl">{entry.emoji}</span>
+        <span className="flex-shrink-0 text-2xl leading-none mt-0.5">{entry.emoji}</span>
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2 mb-1">
@@ -94,7 +104,7 @@ function GuestbookItem({
             {secretBadge}
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-xs text-foreground/50">
+            <span className="text-xs text-foreground/40">
               {formatDate(entry.created_at)}
             </span>
             {isAdmin && (
@@ -113,7 +123,27 @@ function GuestbookItem({
           {entry.message}
         </p>
 
-        {/* 댓글 섹션 */}
+        {/* 좋아요 + 댓글 섹션 */}
+        <div className="flex items-center gap-1 mt-2">
+          <button
+            type="button"
+            onClick={onLike}
+            className={`flex items-center gap-1 text-xs transition-colors px-1.5 py-0.5 rounded-md ${
+              likeState.likedByMe
+                ? 'text-rose-500'
+                : 'text-foreground/35 hover:text-rose-400'
+            }`}
+          >
+            <Heart
+              className="w-3.5 h-3.5"
+              fill={likeState.likedByMe ? 'currentColor' : 'none'}
+            />
+            {likeState.count > 0 && (
+              <span>{likeState.count}</span>
+            )}
+          </button>
+        </div>
+
         <GuestbookCommentSection
           guestbookId={entry.id}
           isAdmin={isAdmin}
@@ -166,6 +196,39 @@ export function GuestbookListClient({
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
+  // 원글 좋아요 상태 (낙관적 업데이트)
+  const [entryLikes, setEntryLikes] = useState<Record<number, EntryLikeState>>(() =>
+    Object.fromEntries(
+      entries.map((e) => [e.id, { count: e.like_count, likedByMe: e.liked_by_me }])
+    )
+  )
+
+  const handleEntryLike = async (entryId: number) => {
+    if (!currentUserId) {
+      toast.error('좋아요는 로그인 후 가능합니다.')
+      return
+    }
+
+    // 낙관적 업데이트
+    setEntryLikes((prev) => {
+      const cur = prev[entryId] ?? { count: 0, likedByMe: false }
+      return {
+        ...prev,
+        [entryId]: {
+          count: cur.likedByMe ? cur.count - 1 : cur.count + 1,
+          likedByMe: !cur.likedByMe,
+        },
+      }
+    })
+
+    const result = await toggleEntryLike(entryId)
+    if (!result.success) {
+      toast.error(result.error)
+      // 롤백
+      router.refresh()
+    }
+  }
+
   const navigateToPage = useCallback(
     (page: number) => {
       const params = new URLSearchParams(searchParams.toString())
@@ -190,7 +253,7 @@ export function GuestbookListClient({
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="space-y-0"
+        className="space-y-3"
       >
         {entries.map((entry) => (
           <GuestbookItem
@@ -200,12 +263,14 @@ export function GuestbookListClient({
             currentUserId={currentUserId}
             currentUserName={currentUserName}
             commentCount={commentCounts[entry.id] ?? 0}
+            likeState={entryLikes[entry.id] ?? { count: entry.like_count, likedByMe: entry.liked_by_me }}
+            onLike={() => handleEntryLike(entry.id)}
           />
         ))}
       </motion.div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1.5 py-4 border-t border-foreground/5">
+        <div className="flex items-center justify-center gap-1.5 py-4 mt-2">
           {/* 이전 */}
           <button
             type="button"

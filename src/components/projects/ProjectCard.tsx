@@ -8,6 +8,7 @@ import { isAdminAtom } from '@/src/store/authAtom'
 import { selectedProjectAtom } from '@/src/store/projectAtom'
 import { ProjectCardActions } from './ProjectCardActions'
 import { motion } from 'framer-motion'
+import { THEME_CARD_CLASS } from '@/src/components/common/ThemeCard'
 
 type Project = Database['public']['Tables']['projects']['Row']
 
@@ -40,9 +41,9 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.5, delay: (index % 3) * 0.1, ease: 'easeOut' }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      whileHover={{ y: -2, scale: 1.015, transition: { type: 'spring', stiffness: 400, damping: 30 } }}
       onClick={handleCardClick}
-      className="group relative flex flex-col bg-background border border-foreground/10 rounded-xl shadow-sm hover:shadow-md hover:border-foreground/20 cursor-pointer transition-shadow overflow-hidden"
+      className={`group flex flex-col cursor-pointer overflow-hidden ${THEME_CARD_CLASS}`}
     >
       {/* 좌측 상단 태그 컨테이너 */}
       {(project.is_ongoing || project.is_featured) && (
@@ -69,7 +70,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
 
       {/* 썸네일 */}
       {project.thumbnail_url ? (
-        <div className="relative w-full aspect-video bg-foreground/10 overflow-hidden flex-shrink-0">
+        <div className="relative w-full aspect-[5/3] bg-foreground/10 overflow-hidden flex-shrink-0">
           <Image
             src={project.thumbnail_url}
             alt={project.title}
@@ -79,20 +80,20 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           />
         </div>
       ) : (
-        <div className="relative w-full aspect-video bg-foreground/8 flex items-center justify-center flex-shrink-0">
-          <FolderKanban className="w-10 h-10 text-white opacity-50" />
+        <div className="relative w-full aspect-[5/3] bg-foreground/8 flex items-center justify-center flex-shrink-0">
+          <FolderKanban className="w-8 h-8 text-white opacity-50" />
         </div>
       )}
 
       {/* 본문 */}
-      <div className="flex flex-col gap-2 p-4 flex-1">
+      <div className="flex flex-col gap-1.5 p-4 flex-1">
         {/* 제목 */}
-        <h2 className="text-base font-bold text-foreground line-clamp-2">
+        <h2 className="text-sm font-bold text-foreground line-clamp-2">
           {project.title}
         </h2>
 
         {/* 설명 */}
-        <p className="text-sm text-foreground/60 line-clamp-2 flex-1">
+        <p className="text-xs text-foreground/60 line-clamp-2 flex-1">
           {project.description || '프로젝트 설명이 없습니다.'}
         </p>
 

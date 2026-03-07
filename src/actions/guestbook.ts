@@ -333,6 +333,50 @@ export async function deleteGuestbookComment(
 }
 
 /**
+ * 방명록 원글 좋아요 토글 (로그인 유저 전용)
+ */
+export async function toggleEntryLike(
+  entryId: number
+): Promise<ActionResult & { liked?: boolean }> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) return { success: false, error: '로그인이 필요합니다.' }
+
+  const { data: existing } = await supabase
+    .from('guestbook_likes')
+    .select('id')
+    .eq('guestbook_id', entryId)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (existing) {
+    const { error } = await supabase
+      .from('guestbook_likes')
+      .delete()
+      .eq('id', existing.id)
+
+    if (error) {
+      console.error('[toggleEntryLike] delete error:', error)
+      return { success: false, error: error.message }
+    }
+    return { success: true, liked: false }
+  } else {
+    const { error } = await supabase
+      .from('guestbook_likes')
+      .insert({ guestbook_id: entryId, user_id: user.id })
+
+    if (error) {
+      console.error('[toggleEntryLike] insert error:', error)
+      return { success: false, error: error.message }
+    }
+    return { success: true, liked: true }
+  }
+}
+
+/**
  * 댓글 좋아요 토글 (로그인 유저 전용)
  */
 export async function toggleCommentLike(

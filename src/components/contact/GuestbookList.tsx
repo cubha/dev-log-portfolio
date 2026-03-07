@@ -41,19 +41,9 @@ export async function GuestbookList({
   const totalCount = count ?? 0
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
-  const entries: GuestbookEntry[] = (data ?? []).map((row) => ({
-    id: row.id,
-    nickname: row.nickname,
-    message: row.message,
-    emoji: row.emoji,
-    created_at: row.created_at,
-    is_secret: row.is_secret ?? false,
-    user_id: row.user_id ?? null,
-    avatar_url: row.avatar_url ?? null,
-  }))
+  const entryIds = (data ?? []).map((e) => e.id)
 
-  // 현재 페이지 항목들의 댓글 수 조회
-  const entryIds = entries.map((e) => e.id)
+  // 댓글 수 조회
   const { data: commentRows } = await supabase
     .from('guestbook_comments')
     .select('guestbook_id')
@@ -63,6 +53,37 @@ export async function GuestbookList({
   for (const row of commentRows ?? []) {
     commentCounts[row.guestbook_id] = (commentCounts[row.guestbook_id] ?? 0) + 1
   }
+
+  // 원글 좋아요 집계
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const { data: likeRows } = await supabase
+    .from('guestbook_likes')
+    .select('guestbook_id, user_id')
+    .in('guestbook_id', entryIds.length > 0 ? entryIds : [-1])
+
+  const likeMap = new Map<number, { count: number; likedByMe: boolean }>()
+  for (const like of likeRows ?? []) {
+    const entry = likeMap.get(like.guestbook_id) ?? { count: 0, likedByMe: false }
+    entry.count++
+    if (user && like.user_id === user.id) entry.likedByMe = true
+    likeMap.set(like.guestbook_id, entry)
+  }
+
+  const entries: GuestbookEntry[] = (data ?? []).map((row) => ({
+    id: row.id,
+    nickname: row.nickname,
+    message: row.message,
+    emoji: row.emoji,
+    created_at: row.created_at,
+    is_secret: row.is_secret ?? false,
+    user_id: row.user_id ?? null,
+    avatar_url: row.avatar_url ?? null,
+    like_count: likeMap.get(row.id)?.count ?? 0,
+    liked_by_me: likeMap.get(row.id)?.likedByMe ?? false,
+  }))
 
   return (
     <section className="mt-8">
@@ -74,23 +95,21 @@ export async function GuestbookList({
         )}
       </div>
       {entries.length === 0 && page === 1 ? (
-        <div className="bg-background border-[0.5px] border-foreground/10 rounded-2xl p-8 text-center">
+        <div className="bg-surface border border-foreground/[0.08] rounded-2xl p-8 text-center">
           <p className="text-sm text-foreground/50">
             아직 방명록이 없어요. 첫 번째 메시지를 남겨주세요! 👋
           </p>
         </div>
       ) : (
-        <div className="bg-background border-[0.5px] border-foreground/10 rounded-2xl overflow-hidden px-4">
-          <GuestbookListClient
-            entries={entries}
-            isAdmin={isAdmin}
-            currentUserId={currentUserId}
-            currentUserName={currentUserName}
-            commentCounts={commentCounts}
-            currentPage={page}
-            totalPages={totalPages}
-          />
-        </div>
+        <GuestbookListClient
+          entries={entries}
+          isAdmin={isAdmin}
+          currentUserId={currentUserId}
+          currentUserName={currentUserName}
+          commentCounts={commentCounts}
+          currentPage={page}
+          totalPages={totalPages}
+        />
       )}
     </section>
   )

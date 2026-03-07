@@ -43,7 +43,7 @@ export default async function ProjectsPage() {
 
     // 단일 return 문으로 통합된 레이아웃
     return (
-      <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-12">
         <AuthStateInitializer isAdmin={isAdmin} />
         {errorMessage ? (
           <ErrorState message={errorMessage} />
