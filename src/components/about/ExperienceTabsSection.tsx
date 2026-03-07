@@ -82,28 +82,28 @@ function TimelineList({ items }: { items: CardItem[] }) {
     )
   }
   return (
-    <div className="relative pl-10">
-      {/* 세로 선 */}
+    <div className="relative pl-12">
+      {/* Vertical line — centered on dot (dot: 24px, center at 12px) */}
       <div
-        className="absolute left-[18px] top-[11px] w-px bg-gradient-to-b from-foreground/25 via-foreground/10 to-transparent"
-        style={{ bottom: '11px' }}
+        className="absolute left-[11px] top-6 w-px bg-gradient-to-b from-foreground/20 via-foreground/8 to-transparent"
+        style={{ bottom: 24 }}
       />
       <div className="space-y-6">
         {items.map((item, i) => (
           <motion.div
             key={item.key}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-30px' }}
             transition={{
-              duration: 0.6,
+              duration: 0.5,
               ease: [0.22, 1, 0.36, 1],
               delay: i * 0.08,
             }}
             className="relative"
           >
-            {/* Silver Dot */}
-            <div className="absolute -left-10 top-[10px] w-[22px] h-[22px] rounded-full bg-silver-metal flex items-center justify-center shadow-sm ring-2 ring-background flex-shrink-0">
+            {/* Silver Dot — 24px, centered at left-[0] */}
+            <div className="absolute -left-12 top-[14px] w-6 h-6 rounded-full bg-silver-metal flex items-center justify-center ring-2 ring-background flex-shrink-0">
               {item.dotIcon}
             </div>
             {/* 카드 */}

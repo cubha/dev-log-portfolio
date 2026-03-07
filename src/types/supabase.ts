@@ -226,6 +226,35 @@ export type Database = {
           }
         ]
       }
+      guestbook_likes: {
+        Row: {
+          id: number
+          guestbook_id: number
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          guestbook_id: number
+          user_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          guestbook_id?: number
+          user_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guestbook_likes_guestbook_id_fkey"
+            columns: ["guestbook_id"]
+            isOneToOne: false
+            referencedRelation: "guestbook"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       guestbook_comment_likes: {
         Row: {
           comment_id: number

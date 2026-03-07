@@ -69,7 +69,7 @@ export default async function ContactPage({
   return (
     <>
       <div className="min-h-screen bg-background">
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-12">
           {/* 페이지 헤더 */}
           <div className="mb-10 text-center">
             <h1 className="text-3xl font-bold text-foreground">Contact</h1>
@@ -82,9 +82,7 @@ export default async function ContactPage({
               <ThemeCard noHoverLift className="p-6">
                 <ContactInfo initialData={contactLinks} isAdmin={isAdmin} />
               </ThemeCard>
-              <ThemeCard noHoverLift className="p-4">
-                <LiveStatusWidget />
-              </ThemeCard>
+              <LiveStatusWidget />
             </div>
 
             {/* 우측: 방명록 폼 */}

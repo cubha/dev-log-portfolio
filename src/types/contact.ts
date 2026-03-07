@@ -21,6 +21,8 @@ export type GuestbookEntry = {
   is_secret: boolean
   user_id: string | null
   avatar_url: string | null
+  like_count: number
+  liked_by_me: boolean
 }
 
 /** 방명록 생성 시 필요한 필드 */

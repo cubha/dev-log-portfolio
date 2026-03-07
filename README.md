@@ -397,6 +397,12 @@ chmod +x verify.sh
   - [x] Sonner 토스트 알림 (SSR 호환 DynamicToaster)
   - [x] 페이지 트랜지션 (fade-up, Hydration 블랭크 방지)
   - [x] 반응형 디자인 (모바일/태블릿/데스크탑)
+  - [x] ThemeCard variant 시스템 (default/featured/minimal) + THEME_CARD_CLASS static export
+  - [x] Surface 토큰 계층 (`--surface` / `--elevated`) + ambient-glow 단색 통합
+  - [x] 전 페이지 컴포넌트 디자인 통일 (HeroSection, AIWorkflowSection, AboutContent, ProjectCard, GuestbookListClient)
+- [x] **방명록 원글 좋아요**
+  - [x] `guestbook_likes` 테이블 (RLS: 조회=공개, 생성/삭제=인증 유저)
+  - [x] `toggleEntryLike` Server Action + 낙관적 업데이트 + 실패 시 롤백
 - [x] **배포**
   - [x] Vercel 배포 (GitHub main 브랜치 자동 배포)
   - [x] 환경변수 7개 설정 완료
@@ -409,7 +415,7 @@ chmod +x verify.sh
 - [x] ~~사용자 로그인 기능 통합~~ → GitHub 로그인 버튼 방명록 폼/댓글 영역에 독립 배치 완료 (v1.2.0)
 - [x] ~~방명록/댓글 닉네임 체계 정리~~ → Admin/GitHub OAuth/이메일 우선순위 정렬, 비회원 자동생성 닉네임 완료 (v1.2.0)
 - [x] ~~관리자 대시보드 방문자 통계~~ → page_views 수집 + 통합 Analytics 카드 (v1.2.0)
-- [ ] 전체 UI/UX 업데이트
+- [x] ~~전체 UI/UX 업데이트~~ → 디자인 시스템 전면 재설계 (ThemeCard, Surface 토큰, ambient-glow 통합) 완료 (v1.3.0)
 - [ ] 프로젝트 검색 기능
 
 ---
@@ -445,9 +451,34 @@ chmod +x verify.sh
 - `page_views` 테이블 기반 방문 추적 인프라 구축
 - 관리자 대시보드 Visitor Analytics 통합 카드 (수치·7일 바차트·인기페이지 TOP5)
 
+### Phase 9: UI/UX 전면 개편 + 방명록 원글 좋아요 ✅ (2026-03-07)
+- 디자인 시스템 정립: Surface 토큰 계층(`--surface`/`--elevated`), ThemeCard variant 시스템 (default/featured/minimal)
+- HeroSection·AIWorkflowSection·AboutContent·ProjectCard·GuestbookListClient 전 페이지 디자인 통일
+- ambient-glow 3색 → 단색 통합, 불필요한 CSS 클래스 제거 (role-pill, gradient-ring, bento-grid 등)
+- 방명록 원글 좋아요: `guestbook_likes` 테이블 + Server Action + 낙관적 업데이트
+- About Me 카드 ThemeCard default variant 통일
+
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v1.3.0 — 2026-03-07 (UI/UX 전면 개편 + 방명록 원글 좋아요)
+
+**UI/UX 개편:**
+- 디자인 시스템 정립: `--surface`(다크 20%/라이트 100%) · `--elevated`(24%/97%) CSS 변수, `@layer utilities` 직접 정의로 Tailwind JIT 미생성 이슈 해결
+- ThemeCard variant 시스템 (`default` / `featured` / `minimal`) + `THEME_CARD_CLASS` static export (Framer Motion 호환)
+- HeroSection: role-pill 제거, 3색 ambient-orb → 단색 ambient-glow, 수직 중앙 레이아웃
+- AIWorkflowSection: bento grid → 수직 타임라인 (좌측 step number + 연결선)
+- AboutContent: gradient-ring → 단순 border, story 카드 vertical stack + ThemeCard(minimal → default)
+- ProjectCard: THEME_CARD_CLASS 적용, hover spring 애니메이션
+- GuestbookListClient: 각 항목 ThemeCard(default) 카드 형태
+- 불필요한 CSS 제거: `.role-pill`, `.gradient-ring`, `@keyframes gradient-rotate`, `.bento-grid`, `.ambient-orb-*`
+
+**기능 추가:**
+- 방명록 원글 좋아요: `guestbook_likes` 테이블 (RLS: 조회=공개, 생성/삭제=인증 유저), `toggleEntryLike` Server Action, 낙관적 업데이트 + 실패 시 롤백
+
+**DB 변경:**
+- `guestbook_likes` 테이블 추가 (guestbook_id FK, user_id, UNIQUE 제약)
 
 ### v1.2.0 — 2026-03-07 (닉네임 체계 정리 + 방문자 분석)
 

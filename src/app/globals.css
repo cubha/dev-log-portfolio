@@ -5,37 +5,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   Design Tokens
+   ─────────────────────────────────────────────────────────────────────────
+   Spacing scale (4px grid): 1/2/3/4/5/6/8/10/12/16/24
+   Section padding: py-24 (96px)
+   Card padding: p-5 (20px) or p-6 (24px)
+   Card gap: gap-4 (16px)
+   Section gap: gap-6 (24px)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 @layer base {
   :root {
-    /* [Light Mode] 대비를 높여 가독성 확보 */
-    --background: 210 40% 98%;    /* slate-50 */
-    --foreground: 222 47% 11%;    /* slate-950 (진한 텍스트) */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
 
-    /* 실버 그라데이션 - 뭉치지 않게 명도 차이 최적화 */
-    --metal-start: 215 16% 40%;  /* 어두운 메탈 */
-    --metal-mid: 214 20% 75%;    /* 밝은 실버 */
-    --metal-end: 215 16% 40%;    /* 어두운 메탈 */
+    --metal-start: 215 16% 40%;
+    --metal-mid: 214 20% 75%;
+    --metal-end: 215 16% 40%;
 
-    --brand-secondary: 201 96% 40%; /* 쨍하지 않은 고급스러운 블루 */
+    --brand-secondary: 201 96% 40%;
+
+    /* Surface layers (light) — 순수 흰색 카드, body gradient 98%→94% 위에 부각 */
+    --surface: 0 0% 100%;
+    --elevated: 220 13% 97%;
   }
 
   .dark {
-    /* [Dark Mode] 차콜 그레이 — 채도 5%로 낮춰 남색/네이비 기운 완전 제거 */
-    --background: 215 5% 12%;     /* 딥 차콜 (거의 중립 그레이) */
-    --foreground: 215 5% 87%;     /* 중립 라이트 그레이 텍스트 (대비 확보) */
+    --background: 215 5% 12%;
+    --foreground: 215 5% 87%;
 
-    /* 실버 — 티타늄/건메탈 질감 (채도 최소화로 차가운 금속감 유지) */
-    --metal-start: 215 5% 23%;    /* 짙은 건메탈 섀도 */
-    --metal-mid:   215 6% 64%;    /* 티타늄 하이라이트 */
-    --metal-end:   215 5% 23%;    /* 짙은 건메탈 섀도 */
+    --metal-start: 215 5% 23%;
+    --metal-mid: 215 6% 64%;
+    --metal-end: 215 5% 23%;
 
     --brand-secondary: 200 60% 45%;
+
+    /* Surface layers (dark) — body gradient 12%→17%, surface는 그 위에 떠야 함 */
+    --surface: 215 5% 20%;
+    --elevated: 215 5% 24%;
   }
 }
 
 body {
   color: hsl(var(--foreground));
-  /* Light: slate-50 → slate-100 (은은한 메탈 그라데이션) */
   background: linear-gradient(to bottom, hsl(210, 40%, 98%), hsl(214, 32%, 94%));
   background-attachment: fixed;
   font-family: 'Pretendard Variable', sans-serif;
@@ -43,13 +56,22 @@ body {
 }
 
 .dark body {
-  /* Dark: 딥 차콜 → 다크 차콜 그라데이션 (남색 기운 없음) */
   background: linear-gradient(to bottom, hsl(215, 5%, 12%), hsl(215, 5%, 17%));
   background-attachment: fixed;
 }
 
 @layer utilities {
-  /* 1. 실버 메탈 배경 (입체감 강화) */
+  /* ─── Surface Tokens ─────────────────────────────────────────────────── */
+
+  .bg-surface {
+    background-color: hsl(var(--surface));
+  }
+  .bg-elevated {
+    background-color: hsl(var(--elevated));
+  }
+
+  /* ─── Silver Metal ──────────────────────────────────────────────────── */
+
   .bg-silver-metal {
     background: linear-gradient(
       135deg,
@@ -61,7 +83,6 @@ body {
     transition: 0.5s;
   }
 
-  /* 2. 실버 메탈 텍스트 (로고용) */
   .text-silver-metal {
     background: linear-gradient(
       to right,
@@ -74,7 +95,6 @@ body {
     background-size: 200% auto;
   }
 
-  /* 3. 광택 애니메이션 (뭉침 현상 해결 버전) */
   .animate-shine:hover {
     animation: shine 1.5s linear infinite;
     background-image: linear-gradient(
@@ -92,19 +112,17 @@ body {
     }
   }
 
-  /* ─── ThemeCard Rim Light 시스템 ───────────────────────────────────────── */
+  /* ─── ThemeCard Rim Light System ─────────────────────────────────── */
 
-  /* 베벨 림 라이트: 라이트 모드에선 거의 투명하게, 다크 모드에서만 광택 유지 */
   .border-rim-light {
-    border-top-color: rgba(0, 0, 0, 0.03);
-    border-left-color: rgba(0, 0, 0, 0.01);
+    border-top-color: rgba(0, 0, 0, 0.06);
+    border-left-color: rgba(0, 0, 0, 0.03);
   }
   .dark .border-rim-light {
-    border-top-color: rgba(255, 255, 255, 0.12);
+    border-top-color: rgba(255, 255, 255, 0.14);
     border-left-color: rgba(255, 255, 255, 0.07);
   }
 
-  /* 카드 표면 그라데이션: ::before 오버레이로 Tailwind gradient와 충돌 없음 */
   .bg-card-surface::before {
     content: '';
     position: absolute;
@@ -118,11 +136,10 @@ body {
     pointer-events: none;
   }
 
-  /* 선명한 드롭 섀도: 라이트 모드(기본)는 투명도를 대폭 낮춰 마일드하게, 다크 모드만 기존 강도 유지 */
   .shadow-sharp {
     box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.04),
-      0 1px 1px rgba(0, 0, 0, 0.02);
+      0 1px 3px rgba(0, 0, 0, 0.08),
+      0 2px 6px rgba(0, 0, 0, 0.04);
   }
   .dark .shadow-sharp {
     box-shadow:
@@ -130,20 +147,80 @@ body {
       0 2px 4px rgba(0, 0, 0, 0.20);
   }
 
-  /* 호버: 상단 빛 효과 조절 */
   .hover\:border-rim-intense:hover {
-    border-top-color: rgba(0, 0, 0, 0.08);
+    border-top-color: rgba(0, 0, 0, 0.12);
   }
   .dark .hover\:border-rim-intense:hover {
-    border-top-color: rgba(255, 255, 255, 0.30);
+    border-top-color: rgba(255, 255, 255, 0.25);
+  }
+
+  /* ─── Ambient Glow (seamless edge, single tone) ─────────────────── */
+
+  .ambient-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    will-change: transform;
+    background: radial-gradient(
+      circle,
+      hsl(var(--brand-secondary) / 0.10) 0%,
+      hsl(var(--brand-secondary) / 0.04) 40%,
+      transparent 70%
+    );
+  }
+  .dark .ambient-glow {
+    background: radial-gradient(
+      circle,
+      hsl(var(--brand-secondary) / 0.14) 0%,
+      hsl(var(--brand-secondary) / 0.05) 40%,
+      transparent 70%
+    );
   }
 }
 
-/* ─── MDX 모달 콘텐츠 보조 스타일 ───────────────────────────────────────── */
-/*
- * MdxComponents.tsx의 Tailwind 클래스가 renderToStaticMarkup으로 인라인 출력되므로
- * 대부분의 스타일은 이미 적용됨. 아래는 MdxComponents에서 정의하지 않은 요소 보완.
- */
+/* ─── Hero Silver Button ──────────────────────────────────────────────── */
+
+.btn-silver-hero {
+  background-image: linear-gradient(
+    110deg,
+    hsl(var(--metal-start)) 45%,
+    hsl(var(--metal-mid))   50%,
+    hsl(var(--metal-start)) 55%
+  );
+  background-size: 200% 100%;
+  animation: shine 3s linear infinite;
+}
+.btn-silver-hero:hover {
+  animation: shine 0.65s linear infinite;
+  box-shadow: 0 8px 30px hsl(var(--metal-start) / 0.35);
+}
+
+/* ─── Glass Card ──────────────────────────────────────────────────────── */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-top-color: rgba(255, 255, 255, 0.60);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+.dark .glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+}
+
+/* ─── MDX Modal ───────────────────────────────────────────────────────── */
+
 .mdx-modal-content hr {
   border: none;
   border-top: 1px solid hsl(var(--foreground) / 0.12);
@@ -160,7 +237,8 @@ body {
   padding-left: 0.25rem;
 }
 
-/* 커스텀 스크롤바 */
+/* ─── Scrollbar ───────────────────────────────────────────────────────── */
+
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: hsl(var(--background)); }
 .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -168,34 +246,8 @@ body {
   border-radius: 10px;
 }
 
-/* ─── Hero 전용 Silver 버튼: 기본 3s 지속 shimmer, hover 시 0.65s 고속 ─── */
-/*
- * animate-shine(hover 전용)와 달리 btn-silver-hero는 항상 shimmer가 흐르며
- * hover 시 애니메이션 속도가 빠르게 전환됩니다.
- */
-.btn-silver-hero {
-  background-image: linear-gradient(
-    110deg,
-    hsl(var(--metal-start)) 45%,
-    hsl(var(--metal-mid))   50%,
-    hsl(var(--metal-start)) 55%
-  );
-  background-size: 200% 100%;
-  animation: shine 3s linear infinite;
-}
-.btn-silver-hero:hover {
-  animation: shine 0.65s linear infinite;
-  box-shadow: 0 8px 30px hsl(var(--metal-start) / 0.35);
-}
+/* ─── Admin ───────────────────────────────────────────────────────────── */
 
-/* ─── 관리자 폼 공통 인풋 스타일 ─────────────────────────────────────────── */
-
-/*
- * .admin-input: input, select, textarea 등 관리자 페이지 폼 요소에 적용
- * - Silver Metal 테마 border (라이트/다크 양방향)
- * - 포커스 시 brand-primary 기반 은빛 광택 링
- * - 다크모드 텍스트 대비 확보 (foreground 변수 직접 적용)
- */
 .admin-input {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
@@ -214,7 +266,6 @@ body {
   box-shadow: 0 0 0 2px hsl(var(--metal-start) / 0.18);
 }
 
-/* 네이티브 date/datetime-local input 다크모드 달력 아이콘 및 텍스트 보정 */
 input[type="date"],
 input[type="datetime-local"] {
   color-scheme: light;
@@ -224,7 +275,6 @@ input[type="datetime-local"] {
   color-scheme: dark;
 }
 
-/* is_ongoing(진행중) 토글 - Silver Metal 팔레트 */
 .toggle-silver[aria-checked="true"] {
   background: linear-gradient(
     135deg,

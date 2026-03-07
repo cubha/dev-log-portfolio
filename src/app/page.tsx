@@ -18,7 +18,7 @@ export default async function Home() {
   const isLoggedIn = !!user
 
   return (
-    <main className="flex min-h-screen flex-col items-center pt-12 pb-16 md:pt-14 md:pb-12">
+    <main className="flex min-h-screen flex-col items-center pb-24">
       {/* ── Hero (전체 너비 배경) ───────────────────────────────────── */}
       <div className="w-full">
         <HeroSection />
@@ -29,7 +29,7 @@ export default async function Home() {
         <AIWorkflowSection />
 
         {/* ── Footer Link 영역 (수직 정렬) ───────────────────────────── */}
-        <div className="flex flex-col items-center gap-5 mt-20 max-w-fit mx-auto">
+        <div className="flex flex-col items-center gap-5 mt-12 max-w-fit mx-auto">
           <AboutLink />
           <ContactLink />
         </div>

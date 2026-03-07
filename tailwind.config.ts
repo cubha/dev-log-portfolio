@@ -15,8 +15,10 @@ const config: Config = {
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        surface: "hsl(var(--surface))",
+        elevated: "hsl(var(--elevated))",
         brand: {
-          primary: "hsl(var(--metal-start))", // metal-start를 프라이머리로 매핑
+          primary: "hsl(var(--metal-start))",
           secondary: "hsl(var(--brand-secondary))",
         },
         accent: {
