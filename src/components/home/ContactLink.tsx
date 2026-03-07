@@ -23,7 +23,7 @@ export function ContactLink() {
                    text-foreground/60 hover:text-foreground transition-colors"
       >
         <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-        <span>문의하기</span>
+        <span>Contact</span>
         <span className="group-hover:translate-x-0.5 transition-transform inline-block">→</span>
       </Link>
     </motion.div>
