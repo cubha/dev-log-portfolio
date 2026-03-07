@@ -1,3 +1,7 @@
 {
-  "ignoreCommand": "[ \"$VERCEL_ENV\" != \"production\" ]"
+  "git": {
+    "deploymentEnabled": {
+      "feature/*": false
+    }
+  }
 }
