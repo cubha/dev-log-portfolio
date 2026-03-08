@@ -36,7 +36,7 @@ export default function RootLayout({
     // suppressHydrationWarning: next-themes가 class 속성을 클라이언트에서 주입하므로 필수
     <html lang="ko" suppressHydrationWarning>
       {/* font-sans: tailwind.config.ts에서 Pretendard로 설정된 기본 폰트 적용 */}
-      <body className="font-sans antialiased min-h-screen flex flex-col bg-background text-foreground">
+      <body className="font-sans antialiased min-h-screen flex flex-col text-foreground">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

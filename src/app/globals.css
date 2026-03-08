@@ -47,17 +47,22 @@
   }
 }
 
-body {
-  color: hsl(var(--foreground));
+html {
+  overflow-x: hidden;
   background: linear-gradient(to bottom, hsl(210, 40%, 98%), hsl(214, 32%, 94%));
   background-attachment: fixed;
-  font-family: 'Pretendard Variable', sans-serif;
-  transition: color 0.3s ease;
 }
 
-.dark body {
+html.dark {
   background: linear-gradient(to bottom, hsl(215, 5%, 12%), hsl(215, 5%, 17%));
   background-attachment: fixed;
+}
+
+body {
+  background: transparent;
+  color: hsl(var(--foreground));
+  font-family: 'Pretendard Variable', sans-serif;
+  transition: color 0.3s ease;
 }
 
 @layer utilities {
@@ -176,6 +181,21 @@ body {
       hsl(var(--brand-secondary) / 0.05) 40%,
       transparent 70%
     );
+  }
+
+  /* 효과 레이어 가장자리를 부드럽게 페이드 */
+  .effects-fade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mask-image:
+      linear-gradient(to right, transparent, black 12%, black 88%, transparent),
+      linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+    mask-composite: intersect;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, black 12%, black 88%, transparent),
+      linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+    -webkit-mask-composite: source-in;
   }
 }
 

@@ -86,52 +86,55 @@ export function HeroSection() {
       onMouseMove={handleMouseMove}
       className="relative w-full min-h-[70vh] flex items-center py-16 overflow-hidden"
     >
-      {/* Ambient glow */}
-      <div
-        className="ambient-glow"
-        style={{ width: 800, height: 800, top: '-20%', left: '10%' }}
-      />
-      <div
-        className="ambient-glow"
-        style={{ width: 600, height: 600, bottom: '-10%', right: '5%' }}
-      />
+      {/* Effects layer — edges fade out smoothly */}
+      <div className="effects-fade">
+        {/* Ambient glow */}
+        <div
+          className="ambient-glow"
+          style={{ width: 800, height: 800, top: '-20%', left: '10%' }}
+        />
+        <div
+          className="ambient-glow"
+          style={{ width: 600, height: 600, bottom: '-10%', right: '5%' }}
+        />
 
-      {/* Grid pattern */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.07] dark:opacity-[0.05]"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, hsl(var(--foreground) / 0.12) 1px, transparent 1px),
-            linear-gradient(to bottom, hsl(var(--foreground) / 0.12) 1px, transparent 1px)
-          `,
-          backgroundSize: '28px 28px',
-          maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)',
-        }}
-      />
-      <motion.div
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.12] dark:opacity-[0.10]"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, hsl(var(--foreground) / 0.2) 1px, transparent 1px),
-            linear-gradient(to bottom, hsl(var(--foreground) / 0.2) 1px, transparent 1px)
-          `,
-          backgroundSize: '28px 28px',
-          maskImage: gridMask,
-          WebkitMaskImage: gridMask,
-        }}
-      />
+        {/* Grid pattern */}
+        <div
+          className="pointer-events-none absolute inset-0 -z-10 opacity-[0.07] dark:opacity-[0.05]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, hsl(var(--foreground) / 0.12) 1px, transparent 1px),
+              linear-gradient(to bottom, hsl(var(--foreground) / 0.12) 1px, transparent 1px)
+            `,
+            backgroundSize: '28px 28px',
+            maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)',
+          }}
+        />
+        <motion.div
+          className="pointer-events-none absolute inset-0 -z-10 opacity-[0.12] dark:opacity-[0.10]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, hsl(var(--foreground) / 0.2) 1px, transparent 1px),
+              linear-gradient(to bottom, hsl(var(--foreground) / 0.2) 1px, transparent 1px)
+            `,
+            backgroundSize: '28px 28px',
+            maskImage: gridMask,
+            WebkitMaskImage: gridMask,
+          }}
+        />
 
-      {/* Spotlight */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 -z-0 blur-3xl"
-        style={{
-          background: isDark ? ambientBgDark : ambientBgLight,
-          mixBlendMode: isDark ? 'screen' : 'soft-light',
-          maskImage: edgeMask,
-          WebkitMaskImage: edgeMask,
-        }}
-      />
+        {/* Spotlight */}
+        <motion.div
+          className="pointer-events-none absolute inset-0 -z-0 blur-3xl"
+          style={{
+            background: isDark ? ambientBgDark : ambientBgLight,
+            mixBlendMode: isDark ? 'screen' : 'soft-light',
+            maskImage: edgeMask,
+            WebkitMaskImage: edgeMask,
+          }}
+        />
+      </div>
 
       {/* Main content — vertical center */}
       <div className="relative z-10 w-full px-4 md:px-6">

@@ -46,11 +46,13 @@ export function AboutContent({ profile }: AboutContentProps) {
     <>
       {/* Hero section */}
       <section className="relative flex flex-col justify-center py-24 mb-8 overflow-hidden">
-        {/* Ambient glow */}
-        <div
-          className="ambient-glow"
-          style={{ width: 500, height: 500, top: '-15%', right: '-10%' }}
-        />
+        {/* Effects layer — edges fade out smoothly */}
+        <div className="effects-fade">
+          <div
+            className="ambient-glow"
+            style={{ width: 500, height: 500, top: '-15%', right: '-10%' }}
+          />
+        </div>
 
         <div className="flex flex-col md:flex-row md:items-center md:gap-12 text-center md:text-left">
 
