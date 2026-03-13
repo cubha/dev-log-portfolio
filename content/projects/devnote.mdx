@@ -1,0 +1,86 @@
+# 🗂️ DevNote — 개발자 정보 관리 대시보드
+
+> **서버·DB·API 접속 정보부터 메모·문서까지, 개발에 필요한 모든 정보를 한 곳에서 관리하는 도구**
+> 외부 서버 없이 브라우저 IndexedDB만 사용하는 완전 로컬 무설치 웹 앱입니다.
+
+---
+
+## ✨ 핵심 구현 내용
+
+### 1. 🗄️ 5종 카드 타입 시스템
+개발에 필요한 정보를 체계적으로 분류·관리할 수 있는 카드 기반 시스템을 설계했습니다.
+- **Server**: 서버 접속 정보 (host, port, username, password, SSH key)
+- **DB**: 데이터베이스 연결 정보 (host, port, dbName, credentials)
+- **API**: API 엔드포인트 정보 (url, method, apiKey, token, headers)
+- **Markdown**: 자유 텍스트 메모 (마크다운 미리보기 토글)
+- **Document**: 다중 섹션 복합 문서 (5종 섹션을 자유롭게 조합)
+
+### 2. 📄 Document 카드 — HybridContent 아키텍처
+하나의 문서 안에 접속 정보 + URL + 환경변수 + 코드 + 메모를 섹션 단위로 조합할 수 있는 복합 문서 시스템을 구현했습니다.
+- **5종 섹션**: Markdown, Credentials, URLs, Env, Code
+- **DnD 섹션 정렬**: `@dnd-kit/sortable`로 드래그 앤 드롭 순서 변경
+- **섹션별 접기/펼치기**: SectionWrapper 공통 헤더로 통일된 UX
+- **섹션별 Smart Paste**: 각 섹션 타입에 맞는 텍스트 자동 파싱
+
+### 3. 🤖 2-Tier 하이브리드 AI 아키텍처
+API 키 없이도 기본 동작하면서, BYOK(Bring Your Own Key)로 고정밀 기능을 추가할 수 있는 구조를 설계했습니다.
+- **Tier 1 (오프라인)**: 정규식 기반 패턴 감지 — 0ms 즉시 구조화
+- **Tier 2 (BYOK)**: Claude API Structured Outputs — 고정밀 구조화
+- **Smart Paste**: 자유 텍스트 붙여넣기 → 카드 필드 자동 매핑
+- **MD Smart Paste**: 자유 텍스트 → 마크다운 자동 변환 (리스트, 링크, 코드블록)
+- **Document Smart Paste**: 자유 텍스트 → Section[] 구조화
+- **콘텐츠 요약**: 카드 내용 → 핵심 요약 + 키포인트
+
+### 4. 💾 완전 로컬 데이터 아키텍처
+외부 서버 의존 없이 브라우저만으로 동작하는 데이터 관리 시스템을 구축했습니다.
+- **Dexie.js (IndexedDB)**: 스키마 v12 마이그레이션, `useLiveQuery` 반응형 쿼리
+- **File System Access API**: Chrome/Edge 네이티브 파일 저장 + Firefox `<input>` 폴백
+- **JSON 백업/복원**: 전체/선택 내보내기, Append/Replace 가져오기 (2-Pass 폴더 리매핑)
+- **자동 백업 알림**: 7일 경과 또는 미백업+10건 이상 시 toast 알림
+
+### 5. 🔍 검색 & 필터 시스템
+- **Fuse.js 퍼지 검색**: 제목, 태그, 콘텐츠 통합 매칭
+- **타입/태그 필터 조합**: 카드 타입별 + 태그별 필터링
+- **폴더 트리 네비게이션**: 계층 구조 탐색 + DnD 이동
+
+### 6. ✏️ 에디터 & UX
+- **CodeMirror 6**: JSON, SQL 언어 모드 코드 에디터
+- **탭 기반 다중 편집**: 동시 여러 카드 편집, Ctrl+S 저장
+- **다크/라이트 테마**: 즉시 전환
+- **키보드 단축키**: Ctrl+N(새 카드), Ctrl+K(검색), Ctrl+W(탭 닫기)
+- **우클릭 컨텍스트 메뉴**: 이름 변경, 삭제
+- **사이드바 접기/펼치기**: hover 핸들로 복원
+
+---
+
+## 🚨 트러블슈팅
+
+### 1️⃣ IndexedDB 스키마 마이그레이션 데이터 손실
+* **문제 상황:** Dexie.js 스키마 업그레이드 시 기존 데이터가 유실되는 현상 발생
+* **원인 분석:** 인덱스 변경과 데이터 변환이 동시에 이루어지며 트랜잭션 충돌
+* **해결 방안:** `upgrade()` 콜백에서 데이터 마이그레이션 로직을 명시적으로 작성하고, 레거시 타입 매핑(`LEGACY_TYPE_MAP`)으로 이전 버전 호환성 확보
+
+### 2️⃣ Smart Paste API 타입 오탐
+* **문제 상황:** URL 1개만 있어도 API 타입으로 감지되는 오탐 발생
+* **원인 분석:** Tier 1 정규식 패턴이 URL 존재만으로 API 타입을 판단
+* **해결 방안:** 인증정보(apiKey, token, headers)가 동반될 때만 API 타입으로 감지하도록 `detectPatterns` 로직 강화
+
+### 3️⃣ File System Access API 브라우저 호환성
+* **문제 상황:** Firefox에서 `showSaveFilePicker`/`showOpenFilePicker` API 미지원으로 내보내기/가져오기 실패
+* **원인 분석:** FSAA는 Chrome/Edge 전용 API
+* **해결 방안:** `<input type="file">` + Blob URL 폴백 패턴 구현으로 모든 브라우저 대응
+
+---
+
+## 🤖 AI 협업 개발 구조
+
+- **Claude Code (Controller + Implementer):** 요구사항 분석, 아키텍처 설계, 코드 구현, 검증까지 전 과정 담당
+- **Gemini (Researcher):** 외부 리서치 (라이브러리 비교, API 스펙 확인)
+
+---
+
+## 💡 회고
+
+서버 없이 브라우저만으로 동작하는 앱을 설계하면서, IndexedDB의 비동기 특성과 스키마 마이그레이션의 복잡성을 깊이 경험했습니다. 특히 Dexie.js의 `useLiveQuery`를 활용한 반응형 데이터 바인딩이 React 상태 관리와 자연스럽게 통합되는 패턴을 확립할 수 있었습니다.
+
+2-Tier AI 아키텍처는 "API 키 없이도 동작하되, 있으면 더 잘 동작한다"는 설계 철학을 실현한 결과물입니다. Tier 1 정규식 파서의 정확도를 높이는 과정에서 텍스트 패턴 분석 역량이 크게 향상되었습니다.
