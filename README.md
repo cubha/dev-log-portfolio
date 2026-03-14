@@ -157,6 +157,10 @@ dev-log-portfolio/
 │   └── projects/
 │       └── dev-log-portfolio.mdx     # 포트폴리오 개발 회고
 │
+├── docs/                             # 📊 분석 문서
+│   └── analysis/
+│       └── ANALYSIS-2026-03-14.md   # 성능 분석 보고서
+│
 ├── supabase/                         # 🗄️ Supabase 관련 파일
 │   ├── schema.sql                    # 데이터베이스 스키마
 │   └── migrations/
@@ -416,7 +420,9 @@ chmod +x verify.sh
 - [x] ~~방명록/댓글 닉네임 체계 정리~~ → Admin/GitHub OAuth/이메일 우선순위 정렬, 비회원 자동생성 닉네임 완료 (v1.2.0)
 - [x] ~~관리자 대시보드 방문자 통계~~ → page_views 수집 + 통합 Analytics 카드 (v1.2.0)
 - [x] ~~전체 UI/UX 업데이트~~ → 디자인 시스템 전면 재설계 (ThemeCard, Surface 토큰, ambient-glow 통합) 완료 (v1.3.0)
+- [x] ~~성능 병목 분석 및 핵심 개선~~ → React.cache(), Promise.all() 병렬화, Skills 애니메이션 최적화 완료 (v1.4.0)
 - [ ] 프로젝트 검색 기능
+- [ ] `/projects`, `/about` ISR 전환 (Suspense 경계 분리 후 적용 예정)
 
 ---
 
@@ -458,9 +464,27 @@ chmod +x verify.sh
 - 방명록 원글 좋아요: `guestbook_likes` 테이블 + Server Action + 낙관적 업데이트
 - About Me 카드 ThemeCard default variant 통일
 
+### Phase 10: 성능 분석 및 핵심 병목 리팩토링 ✅ (2026-03-14)
+- 성능 분석 보고서 작성 (`docs/analysis/ANALYSIS-2026-03-14.md`)
+- `getCurrentUserRole()` React.cache() 래핑 — 동일 요청 범위 내 `auth.getUser()` 중복 호출 제거 (Contact 페이지 3회→1회)
+- `GuestbookList` 댓글수·좋아요·auth 조회 `Promise.all()` 병렬화 — 순차 대기 제거
+- `getGuestbookComments()` `auth.getUser()` ‖ `comments.select()` 병렬 실행
+- `SkillsSection` stagger delay `0.06→0.02` 축소, `whileInView→animate` 전환 — IntersectionObserver 제거
+
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v1.4.0 — 2026-03-14 (성능 최적화 — 핵심 병목 리팩토링)
+
+**성능 개선:**
+- `getCurrentUserRole()` `React.cache()` 래핑: 동일 요청 범위 내 `supabase.auth.getUser()` 중복 호출 제거 — Contact 페이지 기준 네트워크 왕복 3→1회
+- `GuestbookList` 병렬 쿼리: 댓글 수·좋아요·auth 정보를 `Promise.all()`로 동시 조회 — 순차 대기 시간 제거
+- `getGuestbookComments()` 병렬화: `auth.getUser()`와 댓글 목록 조회를 `Promise.all()`로 동시 실행
+- `SkillsSection` 애니메이션 최적화: stagger delay `idx×0.06→idx×0.02` 축소, `whileInView` 제거 → IntersectionObserver 0개 (펼침 즉시 반응)
+
+**분석 리포트:**
+- `docs/analysis/ANALYSIS-2026-03-14.md` 성능 분석 보고서 추가
 
 ### v1.3.0 — 2026-03-07 (UI/UX 전면 개편 + 방명록 원글 좋아요)
 

@@ -179,15 +179,19 @@ export async function getGuestbookComments(
   guestbookId: number
 ): Promise<GuestbookComment[]> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
 
-  const { data: comments, error } = await supabase
-    .from('guestbook_comments')
-    .select('*')
-    .eq('guestbook_id', guestbookId)
-    .order('created_at', { ascending: true })
+  // auth.getUser()와 댓글 목록 조회를 병렬 실행
+  const [
+    { data: { user } },
+    { data: comments, error },
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase
+      .from('guestbook_comments')
+      .select('*')
+      .eq('guestbook_id', guestbookId)
+      .order('created_at', { ascending: true }),
+  ])
 
   if (error) {
     console.error('[getGuestbookComments] fetch error:', error)

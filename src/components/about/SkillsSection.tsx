@@ -32,14 +32,15 @@ function pickBestPerCategory(skills: Skill[]): Skill[] {
   )
 }
 
+// stagger delay 0.06→0.02 축소: 카드 100개 기준 최대 2초→0.2초
 const cardVariants = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 0, y: 8 },
   visible: (i: number) => ({
     opacity: 1, y: 0,
     transition: {
-      duration: 0.5,
+      duration: 0.3,
       ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-      delay: i * 0.06,
+      delay: i * 0.02,
     },
   }),
 }
@@ -146,8 +147,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
                           custom={idx}
                           variants={cardVariants}
                           initial="hidden"
-                          whileInView="visible"
-                          viewport={{ once: true, margin: '-20px' }}
+                          animate="visible"
                           className={`group flex items-center gap-3 p-3.5 ${THEME_CARD_CLASS}`}
                         >
                           <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-foreground/5 group-hover:bg-foreground/8 flex items-center justify-center transition-colors">

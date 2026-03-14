@@ -1,4 +1,5 @@
 import { createClient } from '@/src/utils/supabase/server'
+import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { GuestbookListClient } from './GuestbookListClient'
 import type { GuestbookEntry } from '@/src/types/contact'
 
@@ -15,6 +16,8 @@ interface GuestbookListProps {
  * 방명록 목록 (서버 컴포넌트)
  *
  * 서버사이드 페이지네이션: Supabase range + count 사용
+ * - getCurrentUserRole()은 cache()로 래핑되어 중복 호출 없음
+ * - 댓글 수/좋아요 쿼리는 Promise.all()로 병렬 실행
  */
 export async function GuestbookList({
   isAdmin,
@@ -42,27 +45,19 @@ export async function GuestbookList({
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
   const entryIds = (data ?? []).map((e) => e.id)
+  const safeIds = entryIds.length > 0 ? entryIds : [-1]
 
-  // 댓글 수 조회
-  const { data: commentRows } = await supabase
-    .from('guestbook_comments')
-    .select('guestbook_id')
-    .in('guestbook_id', entryIds.length > 0 ? entryIds : [-1])
+  // 댓글 수 + 좋아요 병렬 조회 (+ 캐시된 유저 정보 재사용)
+  const [{ data: commentRows }, { data: likeRows }, { user }] = await Promise.all([
+    supabase.from('guestbook_comments').select('guestbook_id').in('guestbook_id', safeIds),
+    supabase.from('guestbook_likes').select('guestbook_id, user_id').in('guestbook_id', safeIds),
+    getCurrentUserRole(),
+  ])
 
   const commentCounts: Record<number, number> = {}
   for (const row of commentRows ?? []) {
     commentCounts[row.guestbook_id] = (commentCounts[row.guestbook_id] ?? 0) + 1
   }
-
-  // 원글 좋아요 집계
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  const { data: likeRows } = await supabase
-    .from('guestbook_likes')
-    .select('guestbook_id, user_id')
-    .in('guestbook_id', entryIds.length > 0 ? entryIds : [-1])
 
   const likeMap = new Map<number, { count: number; likedByMe: boolean }>()
   for (const like of likeRows ?? []) {
