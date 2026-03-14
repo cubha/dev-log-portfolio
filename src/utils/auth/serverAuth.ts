@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { createClient } from '@/src/utils/supabase/server'
 import type { User } from '@supabase/supabase-js'
 
@@ -13,6 +14,7 @@ export interface UserRoleInfo {
 
 /**
  * 서버 컴포넌트에서 현재 로그인 유저의 역할을 안전하게 조회합니다.
+ * React.cache()로 래핑되어 동일 요청 범위 내 중복 호출을 방지합니다.
  *
  * - 비로그인 상태: { user: null, role: 'guest', isAdmin: false }
  * - 일반 로그인: { user, role: 'user', isAdmin: false }
@@ -23,7 +25,7 @@ export interface UserRoleInfo {
  * const { user, role, isAdmin } = await getCurrentUserRole()
  * ```
  */
-export async function getCurrentUserRole(): Promise<UserRoleInfo> {
+export const getCurrentUserRole = cache(async (): Promise<UserRoleInfo> => {
   const supabase = await createClient()
 
   // 현재 로그인 유저 확인 (서버 사이드에서 안전하게 검증)
@@ -50,4 +52,4 @@ export async function getCurrentUserRole(): Promise<UserRoleInfo> {
     role,
     isAdmin: role === 'admin',
   }
-}
+})
