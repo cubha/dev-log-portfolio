@@ -17,7 +17,6 @@
 /build
 
 # misc
-.DS_Store
 *.pem
 
 # debug
@@ -41,9 +40,26 @@ next-env.d.ts
 
 # IDE
 .cursor/
+.vscode/
 
-# screenshots / images
+# screenshots / images / media
 *.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.avif
+*.ico
+*.svg
+*.mp4
+*.mov
+*.avi
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # playwright
 .playwright-mcp/
