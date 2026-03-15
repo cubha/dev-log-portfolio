@@ -368,6 +368,7 @@ chmod +x verify.sh
 - [x] **프로젝트 리스트**
   - [x] CSS Grid 레이아웃 (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`)
   - [x] 카테고리 필터링 (전체/업무/개인/팀)
+  - [x] 키워드 검색 (제목·기술스택·회사명, `searchQueryAtom` 기반)
   - [x] Framer Motion `whileInView` 애니메이션
   - [x] 진행중/주요 태그 (카드 좌상단 고정)
   - [x] `is_ongoing DESC` + `end_date DESC` 정렬
@@ -414,14 +415,6 @@ chmod +x verify.sh
 
 ### 🚧 개발 예정
 
-- [x] ~~방명록 페이지네이션~~ → v1.1.0에서 서버사이드 페이지네이션으로 구현 완료
-- [x] ~~관리자 문의 답변 기능~~ → v1.1.0에서 방명록 댓글 시스템으로 대체
-- [x] ~~사용자 로그인 기능 통합~~ → GitHub 로그인 버튼 방명록 폼/댓글 영역에 독립 배치 완료 (v1.2.0)
-- [x] ~~방명록/댓글 닉네임 체계 정리~~ → Admin/GitHub OAuth/이메일 우선순위 정렬, 비회원 자동생성 닉네임 완료 (v1.2.0)
-- [x] ~~관리자 대시보드 방문자 통계~~ → page_views 수집 + 통합 Analytics 카드 (v1.2.0)
-- [x] ~~전체 UI/UX 업데이트~~ → 디자인 시스템 전면 재설계 (ThemeCard, Surface 토큰, ambient-glow 통합) 완료 (v1.3.0)
-- [x] ~~성능 병목 분석 및 핵심 개선~~ → React.cache(), Promise.all() 병렬화, Skills 애니메이션 최적화 완료 (v1.4.0)
-- [ ] 프로젝트 검색 기능
 - [ ] `/projects`, `/about` ISR 전환 (Suspense 경계 분리 후 적용 예정)
 
 ---
@@ -615,7 +608,7 @@ chmod +x verify.sh
 
 ## 📄 라이선스
 
-이 프로젝트는 개인 포트폴리오 용도로 제작되었습니다.
+이 프로젝트는 [MIT License](./LICENSE)로 배포됩니다.
 
 ---
 
