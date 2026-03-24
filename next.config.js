@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  watchOptions: {
+    pollIntervalMs: 300,
+  },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   images: {
     formats: ['image/avif', 'image/webp'],

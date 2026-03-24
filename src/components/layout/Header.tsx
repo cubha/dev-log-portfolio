@@ -11,6 +11,7 @@ import { ThemeToggle } from '@/src/components/common/ThemeToggle'
 /** GNB 네비게이션 항목 */
 const NAV_ITEMS = [
   { href: '/projects', label: 'Projects' },
+  { href: '/blog', label: 'Blog' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ]

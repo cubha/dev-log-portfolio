@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { LogOut, X, LayoutDashboard, User, Edit } from 'lucide-react'
+import { LogOut, X, LayoutDashboard, User, Edit, FileText } from 'lucide-react'
 import { logoutUser } from '@/src/utils/auth/logout'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
@@ -30,8 +30,9 @@ export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
     }
   }
 
-  // About 페이지인지 확인
+  // 특수 페이지 확인
   const isAboutPage = pathname === '/about'
+  const isBlogPage = pathname?.startsWith('/blog')
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
@@ -41,21 +42,28 @@ export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
           {/* 관리자 전용 메뉴 */}
           {isAdmin && (
             <>
-              {/* About 페이지에서는 프로필 편집 */}
               {isAboutPage ? (
                 <Link
                   href="/admin/profile"
-                className="flex items-center gap-2.5 px-4 py-3 text-sm text-foreground/70 hover:bg-foreground/5 transition-colors"
-              >
-                <Edit className="w-4 h-4 text-brand-secondary" />
+                  className="flex items-center gap-2.5 px-4 py-3 text-sm text-foreground/70 hover:bg-foreground/5 transition-colors"
+                >
+                  <Edit className="w-4 h-4 text-brand-secondary" />
                   <span className="font-medium">프로필 편집</span>
+                </Link>
+              ) : isBlogPage ? (
+                <Link
+                  href="/admin/blog"
+                  className="flex items-center gap-2.5 px-4 py-3 text-sm text-foreground/70 hover:bg-foreground/5 transition-colors"
+                >
+                  <FileText className="w-4 h-4 text-brand-secondary" />
+                  <span className="font-medium">블로그 관리</span>
                 </Link>
               ) : (
                 <Link
                   href="/admin/dashboard"
-                className="flex items-center gap-2.5 px-4 py-3 text-sm text-foreground/70 hover:bg-foreground/5 transition-colors"
-              >
-                <LayoutDashboard className="w-4 h-4 text-brand-secondary" />
+                  className="flex items-center gap-2.5 px-4 py-3 text-sm text-foreground/70 hover:bg-foreground/5 transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-brand-secondary" />
                   <span className="font-medium">대시보드</span>
                 </Link>
               )}

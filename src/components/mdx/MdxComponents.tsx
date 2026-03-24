@@ -1,13 +1,28 @@
 // src/components/mdx/MdxComponents.tsx
 
+import { Children } from 'react'
 import type { MDXComponents } from 'mdx/types'
+import type { ReactNode } from 'react'
+
+/** children에서 순수 텍스트를 추출하여 heading id를 생성 */
+const getHeadingId = (children: ReactNode): string => {
+  const text = Children.toArray(children)
+    .map((child) => (typeof child === 'string' ? child : ''))
+    .join('')
+    .trim()
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s가-힣-]/g, '')
+    .replace(/\s+/g, '-')
+}
 
 /** MDX 내 HTML 태그 → Tailwind 커스텀 컴포넌트 매핑 */
 export const mdxComponents: MDXComponents = {
   h2: ({ children, ...props }) => (
     <h2
       {...props}
-      className="mt-8 mb-4 text-lg font-bold text-foreground border-l-4 border-brand-primary pl-4 py-1 dark:border-brand-primary"
+      id={getHeadingId(children)}
+      className="mt-8 mb-4 text-lg font-bold text-foreground border-l-4 border-brand-primary pl-4 py-1 dark:border-brand-primary scroll-mt-24"
     >
       {children}
     </h2>
@@ -15,7 +30,8 @@ export const mdxComponents: MDXComponents = {
   h3: ({ children, ...props }) => (
     <h3
       {...props}
-      className="mt-6 mb-3 text-base font-semibold text-foreground dark:text-foreground"
+      id={getHeadingId(children)}
+      className="mt-6 mb-3 text-base font-semibold text-foreground dark:text-foreground scroll-mt-24"
     >
       {children}
     </h3>
