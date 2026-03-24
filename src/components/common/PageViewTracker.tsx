@@ -6,11 +6,19 @@ import { usePathname } from 'next/navigation'
 const VISITOR_ID_KEY = 'pv_visitor_id'
 const EXCLUDED_PREFIXES = ['/admin', '/login', '/api']
 
+function generateId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  // HTTP 환경(crypto.randomUUID 미지원) 폴백
+  return Date.now().toString(36) + Math.random().toString(36).slice(2)
+}
+
 function getOrCreateVisitorId(): string {
   if (typeof window === 'undefined') return ''
   let id = localStorage.getItem(VISITOR_ID_KEY)
   if (!id) {
-    id = crypto.randomUUID()
+    id = generateId()
     localStorage.setItem(VISITOR_ID_KEY, id)
   }
   return id

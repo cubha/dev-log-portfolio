@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Wrench, Home, LayoutDashboard, FolderKanban, Layers, User } from 'lucide-react'
+import { Wrench, Home, LayoutDashboard, FolderKanban, Layers, User, FileText } from 'lucide-react'
 import { ThemeToggle } from '@/src/components/common/ThemeToggle'
 import { LogoutButton } from '@/src/components/admin/LogoutButton'
 
 const NAV_ITEMS = [
   { href: '/admin/dashboard', label: '대시보드',       icon: LayoutDashboard },
   { href: '/admin/projects',  label: '프로젝트 관리',  icon: FolderKanban    },
+  { href: '/admin/blog',      label: '블로그 관리',    icon: FileText        },
   { href: '/admin/skills',    label: '기술 스택 관리', icon: Layers          },
   { href: '/admin/profile',   label: '프로필 관리',    icon: User            },
 ]

@@ -4,6 +4,7 @@ import { HeroSection } from '@/src/components/home/HeroSection'
 import { AboutLink } from '@/src/components/home/AboutLink'
 import { ContactLink } from '@/src/components/home/ContactLink'
 import { AIWorkflowSection } from '@/src/components/home/AIWorkflowSection'
+import { RecentBlogSection } from '@/src/components/home/RecentBlogSection'
 
 /**
  * 홈페이지
@@ -27,6 +28,9 @@ export default async function Home() {
       <div className="max-w-5xl w-full flex flex-col px-4 md:px-6">
         {/* ── AI Workflow + Buffer + Tech ───────────────────────────── */}
         <AIWorkflowSection />
+
+        {/* ── 최근 블로그 글 ───────────────────────────────────────── */}
+        <RecentBlogSection />
 
         {/* ── Footer Link 영역 (수직 정렬) ───────────────────────────── */}
         <div className="flex flex-col items-center gap-5 mt-12 max-w-fit mx-auto">
