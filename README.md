@@ -427,6 +427,7 @@ chmod +x verify.sh
 ### 🚧 개발 예정
 
 - [ ] `/projects`, `/about` ISR 전환 (Suspense 경계 분리 후 적용 예정)
+- [ ] **블로그 관리 진입점 개선**: 현재 관리자 대시보드(`/admin/dashboard`)에서 블로그 관리 → 블로그 목록 페이지(`/blog`) 상단에서 직접 관리 진입 가능하도록 UX 개선 예정
 
 ---
 
