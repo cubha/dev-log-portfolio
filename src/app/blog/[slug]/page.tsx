@@ -2,9 +2,10 @@
 
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar } from 'lucide-react'
+import { ArrowLeft, Calendar, Pencil } from 'lucide-react'
 import { compile, run } from '@mdx-js/mdx'
 import * as runtime from 'react/jsx-runtime'
+import remarkGfm from 'remark-gfm'
 import { rehypeShiki } from '@/src/utils/mdx'
 import { mdxComponents } from '@/src/components/mdx/MdxComponents'
 import { getBlogPostBySlug, getPublishedPostSummaries } from '@/src/utils/blog/getBlogPosts'
@@ -47,16 +48,25 @@ export default async function BlogDetailPage({ params }: PageProps) {
   const currentIdx = allPosts.findIndex((p) => p.id === post.id)
   const adjacent = {
     prev: currentIdx >= 0 && currentIdx < allPosts.length - 1
-      ? { slug: allPosts[currentIdx + 1].slug, title: allPosts[currentIdx + 1].title }
+      ? {
+          slug: allPosts[currentIdx + 1].slug,
+          title: allPosts[currentIdx + 1].title,
+          published_at: allPosts[currentIdx + 1].published_at,
+        }
       : null,
     next: currentIdx > 0
-      ? { slug: allPosts[currentIdx - 1].slug, title: allPosts[currentIdx - 1].title }
+      ? {
+          slug: allPosts[currentIdx - 1].slug,
+          title: allPosts[currentIdx - 1].title,
+          published_at: allPosts[currentIdx - 1].published_at,
+        }
       : null,
   }
 
   const compiled = await compile(post.content, {
     outputFormat: 'function-body',
     format: 'md',
+    remarkPlugins: [remarkGfm],
     rehypePlugins: [rehypeShiki],
   })
   const { default: Content } = await run(String(compiled), {
@@ -85,14 +95,25 @@ export default async function BlogDetailPage({ params }: PageProps) {
     <div className="max-w-5xl mx-auto px-4 md:px-6 py-12">
       <ReadingProgressBar />
       <AuthStateInitializer isAdmin={isAdmin} />
-      {/* 뒤로가기 */}
-      <Link
-        href="/blog"
-        className="inline-flex items-center gap-2 text-foreground/70 hover:text-foreground mb-8 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>블로그 목록</span>
-      </Link>
+      {/* 상단 내비 */}
+      <div className="flex items-center justify-between mb-8">
+        <Link
+          href="/blog"
+          className="inline-flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>블로그 목록</span>
+        </Link>
+        {isAdmin && (
+          <Link
+            href="/admin/blog"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-foreground/5 hover:bg-foreground/10 text-foreground/70 hover:text-foreground transition-colors"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            <span>수정</span>
+          </Link>
+        )}
+      </div>
 
       {/* 헤더 */}
       <header className="mb-10 max-w-3xl">

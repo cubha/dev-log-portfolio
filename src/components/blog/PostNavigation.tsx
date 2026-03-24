@@ -3,9 +3,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, List, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { ArrowLeft, ArrowRight, List, ChevronDown, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
+import { ko } from 'date-fns/locale'
 import type { AdjacentPost, PostSummary } from '@/src/utils/blog/getBlogPosts'
+import { ThemeCard } from '@/src/components/common/ThemeCard'
 
 const ITEMS_PER_PAGE = 10
 
@@ -17,6 +20,7 @@ interface PostNavigationProps {
 }
 
 export const PostNavigation = ({ prev, next, allPosts, currentSlug }: PostNavigationProps) => {
+  const router = useRouter()
   const currentIndex = allPosts.findIndex((p) => p.slug === currentSlug)
   const initialPage = currentIndex >= 0 ? Math.floor(currentIndex / ITEMS_PER_PAGE) : 0
 
@@ -36,11 +40,30 @@ export const PostNavigation = ({ prev, next, allPosts, currentSlug }: PostNaviga
     }
   }, [isOpen])
 
+  // 키보드 방향키(← →) 네비게이션 — input/textarea/contenteditable 포커스 중 무시
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName.toLowerCase()
+      const isEditable = tag === 'input' || tag === 'textarea' || (e.target as HTMLElement).isContentEditable
+      if (isEditable) return
+
+      if (e.key === 'ArrowLeft' && prev) {
+        e.preventDefault()
+        router.push(`/blog/${prev.slug}`)
+      } else if (e.key === 'ArrowRight' && next) {
+        e.preventDefault()
+        router.push(`/blog/${next.slug}`)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [prev, next, router])
+
   return (
-    <nav className="mt-12 pt-8 border-t border-foreground/10 space-y-3">
+    <nav aria-label="포스트 탐색" className="mt-12 pt-8 border-t border-foreground/10 space-y-3">
       {/* 접이식 글 목록 패널 */}
       {allPosts.length > 0 && (
-        <div className="border border-foreground/10 rounded-xl overflow-hidden">
+        <ThemeCard noHoverLift className="overflow-hidden">
           {/* 헤더 토글 버튼 */}
           <button
             type="button"
@@ -144,45 +167,66 @@ export const PostNavigation = ({ prev, next, allPosts, currentSlug }: PostNaviga
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </ThemeCard>
       )}
 
       {/* 이전/다음 카드 */}
       {(prev || next) && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {prev ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="group" aria-label="이전/다음 글 이동 (← → 방향키 사용 가능)">
+          {prev && (
             <Link
               href={`/blog/${prev.slug}`}
-              className="group flex items-start gap-3 p-4 rounded-xl border border-foreground/10 hover:border-foreground/25 hover:shadow-md transition-all duration-200"
+              aria-label={`이전 글: ${prev.title}`}
+              className={`group flex items-start gap-3 p-4 relative bg-surface rounded-2xl border border-foreground/[0.08] border-rim-light bg-card-surface shadow-sharp transition-all duration-300 hover:border-rim-intense hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30${!next ? ' sm:col-span-2' : ''}`}
             >
-              <ArrowLeft className="w-4 h-4 mt-0.5 text-foreground/40 group-hover:text-foreground/70 transition-colors shrink-0" />
-              <div className="min-w-0">
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-silver-metal flex items-center justify-center">
+                <ArrowLeft className="w-4 h-4 text-white group-hover:-translate-x-0.5 transition-transform duration-200" />
+              </div>
+              <div className="min-w-0 flex-1">
                 <span className="text-xs text-foreground/40 block mb-1">이전 글</span>
                 <span className="text-sm font-medium text-foreground/80 group-hover:text-foreground transition-colors line-clamp-2">
                   {prev.title}
                 </span>
+                {prev.published_at && (
+                  <span className="flex items-center gap-1 mt-1.5 text-xs text-foreground/40">
+                    <Calendar className="w-3 h-3" />
+                    {format(new Date(prev.published_at), 'yyyy년 M월 d일', { locale: ko })}
+                  </span>
+                )}
               </div>
             </Link>
-          ) : (
-            <div />
           )}
-          {next ? (
+          {next && (
             <Link
               href={`/blog/${next.slug}`}
-              className="group flex items-start gap-3 p-4 rounded-xl border border-foreground/10 hover:border-foreground/25 hover:shadow-md transition-all duration-200 text-right sm:col-start-2"
+              aria-label={`다음 글: ${next.title}`}
+              className={`group flex items-start gap-3 p-4 relative bg-surface rounded-2xl border border-foreground/[0.08] border-rim-light bg-card-surface shadow-sharp transition-all duration-300 hover:border-rim-intense hover:-translate-y-0.5 text-right focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30${!prev ? ' sm:col-span-2' : ' sm:col-start-2'}`}
             >
               <div className="min-w-0 flex-1">
                 <span className="text-xs text-foreground/40 block mb-1">다음 글</span>
                 <span className="text-sm font-medium text-foreground/80 group-hover:text-foreground transition-colors line-clamp-2">
                   {next.title}
                 </span>
+                {next.published_at && (
+                  <span className="flex items-center justify-end gap-1 mt-1.5 text-xs text-foreground/40">
+                    <Calendar className="w-3 h-3" />
+                    {format(new Date(next.published_at), 'yyyy년 M월 d일', { locale: ko })}
+                  </span>
+                )}
               </div>
-              <ArrowRight className="w-4 h-4 mt-0.5 text-foreground/40 group-hover:text-foreground/70 transition-colors shrink-0" />
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-silver-metal flex items-center justify-center">
+                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-0.5 transition-transform duration-200" />
+              </div>
             </Link>
-          ) : (
-            <div />
           )}
         </div>
+      )}
+
+      {/* 키보드 힌트 */}
+      {(prev || next) && (
+        <p className="text-center text-xs text-foreground/20 select-none" aria-hidden="true">
+          {prev && '←'} 방향키로 글 이동 {next && '→'}
+        </p>
       )}
     </nav>
   )

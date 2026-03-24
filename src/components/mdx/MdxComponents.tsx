@@ -81,7 +81,7 @@ export const mdxComponents: MDXComponents = {
   pre: ({ children, ...props }) => (
     <pre
       {...props}
-      className="mb-4 overflow-x-auto rounded-lg bg-foreground/5 p-4 text-sm dark:bg-foreground/10"
+      className="mb-4 overflow-x-auto rounded-lg bg-[#24292e] p-4 text-sm text-[#e1e4e8] [&>code]:!text-inherit [&>code]:!bg-transparent [&>code]:!p-0 [&>code]:!rounded-none"
     >
       {children}
     </pre>
@@ -98,5 +98,43 @@ export const mdxComponents: MDXComponents = {
     >
       {children}
     </blockquote>
+  ),
+  table: ({ children, ...props }) => (
+    <div className="mb-4 overflow-x-auto not-prose">
+      <table {...props} className="w-full border-collapse text-sm">
+        {children}
+      </table>
+    </div>
+  ),
+  thead: ({ children, ...props }) => (
+    <thead {...props} className="bg-foreground/5 dark:bg-foreground/10">
+      {children}
+    </thead>
+  ),
+  tbody: ({ children, ...props }) => (
+    <tbody {...props} className="divide-y divide-foreground/10">
+      {children}
+    </tbody>
+  ),
+  tr: ({ children, ...props }) => (
+    <tr {...props} className="hover:bg-foreground/5 transition-colors">
+      {children}
+    </tr>
+  ),
+  th: ({ children, ...props }) => (
+    <th
+      {...props}
+      className="px-4 py-2 text-left font-semibold text-foreground border border-foreground/15"
+    >
+      {children}
+    </th>
+  ),
+  td: ({ children, ...props }) => (
+    <td
+      {...props}
+      className="px-4 py-2 text-foreground/90 border border-foreground/15"
+    >
+      {children}
+    </td>
   ),
 }

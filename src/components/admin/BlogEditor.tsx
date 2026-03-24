@@ -4,6 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
+import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import { Markdown, type MarkdownStorage } from 'tiptap-markdown'
 import { BlogEditorToolbar } from '@/src/components/admin/BlogEditorToolbar'
 
@@ -30,6 +31,10 @@ export const BlogEditor = ({
       Placeholder.configure({
         placeholder,
       }),
+      Table.configure({ resizable: false }),
+      TableRow,
+      TableHeader,
+      TableCell,
       Markdown.configure({
         html: false,
         tightLists: true,

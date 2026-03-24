@@ -41,7 +41,7 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
   } catch (err) { console.error('블로그 글 전체 조회 예외:', err); return [] }
 }
 
-export type AdjacentPost = Pick<BlogPost, 'slug' | 'title'>
+export type AdjacentPost = Pick<BlogPost, 'slug' | 'title' | 'published_at'>
 export type PostSummary = Pick<BlogPost, 'id' | 'slug' | 'title' | 'published_at'>
 
 export async function getAdjacentPosts(
@@ -55,7 +55,7 @@ export async function getAdjacentPosts(
       // 이전글: published_at이 더 오래된(이전) 포스트 중 가장 최신
       supabase
         .from('blog_posts')
-        .select('slug, title')
+        .select('slug, title, published_at')
         .eq('status', 'published')
         .lt('published_at', currentPublishedAt)
         .neq('id', currentId)
@@ -64,7 +64,7 @@ export async function getAdjacentPosts(
       // 다음글: published_at이 더 최신인 포스트 중 가장 오래된
       supabase
         .from('blog_posts')
-        .select('slug, title')
+        .select('slug, title, published_at')
         .eq('status', 'published')
         .gt('published_at', currentPublishedAt)
         .neq('id', currentId)
