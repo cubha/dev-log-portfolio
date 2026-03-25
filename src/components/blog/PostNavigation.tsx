@@ -24,7 +24,7 @@ export const PostNavigation = ({ prev, next, allPosts, currentSlug }: PostNaviga
   const currentIndex = allPosts.findIndex((p) => p.slug === currentSlug)
   const initialPage = currentIndex >= 0 ? Math.floor(currentIndex / ITEMS_PER_PAGE) : 0
 
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const [page, setPage] = useState(initialPage)
   const currentItemRef = useRef<HTMLAnchorElement>(null)
 
