@@ -1,4 +1,4 @@
-import { getPublishedBlogPosts } from '@/src/utils/blog/getBlogPosts'
+import { getPublishedBlogPosts, getAllBlogPosts } from '@/src/utils/blog/getBlogPosts'
 import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { BlogList } from '@/src/components/blog/BlogList'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
@@ -9,10 +9,8 @@ import Link from 'next/link'
 export const dynamic = 'force-dynamic'
 
 export default async function BlogPage() {
-  const [posts, { user, isAdmin }] = await Promise.all([
-    getPublishedBlogPosts(),
-    getCurrentUserRole(),
-  ])
+  const { user, isAdmin } = await getCurrentUserRole()
+  const posts = isAdmin ? await getAllBlogPosts() : await getPublishedBlogPosts()
 
   const isLoggedIn = !!user
 
@@ -24,7 +22,7 @@ export default async function BlogPage() {
       {isAdmin && (
         <div className="flex justify-end mb-6">
           <Link
-            href="/admin/blog"
+            href="/blog/new"
             scroll={false}
             className="inline-flex items-center gap-2 px-4 py-2 bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all"
           >
@@ -37,7 +35,7 @@ export default async function BlogPage() {
       {posts.length === 0 ? (
         <EmptyState isAdmin={isAdmin} />
       ) : (
-        <BlogList posts={posts} />
+        <BlogList posts={posts} isAdmin={isAdmin} />
       )}
 
       {isLoggedIn && <FloatingUserButton isAdmin={isAdmin} />}
@@ -57,7 +55,7 @@ function EmptyState({ isAdmin }: { isAdmin: boolean }) {
           <>
             <p className="text-foreground/60 text-lg mb-8">첫 번째 블로그 글을 작성해 보세요!</p>
             <Link
-              href="/admin/blog"
+              href="/blog/new"
               scroll={false}
               className="inline-flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg transition-all shadow-md hover:shadow-lg"
             >

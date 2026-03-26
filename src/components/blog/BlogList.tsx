@@ -3,20 +3,28 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { BlogPost } from '@/src/types/blog'
+import { STATUS_BADGE, STATUS_LABEL } from '@/src/types/blog'
 import Link from 'next/link'
-import { Calendar, Clock, Tag, Search, X, ChevronDown } from 'lucide-react'
+import { Calendar, Clock, Tag, Search, X, ChevronDown, Pencil, Trash2, Eye, EyeOff, Check } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { deleteBlogPost, togglePublish } from '@/src/actions/blog'
+import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
 const POSTS_PER_PAGE = 6
 
+type StatusFilter = 'all' | 'published' | 'draft' | 'archived'
+
 interface BlogListProps {
   posts: BlogPost[]
+  isAdmin?: boolean
 }
 
-export const BlogList = ({ posts }: BlogListProps) => {
+export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all')
   const [displayCount, setDisplayCount] = useState(POSTS_PER_PAGE)
 
   const allTags = useMemo(() => {
@@ -27,6 +35,7 @@ export const BlogList = ({ posts }: BlogListProps) => {
 
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
+      const matchesStatus = selectedStatus === 'all' || post.status === selectedStatus
       const matchesTag = !selectedTag || post.tags.includes(selectedTag)
       const q = searchQuery.trim().toLowerCase()
       const matchesSearch =
@@ -34,13 +43,13 @@ export const BlogList = ({ posts }: BlogListProps) => {
         post.title.toLowerCase().includes(q) ||
         (post.description?.toLowerCase().includes(q) ?? false) ||
         post.tags.some((t) => t.toLowerCase().includes(q))
-      return matchesTag && matchesSearch
+      return matchesStatus && matchesTag && matchesSearch
     })
-  }, [posts, selectedTag, searchQuery])
+  }, [posts, selectedStatus, selectedTag, searchQuery])
 
   // 검색/태그 변경 시 displayCount 리셋
-  const prevFilterKey = useRef(`${searchQuery}|${selectedTag}`)
-  const currentFilterKey = `${searchQuery}|${selectedTag}`
+  const prevFilterKey = useRef(`${searchQuery}|${selectedTag}|${selectedStatus}`)
+  const currentFilterKey = `${searchQuery}|${selectedTag}|${selectedStatus}`
   if (prevFilterKey.current !== currentFilterKey) {
     prevFilterKey.current = currentFilterKey
     if (displayCount !== POSTS_PER_PAGE) setDisplayCount(POSTS_PER_PAGE)
@@ -70,6 +79,41 @@ export const BlogList = ({ posts }: BlogListProps) => {
       >
         <BlogSearchBar query={searchQuery} onQueryChange={setSearchQuery} />
       </motion.div>
+
+      {/* 상태 필터 (관리자 전용) */}
+      {isAdmin && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.24 }}
+          className="flex items-center gap-2 mb-3"
+        >
+          {([
+            { value: 'all', label: '전체' },
+            { value: 'published', label: '발행됨' },
+            { value: 'draft', label: '임시저장' },
+            { value: 'archived', label: '보관됨' },
+          ] as const).map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setSelectedStatus(value)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 cursor-pointer ${
+                selectedStatus === value
+                  ? 'bg-foreground text-background'
+                  : 'bg-background text-foreground/60 border border-foreground/20 hover:border-foreground/40 hover:text-foreground'
+              }`}
+            >
+              {label}
+              {value !== 'all' && (
+                <span className="ml-1 opacity-60">
+                  {posts.filter((p) => p.status === value).length}
+                </span>
+              )}
+            </button>
+          ))}
+        </motion.div>
+      )}
 
       {/* 태그 필터 */}
       {allTags.length > 0 && (
@@ -141,7 +185,7 @@ export const BlogList = ({ posts }: BlogListProps) => {
             </motion.div>
           ) : (
             visiblePosts.map((post, index) => (
-              <BlogCard key={post.id} post={post} index={index} />
+              <BlogCard key={post.id} post={post} index={index} isAdmin={isAdmin} />
             ))
           )}
         </AnimatePresence>
@@ -175,11 +219,47 @@ export const BlogList = ({ posts }: BlogListProps) => {
   )
 }
 
-const BlogCard = ({ post, index }: { post: BlogPost; index: number }) => {
+const BlogCard = ({ post, index, isAdmin = false }: { post: BlogPost; index: number; isAdmin?: boolean }) => {
+  const router = useRouter()
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const publishedDate = post.published_at
     ? format(new Date(post.published_at), 'yyyy년 MM월 dd일', { locale: ko })
     : null
   const readingTime = Math.max(1, Math.ceil(post.content.length / 500))
+
+  const handleTogglePublish = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const willPublish = post.status !== 'published'
+    const result = await togglePublish(post.id, willPublish)
+    if (!result.success) toast.error(result.error)
+    else {
+      toast(willPublish ? '포스트가 발행되었습니다.' : '임시저장으로 변경되었습니다.')
+      router.refresh()
+    }
+  }
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (deletingId !== post.id) {
+      setDeletingId(post.id)
+      return
+    }
+    setDeletingId(null)
+    const result = await deleteBlogPost(post.id)
+    if (!result.success) toast.error(result.error)
+    else {
+      toast('포스트가 삭제되었습니다.')
+      router.refresh()
+    }
+  }
+
+  const handleCancelDelete = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDeletingId(null)
+  }
 
   return (
     <motion.div
@@ -192,11 +272,74 @@ const BlogCard = ({ post, index }: { post: BlogPost; index: number }) => {
         <motion.div
           whileHover={{ y: -2 }}
           transition={{ duration: 0.2 }}
-          className="p-5 bg-background border border-foreground/10 rounded-xl hover:border-foreground/25 hover:shadow-md transition-all duration-200"
+          className="relative p-5 bg-background border border-foreground/10 rounded-xl hover:border-foreground/25 hover:shadow-md transition-all duration-200"
         >
-          <h2 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-foreground/80 transition-colors mb-1.5 line-clamp-2">
-            {post.title}
-          </h2>
+          {/* 관리자 액션 버튼 */}
+          {isAdmin && (
+            <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+              {/* 발행 토글 */}
+              <button
+                onClick={handleTogglePublish}
+                className="p-1.5 rounded-lg text-foreground/40 hover:text-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-all"
+                title={post.status === 'published' ? '발행 취소' : '발행'}
+              >
+                {post.status === 'published'
+                  ? <EyeOff className="w-3.5 h-3.5" />
+                  : <Eye className="w-3.5 h-3.5" />}
+              </button>
+
+              {/* 수정 */}
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  router.push(`/blog/edit/${post.id}`)
+                }}
+                className="p-1.5 rounded-lg text-foreground/40 hover:text-brand-secondary hover:bg-brand-secondary/5 transition-all"
+                title="수정"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
+
+              {/* 삭제 (2단계) */}
+              {deletingId === post.id ? (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={handleDelete}
+                    className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg text-xs font-medium transition-colors"
+                  >
+                    <Check className="w-3 h-3" />
+                    확인
+                  </button>
+                  <button
+                    onClick={handleCancelDelete}
+                    className="p-1.5 rounded-lg text-foreground/40 hover:bg-foreground/8 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={handleDelete}
+                  className="p-1.5 rounded-lg text-foreground/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                  title="삭제"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 mb-1.5">
+            <h2 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-foreground/80 transition-colors line-clamp-2">
+              {post.title}
+            </h2>
+            {isAdmin && post.status !== 'published' && (
+              <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-medium rounded-full shrink-0 ${STATUS_BADGE[post.status] ?? 'bg-gray-100 text-gray-500'}`}>
+                {STATUS_LABEL[post.status] ?? post.status}
+              </span>
+            )}
+          </div>
           {post.description && (
             <p className="text-foreground/55 text-sm line-clamp-2 mb-3">
               {post.description}

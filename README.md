@@ -71,6 +71,12 @@ dev-log-portfolio/
 │   │       ├── skills/page.tsx       # 기술 스택 관리 (/admin/skills)
 │   │       └── profile/page.tsx      # 프로필 관리 (/admin/profile)
 │   │
+│   │   ├── blog/                     # 📝 기술 블로그
+│   │   │   ├── page.tsx              # 블로그 목록 (/blog) — 관리자: 전체 포스트 + 인라인 CRUD
+│   │   │   ├── [slug]/page.tsx       # 블로그 상세 (/blog/[slug])
+│   │   │   ├── new/page.tsx          # 새 글 작성 (/blog/new, 관리자 전용)
+│   │   │   └── edit/[id]/page.tsx    # 글 수정 (/blog/edit/[id], 관리자 전용)
+│   │
 │   ├── components/                   # 🧩 재사용 컴포넌트
 │   │   ├── common/
 │   │   │   ├── AuthPanel.tsx         # 인증 패널 (로그인/OAuth 상태 표시)
@@ -89,6 +95,14 @@ dev-log-portfolio/
 │   │   │   ├── LogoutButton.tsx      # 로그아웃 버튼
 │   │   │   ├── TrainingManager.tsx   # 교육/자격증 관리
 │   │   │   └── ...                  # (InquiryReplyCard 제거됨)
+│   │   ├── blog/                     # 블로그 UI 컴포넌트
+│   │   │   ├── BlogList.tsx          # 목록 + 검색/태그 필터 + 관리자 상태 필터/액션
+│   │   │   ├── BlogEditForm.tsx      # 글 작성/수정 폼 (편집·미리보기 탭)
+│   │   │   ├── MarkdownPreview.tsx   # MDX 클라이언트 미리보기 (@mdx-js/mdx evaluate)
+│   │   │   ├── PostNavigation.tsx    # 이전/다음글 + 전체 글 목록 패널
+│   │   │   ├── TableOfContents.tsx   # TOC 사이드바 (IntersectionObserver)
+│   │   │   ├── ReadingProgressBar.tsx # 읽기 진행바
+│   │   │   └── GiscusComments.tsx    # Giscus GitHub 댓글
 │   │   ├── home/                     # 홈페이지 섹션 컴포넌트
 │   │   │   ├── HeroSection.tsx
 │   │   │   ├── AIWorkflowSection.tsx
@@ -119,6 +133,7 @@ dev-log-portfolio/
 │   │   └── ui/                       # 기타 UI 원자 컴포넌트
 │   │
 │   ├── actions/                      # ⚡ Server Actions
+│   │   ├── blog.ts                   # 블로그 CRUD + 발행 토글 (관리자 전용)
 │   │   ├── contact.ts                # Contact 링크 업데이트
 │   │   └── guestbook.ts              # 방명록 CRUD + 댓글/좋아요
 │   │
@@ -421,13 +436,16 @@ chmod +x verify.sh
   - [x] 블로그 상세 페이지 (`remark-gfm` + shiki 코드 하이라이팅 + 커스텀 MDX 컴포넌트)
   - [x] TOC (목차) 사이드바, 읽기 진행바, Giscus 댓글
   - [x] 이전/다음글 네비게이션 (키보드 ← → 방향키 지원, 발행일 표시)
-  - [x] 관리자 전용 "수정" 버튼 (블로그 상세 페이지 상단)
   - [x] GFM 마크다운 테이블 렌더링 (Tailwind 스타일 커스텀 컴포넌트)
+  - [x] 블로그 인라인 관리 — 리스트 페이지에서 직접 수정/삭제/발행 토글 (관리자 전용)
+  - [x] 관리자 상태 필터 — 전체/발행됨/임시저장/보관됨 + 상태 뱃지
+  - [x] 전용 작성/수정 페이지 (`/blog/new`, `/blog/edit/[id]`)
+  - [x] 마크다운 미리보기 — 편집/미리보기 탭 토글 (`@mdx-js/mdx` evaluate 기반)
 
 ### 🚧 개발 예정
 
 - [ ] `/projects`, `/about` ISR 전환 (Suspense 경계 분리 후 적용 예정)
-- [ ] **블로그 관리 진입점 개선**: 현재 관리자 대시보드(`/admin/dashboard`)에서 블로그 관리 → 블로그 목록 페이지(`/blog`) 상단에서 직접 관리 진입 가능하도록 UX 개선 예정
+- [x] ~~**블로그 관리 진입점 개선**: `/admin/blog` 제거 → `/blog` 리스트에서 직접 인라인 관리 (v1.6.0에서 완료)~~
 
 ---
 
@@ -479,6 +497,13 @@ chmod +x verify.sh
 - 관리자 전용 블로그 수정 진입 버튼 (블로그 상세 페이지 상단, `isAdmin` 조건부 노출)
 - 커스텀 MDX 컴포넌트 — GFM 테이블(table/thead/tbody/tr/th/td), GitHub Dark 코드블록 스타일
 
+### Phase 12: 블로그 관리 인라인화 ✅ (2026-03-26)
+- `/admin/blog` 관리 페이지 제거 → 블로그 리스트(`/blog`)에서 직접 인라인 CRUD
+- 관리자 접근 시 전체 포스트(draft/archived 포함) 표시 + 상태 필터(전체/발행/임시저장/보관)
+- 블로그 카드에 수정/삭제/발행토글 아이콘 (관리자 전용, hover 시 표출)
+- 전용 작성/수정 페이지 (`/blog/new`, `/blog/edit/[id]`) + 우측 상단 버튼 배치
+- 마크다운 미리보기 탭 (`@mdx-js/mdx` evaluate + remarkGfm, 300ms 디바운스)
+
 ### Phase 10: 성능 분석 및 핵심 병목 리팩토링 ✅ (2026-03-14)
 - 성능 분석 보고서 작성 (`docs/analysis/ANALYSIS-2026-03-14.md`)
 - `getCurrentUserRole()` React.cache() 래핑 — 동일 요청 범위 내 `auth.getUser()` 중복 호출 제거 (Contact 페이지 3회→1회)
@@ -489,6 +514,22 @@ chmod +x verify.sh
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v1.6.0 — 2026-03-26 (블로그 관리 인라인화)
+
+**UX 개선:**
+- `/admin/blog` 관리 페이지 제거 — 블로그 리스트(`/blog`)에서 직접 인라인 관리로 전환
+- 관리자 접근 시 전체 포스트(draft/published/archived) 표시 + 상태 필터 버튼(전체/발행됨/임시저장/보관됨)
+- 블로그 카드에 수정·삭제·발행토글 아이콘 추가 (관리자 전용, hover 시 표출)
+- 전용 작성/수정 페이지 신설 (`/blog/new`, `/blog/edit/[id]`) — 우측 상단에 취소+저장 버튼 배치, 하단 중복 취소 제거
+
+**에디터 개선:**
+- 마크다운 미리보기 탭 — 편집/미리보기 토글, `@mdx-js/mdx` evaluate + remarkGfm 기반 클라이언트 렌더링 (300ms 디바운스)
+
+**신규 파일:**
+- `BlogEditForm.tsx` — 블로그 작성/수정 공통 폼 컴포넌트
+- `MarkdownPreview.tsx` — MDX 클라이언트 미리보기 컴포넌트
+- `/blog/new/page.tsx`, `/blog/edit/[id]/page.tsx` — 전용 라우트
 
 ### v1.5.0 — 2026-03-24 (TechBlog 시스템 구축)
 

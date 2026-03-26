@@ -41,6 +41,19 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
   } catch (err) { console.error('블로그 글 전체 조회 예외:', err); return [] }
 }
 
+export async function getBlogPostById(id: string): Promise<BlogPost | null> {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('id', id)
+      .limit(1)
+    if (error) { console.error('블로그 글 ID 조회 오류:', error.message); return null }
+    return (data?.[0] as BlogPost) ?? null
+  } catch (err) { console.error('블로그 글 ID 조회 예외:', err); return null }
+}
+
 export type AdjacentPost = Pick<BlogPost, 'slug' | 'title' | 'published_at'>
 export type PostSummary = Pick<BlogPost, 'id' | 'slug' | 'title' | 'published_at'>
 

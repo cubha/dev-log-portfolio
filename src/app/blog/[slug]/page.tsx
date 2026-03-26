@@ -106,7 +106,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
         </Link>
         {isAdmin && (
           <Link
-            href="/admin/blog"
+            href={`/blog/edit/${post.id}`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-foreground/5 hover:bg-foreground/10 text-foreground/70 hover:text-foreground transition-colors"
           >
             <Pencil className="w-3.5 h-3.5" />
