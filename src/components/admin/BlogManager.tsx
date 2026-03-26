@@ -10,21 +10,8 @@ import { editingBlogAtom } from '@/src/store/blogAtom'
 import { fetchBlogPosts } from '@/src/utils/blog/blogActions'
 import { createBlogPost, updateBlogPost, deleteBlogPost, togglePublish } from '@/src/actions/blog'
 import { BlogEditor } from '@/src/components/admin/BlogEditor'
-import { BLOG_STATUS } from '@/src/types/blog'
+import { BLOG_STATUS, STATUS_BADGE, STATUS_LABEL } from '@/src/types/blog'
 import type { BlogPost } from '@/src/types/blog'
-
-// ─── 상태 뱃지 스타일 ─────────────────────────────────────────────────────────
-const STATUS_BADGE: Record<string, string> = {
-  draft:     'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-  published: 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  archived:  'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
-}
-
-const STATUS_LABEL: Record<string, string> = {
-  draft:     '임시저장',
-  published: '발행됨',
-  archived:  '보관됨',
-}
 
 // ─── 초기 폼 값 ──────────────────────────────────────────────────────────────
 const EMPTY_FORM = {
