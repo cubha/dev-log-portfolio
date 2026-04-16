@@ -63,3 +63,6 @@ Desktop.ini
 
 # playwright
 .playwright-mcp/
+
+# research
+docs/

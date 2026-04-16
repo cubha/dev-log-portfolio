@@ -10,7 +10,7 @@ import {
   rehypeShiki,
   getAllMdxSlugs,
 } from '@/src/utils/mdx'
-import { mdxComponents } from '@/src/components/mdx/MdxComponents'
+import { createMdxComponents } from '@/src/components/mdx/MdxComponents'
 import type { MDXContent } from 'mdx/types'
 
 type PageProps = {
@@ -41,6 +41,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     baseUrl: import.meta.url,
   })
   const MDXComponent = Content as MDXContent
+  const mdxComponents = createMdxComponents()
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">

@@ -3,7 +3,7 @@ import { compile, run } from '@mdx-js/mdx'
 import { createElement } from 'react'
 import * as runtime from 'react/jsx-runtime'
 import { getRawMdxContent, rehypeShiki } from '@/src/utils/mdx'
-import { mdxComponents } from '@/src/components/mdx/MdxComponents'
+import { createMdxComponents } from '@/src/components/mdx/MdxComponents'
 import type { MDXComponents } from 'mdx/types'
 
 export async function GET(
@@ -30,7 +30,7 @@ export async function GET(
     const html = renderToStaticMarkup(
       createElement(
         Content as React.ComponentType<{ components?: MDXComponents }>,
-        { components: mdxComponents }
+        { components: createMdxComponents() }
       )
     )
     return NextResponse.json({ html })

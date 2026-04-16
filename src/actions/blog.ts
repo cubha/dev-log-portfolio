@@ -10,16 +10,16 @@ async function checkAdmin() {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) return { supabase: null, error: '로그인이 필요합니다.' }
+  if (!user) return { supabase: null, user: null, error: '로그인이 필요합니다.' }
 
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single()
-  if (profile?.role !== 'admin') return { supabase: null, error: '관리자 권한이 필요합니다.' }
+  if (profile?.role !== 'admin') return { supabase: null, user: null, error: '관리자 권한이 필요합니다.' }
 
-  return { supabase, error: null }
+  return { supabase, user, error: null }
 }
 
 export async function createBlogPost(data: {
@@ -30,22 +30,18 @@ export async function createBlogPost(data: {
   tags: string[]
   status: string
 }): Promise<ActionResult> {
-  const { supabase, error } = await checkAdmin()
-  if (!supabase) return { success: false, error: error ?? '인증 오류' }
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { supabase, user, error } = await checkAdmin()
+  if (!supabase || !user) return { success: false, error: error ?? '인증 오류' }
 
   const { error: insertError } = await supabase.from('blog_posts').insert({
     ...data,
-    author_id: user!.id,
+    author_id: user.id,
     published_at: data.status === 'published' ? new Date().toISOString() : null,
   })
 
   if (insertError) return { success: false, error: insertError.message }
 
-  revalidatePath('/blog')
+  revalidatePath('/blog', 'layout')
   return { success: true }
 }
 
@@ -70,7 +66,7 @@ export async function updateBlogPost(
 
   if (updateError) return { success: false, error: updateError.message }
 
-  revalidatePath('/blog')
+  revalidatePath('/blog', 'layout')
   return { success: true }
 }
 
@@ -82,7 +78,7 @@ export async function deleteBlogPost(id: string): Promise<ActionResult> {
 
   if (deleteError) return { success: false, error: deleteError.message }
 
-  revalidatePath('/blog')
+  revalidatePath('/blog', 'layout')
   return { success: true }
 }
 
@@ -101,6 +97,6 @@ export async function togglePublish(id: string, publish: boolean): Promise<Actio
 
   if (updateError) return { success: false, error: updateError.message }
 
-  revalidatePath('/blog')
+  revalidatePath('/blog', 'layout')
   return { success: true }
 }

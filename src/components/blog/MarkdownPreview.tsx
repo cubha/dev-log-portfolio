@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { evaluate } from '@mdx-js/mdx'
 import * as runtime from 'react/jsx-runtime'
 import remarkGfm from 'remark-gfm'
-import { mdxComponents } from '@/src/components/mdx/MdxComponents'
+import { createMdxComponents } from '@/src/components/mdx/MdxComponents'
 import type { MDXContent } from 'mdx/types'
 
 interface MarkdownPreviewProps {
@@ -12,6 +12,7 @@ interface MarkdownPreviewProps {
 }
 
 export const MarkdownPreview = ({ content }: MarkdownPreviewProps) => {
+  const mdxComponents = createMdxComponents()
   const [MdxContent, setMdxContent] = useState<MDXContent | null>(null)
   const [error, setError] = useState<string | null>(null)
 

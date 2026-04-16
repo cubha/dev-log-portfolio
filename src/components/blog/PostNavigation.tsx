@@ -27,11 +27,14 @@ export const PostNavigation = ({ prev, next, allPosts, currentSlug }: PostNaviga
   const [isOpen, setIsOpen] = useState(true)
   const [page, setPage] = useState(initialPage)
   const currentItemRef = useRef<HTMLAnchorElement>(null)
+  // 마운트 자동 실행이 아닌 사용자가 직접 토글한 경우에만 스크롤
+  const userToggledRef = useRef(false)
 
   const totalPages = Math.ceil(allPosts.length / ITEMS_PER_PAGE)
   const visiblePosts = allPosts.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE)
 
   useEffect(() => {
+    if (!userToggledRef.current) return
     if (isOpen && currentItemRef.current) {
       const timer = setTimeout(() => {
         currentItemRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
@@ -67,7 +70,7 @@ export const PostNavigation = ({ prev, next, allPosts, currentSlug }: PostNaviga
           {/* 헤더 토글 버튼 */}
           <button
             type="button"
-            onClick={() => setIsOpen((o) => !o)}
+            onClick={() => { userToggledRef.current = true; setIsOpen((o) => !o) }}
             aria-expanded={isOpen}
             className="w-full flex items-center justify-between px-4 py-3 hover:bg-foreground/[0.04] transition-colors duration-200 cursor-pointer"
           >

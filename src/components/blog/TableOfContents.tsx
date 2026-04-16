@@ -15,6 +15,8 @@ interface TableOfContentsProps {
 export const TableOfContents = ({ items }: TableOfContentsProps) => {
   const [activeId, setActiveId] = useState<string>('')
   const observerRef = useRef<IntersectionObserver | null>(null)
+  const visibleIdsRef = useRef<Set<string>>(new Set())
+  const clickCooldownRef = useRef(false)
 
   useEffect(() => {
     const headingEls = items
@@ -25,9 +27,18 @@ export const TableOfContents = ({ items }: TableOfContentsProps) => {
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting)
-        if (visible.length > 0) {
-          setActiveId(visible[0].target.id)
+        if (clickCooldownRef.current) return
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            visibleIdsRef.current.add(entry.target.id)
+          } else {
+            visibleIdsRef.current.delete(entry.target.id)
+          }
+        })
+        // items 순서(DOM 위에서 아래)를 기준으로 첫 번째 가시 섹션 선택
+        const firstVisible = items.find((item) => visibleIdsRef.current.has(item.id))
+        if (firstVisible) {
+          setActiveId(firstVisible.id)
         }
       },
       { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
@@ -40,6 +51,10 @@ export const TableOfContents = ({ items }: TableOfContentsProps) => {
   const handleClick = useCallback((id: string) => {
     const el = document.getElementById(id)
     if (!el) return
+    // 클릭 즉시 활성 표시, 1초간 observer 재정의 방지
+    setActiveId(id)
+    clickCooldownRef.current = true
+    setTimeout(() => { clickCooldownRef.current = false }, 1000)
     const y = el.getBoundingClientRect().top + window.scrollY - 80
     window.scrollTo({ top: y, behavior: 'smooth' })
   }, [])
@@ -52,14 +67,12 @@ export const TableOfContents = ({ items }: TableOfContentsProps) => {
         목차
       </p>
       <ul className="space-y-1.5 text-sm border-l border-foreground/10">
-        {items.map((item) => (
-          <li key={item.id}>
+        {items.map((item, idx) => (
+          <li key={`${item.id}-${idx}`}>
             <button
               type="button"
               onClick={() => handleClick(item.id)}
-              className={`block w-full text-left transition-colors duration-200 cursor-pointer ${
-                item.level === 3 ? 'pl-6' : 'pl-3'
-              } py-0.5 -ml-px border-l-2 ${
+              className={`block w-full text-left transition-colors duration-200 cursor-pointer pl-3 py-0.5 -ml-px border-l-2 ${
                 activeId === item.id
                   ? 'border-foreground/70 text-foreground font-medium'
                   : 'border-transparent text-foreground/40 hover:text-foreground/70'
