@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { FileText, X, AlertCircle, ArrowLeft, Eye, PenLine } from 'lucide-react'
 import { MarkdownPreview } from '@/src/components/blog/MarkdownPreview'
@@ -44,15 +44,26 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
+  const errorRef = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLInputElement>(null)
+  const slugRef = useRef<HTMLInputElement>(null)
+
+  const showError = (message: string, focusRef?: React.RefObject<HTMLInputElement | null>) => {
+    setFormError(message)
+    setTimeout(() => {
+      errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      focusRef?.current?.focus()
+    }, 50)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.title.trim()) {
-      setFormError('제목을 입력해주세요.')
+      showError('제목을 입력해주세요.', titleRef)
       return
     }
     if (!formData.slug.trim()) {
-      setFormError('슬러그를 입력해주세요.')
+      showError('슬러그를 입력해주세요.', slugRef)
       return
     }
 
@@ -74,7 +85,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
         : await createBlogPost(payload)
 
     if (!result.success) {
-      setFormError(result.error)
+      showError(result.error ?? '저장 중 오류가 발생했습니다.')
     } else {
       toast(mode === 'edit' ? '포스트가 수정되었습니다.' : '새 포스트가 등록되었습니다.')
       router.push('/blog')
@@ -137,6 +148,17 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
         </div>
       </div>
 
+      {/* 폼 에러 */}
+      {formError && (
+        <div
+          ref={errorRef}
+          className="flex items-center gap-2 p-3 mb-6 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm dark:bg-red-900/20 dark:border-red-800 dark:text-red-400"
+        >
+          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <span>{formError}</span>
+        </div>
+      )}
+
       {/* 폼 */}
       <form id="blog-edit-form" onSubmit={handleSubmit} className="space-y-5">
         {/* 제목 */}
@@ -145,6 +167,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
             제목 <span className="text-red-400 normal-case tracking-normal font-normal">*</span>
           </label>
           <input
+            ref={titleRef}
             type="text"
             value={formData.title}
             onChange={(e) => setFormData((p) => ({ ...p, title: e.target.value }))}
@@ -160,6 +183,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
             슬러그 <span className="text-red-400 normal-case tracking-normal font-normal">*</span>
           </label>
           <input
+            ref={slugRef}
             type="text"
             value={formData.slug}
             onChange={(e) => setFormData((p) => ({ ...p, slug: e.target.value }))}
@@ -259,13 +283,6 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
           )}
         </div>
 
-        {/* 폼 에러 */}
-        {formError && (
-          <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
-            <span>{formError}</span>
-          </div>
-        )}
       </form>
     </div>
   )

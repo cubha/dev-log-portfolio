@@ -7,8 +7,9 @@ import { compile, run } from '@mdx-js/mdx'
 import * as runtime from 'react/jsx-runtime'
 import remarkGfm from 'remark-gfm'
 import { rehypeShiki } from '@/src/utils/mdx'
-import { mdxComponents } from '@/src/components/mdx/MdxComponents'
+import { createMdxComponents } from '@/src/components/mdx/MdxComponents'
 import { getBlogPostBySlug, getPublishedPostSummaries } from '@/src/utils/blog/getBlogPosts'
+import { markdownTextToPlain, baseIdFromText } from '@/src/utils/blog/headingUtils'
 import { PostNavigation } from '@/src/components/blog/PostNavigation'
 import { GiscusComments } from '@/src/components/blog/GiscusComments'
 import { TableOfContents } from '@/src/components/blog/TableOfContents'
@@ -41,7 +42,8 @@ export default async function BlogDetailPage({ params }: PageProps) {
     getCurrentUserRole(),
     getPublishedPostSummaries(),
   ])
-  if (!post) notFound()
+  // 글이 없거나, 비발행 상태이면서 관리자가 아닌 경우 404
+  if (!post || (post.status !== 'published' && !isAdmin)) notFound()
   const isLoggedIn = !!user
 
   // 전체 글 목록에서 이전/다음글 계산 (published_at 내림차순 기준)
@@ -74,20 +76,23 @@ export default async function BlogDetailPage({ params }: PageProps) {
     baseUrl: import.meta.url,
   })
   const MDXComponent = Content as MDXContent
+  const mdxComponents = createMdxComponents()
 
   // 읽기 시간 계산 (한국어 기준 ~500자/분)
   const readingTime = Math.max(1, Math.ceil(post.content.length / 500))
 
-  // 마크다운 헤딩에서 TOC 데이터 추출 (h2, h3)
+  // 마크다운 헤딩에서 TOC 데이터 추출 (h2만) — 코드 블록 내부 ## 제외, 중복 id는 -2, -3 suffix로 구분
+  const contentWithoutCodeBlocks = post.content.replace(/```[\s\S]*?```/g, '')
   const tocItems: TocItem[] = []
-  const headingRegex = /^(#{2,3})\s+(.+)$/gm
+  const idCountMap = new Map<string, number>()
+  const headingRegex = /^(##)\s+(.+)$/gm
   let match: RegExpExecArray | null
-  while ((match = headingRegex.exec(post.content)) !== null) {
-    const text = match[2].replace(/[`*_~\[\]]/g, '').trim()
-    const id = text
-      .toLowerCase()
-      .replace(/[^\w\s가-힣-]/g, '')
-      .replace(/\s+/g, '-')
+  while ((match = headingRegex.exec(contentWithoutCodeBlocks)) !== null) {
+    const text = markdownTextToPlain(match[2])
+    const baseId = baseIdFromText(text)
+    const count = (idCountMap.get(baseId) ?? 0) + 1
+    idCountMap.set(baseId, count)
+    const id = count === 1 ? baseId : `${baseId}-${count}`
     tocItems.push({ id, text, level: match[1].length })
   }
 

@@ -22,7 +22,6 @@ export async function getBlogPostBySlug(rawSlug: string): Promise<BlogPost | nul
       .from('blog_posts')
       .select('*')
       .eq('slug', slug)
-      .eq('status', 'published')
       .limit(1)
     if (error) { console.error('블로그 글 단일 조회 오류:', error.message); return null }
     return (data?.[0] as BlogPost) ?? null
