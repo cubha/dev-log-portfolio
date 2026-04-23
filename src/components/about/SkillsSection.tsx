@@ -20,7 +20,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
   const grouped = groupByCategory(skills)
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'clamp(100px, 12.5vw, 180px) 1fr', gap: 'clamp(40px, 5.5vw, 80px)' }}>
+    <div className="grid two-col-label-grid" style={{ gap: 'clamp(40px, 5.5vw, 80px)' }}>
       <div>
         <div className="sv-label">TECHNICAL SKILLS</div>
         <div className="sv-mono text-subtle" style={{ fontSize: 11, marginTop: 8 }}>
@@ -32,10 +32,9 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
         {grouped.map(([category, items], i) => (
           <div
             key={category}
+            className="grid two-col-label-grid-sm"
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'clamp(80px, 11.1vw, 160px) 1fr',
-              gap: 40,
+              gap: 'clamp(24px, 4vw, 40px)',
               padding: '22px 0',
               borderTop: '1px solid var(--border)',
             }}

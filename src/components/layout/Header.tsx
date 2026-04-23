@@ -204,7 +204,7 @@ export function Header() {
               top: 0,
               right: 0,
               bottom: 0,
-              zIndex: 50,
+              zIndex: 60,
               width: 260,
               background: 'var(--bg)',
               borderLeft: '1px solid var(--border)',

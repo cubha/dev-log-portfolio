@@ -52,7 +52,7 @@ export default async function ProjectsPage() {
           <div className="page-context" style={{ marginBottom: 32 }}>
             PORTFOLIO · PROJECTS ─────────────
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr clamp(200px, 25vw, 360px)', gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 60 }}>
+          <div className="grid page-header-grid page-header-grid-2col-25vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 60 }}>
             <h1 className="h-1" style={{ margin: 0, maxWidth: 820, letterSpacing: '-0.04em' }}>
               제가 진행했던 프로젝트들의{' '}
               <span className="metallic">연대기</span>입니다.

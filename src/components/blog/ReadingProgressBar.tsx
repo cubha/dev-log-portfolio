@@ -27,7 +27,7 @@ export const ReadingProgressBar = () => {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-[3px] bg-foreground/70 origin-left z-50"
+      className="fixed top-0 left-0 right-0 h-[3px] bg-foreground/70 origin-left z-[60]"
       style={{ scaleX }}
     />
   )
