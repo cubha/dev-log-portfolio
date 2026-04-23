@@ -19,7 +19,7 @@ export function BufferPhilosophySection() {
     >
       <div>
         <div className="sv-eyebrow" style={{ marginBottom: 28 }}>02 ─── BUFFER PHILOSOPHY</div>
-        <h3 className="h-2" style={{ margin: '0 0 18px' }}>
+        <h3 className="h-2" style={{ margin: '0 0 28px' }}>
           가속으로 확보한<br />품질 버퍼
         </h3>
         <p className="text-muted" style={{ fontSize: 14, lineHeight: 1.7 }}>

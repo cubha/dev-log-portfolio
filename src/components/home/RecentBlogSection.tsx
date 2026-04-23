@@ -54,7 +54,7 @@ export async function RecentBlogSection() {
                 {date}
               </div>
               <div>
-                <div className="h-3" style={{ marginBottom: 10, letterSpacing: '-0.02em' }}>
+                <div className="h-3" style={{ marginBottom: 18, letterSpacing: '-0.02em' }}>
                   {post.title}
                 </div>
                 {post.description && (

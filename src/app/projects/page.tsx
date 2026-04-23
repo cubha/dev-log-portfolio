@@ -52,7 +52,7 @@ export default async function ProjectsPage() {
           <div className="page-context" style={{ marginBottom: 32 }}>
             PORTFOLIO · PROJECTS ─────────────
           </div>
-          <div className="grid page-header-grid page-header-grid-2col-25vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 60 }}>
+          <div className="grid page-header-grid page-header-grid-2col-25vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 100 }}>
             <h1 className="h-1" style={{ margin: 0, maxWidth: 820, letterSpacing: '-0.04em' }}>
               제가 진행했던 프로젝트들의{' '}
               <span className="metallic">연대기</span>입니다.
@@ -63,7 +63,7 @@ export default async function ProjectsPage() {
           </div>
         </section>
 
-        <section style={{ padding: `0 ${px} clamp(80px, 9vw, 140px)` }}>
+        <section style={{ padding: `clamp(60px, 6vw, 96px) ${px} clamp(80px, 9vw, 140px)` }}>
           {errorMessage ? (
             <ErrorState message={errorMessage} />
           ) : typedProjects.length === 0 ? (

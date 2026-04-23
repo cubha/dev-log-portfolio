@@ -231,7 +231,7 @@ function BlogRow({ post, index, isAdmin = false }: { post: BlogPost; index: numb
             {date}
           </div>
         )}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
           <div className="h-3" style={{ letterSpacing: '-0.02em' }}>{post.title}</div>
           {isAdmin && post.status !== 'published' && (
             <span className="sv-mono" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.1em' }}>

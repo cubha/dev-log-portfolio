@@ -71,7 +71,7 @@ export function AIWorkflowSection() {
             >
               STEP {s.n}
             </div>
-            <div className="h-3" style={{ marginBottom: 6, position: 'relative', zIndex: 1 }}>
+            <div className="h-3" style={{ marginBottom: 16, position: 'relative', zIndex: 1 }}>
               {s.en}
             </div>
             <div

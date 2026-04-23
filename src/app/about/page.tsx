@@ -59,7 +59,7 @@ export default async function AboutPage() {
         <div className="page-context" style={{ marginBottom: 40 }}>
           PORTFOLIO · ABOUT ─────────────
         </div>
-        <div className="grid page-header-grid page-header-grid-2col-25vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 80 }}>
+        <div className="grid page-header-grid page-header-grid-2col-25vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'start', marginBottom: 120 }}>
           <div>
             <h1 className="h-1" style={{ margin: '0 0 28px', maxWidth: 900, lineHeight: 1.1 }}>
               기술의 변화를{' '}
@@ -78,7 +78,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ─── Essay ───────────────────────────────────────────────── */}
-      <section className="grid two-col-label-grid" style={{ padding: `0 ${px} 120px`, gap: 'clamp(40px, 5.5vw, 80px)' }}>
+      <section className="grid two-col-label-grid" style={{ padding: `clamp(60px, 6vw, 96px) ${px} 120px`, gap: 'clamp(40px, 5.5vw, 80px)' }}>
         <div className="sv-label">ABOUT</div>
         <div style={{ maxWidth: 820 }}>
           {ESSAY.map((p, i) => (
