@@ -77,7 +77,7 @@ export function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 30, fontSize: 13 }} className="hidden md:flex">
+        <nav style={{ alignItems: 'center', gap: 30, fontSize: 13 }} className="hidden md:flex">
           {NAV_ITEMS.map((item) => {
             const isActive = item.href === '/blog'
               ? pathname?.startsWith('/blog')

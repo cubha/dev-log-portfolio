@@ -57,7 +57,7 @@ export default async function ProjectsPage() {
               제가 진행했던 프로젝트들의{' '}
               <span className="metallic">연대기</span>입니다.
             </h1>
-            <p className="text-muted" style={{ fontSize: 14, lineHeight: 1.7 }}>
+            <p className="text-muted hidden md:block" style={{ fontSize: 14, lineHeight: 1.7 }}>
               금융권·제조업·공공 분야. 업무 / 개인 / 팀으로 분류.
             </p>
           </div>

@@ -64,7 +64,7 @@ export default async function ContactPage({
           <h1 className="h-1" style={{ margin: 0, maxWidth: 900, letterSpacing: '-0.04em' }}>
             새 프로젝트든, <span className="metallic">가벼운 인사</span>든 환영합니다.
           </h1>
-          <p className="text-muted" style={{ fontSize: 14, lineHeight: 1.7 }}>
+          <p className="text-muted hidden md:block" style={{ fontSize: 14, lineHeight: 1.7 }}>
             보통 하루 안에 답장드립니다. 아래 방명록은 공개, 이메일은 비공개로 받고 있습니다.
           </p>
         </div>
