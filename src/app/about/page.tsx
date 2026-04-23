@@ -69,7 +69,7 @@ export default async function AboutPage() {
               {(profileData as AboutProfile | null)?.intro_text ?? '금융권 SI 출신 · 서울시 중심 활동 · 원격지 유연 대응 가능'}
             </p>
           </div>
-          <div style={{ textAlign: 'right' }}>
+          <div className="text-left md:text-right hidden md:block">
             <div className="sv-mono text-subtle" style={{ fontSize: 11, letterSpacing: '0.1em', marginBottom: 6 }}>CURRENTLY</div>
             <div className="sv-mono" style={{ fontSize: 13, color: 'var(--fg)' }}>새 프로젝트 상담 가능</div>
             <div className="sv-mono text-muted" style={{ fontSize: 12, marginTop: 4 }}>2026 Q2 ~</div>

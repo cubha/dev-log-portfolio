@@ -62,7 +62,7 @@ export function MenuPreviewSection() {
             <div className="sv-label" style={{ marginBottom: 20, position: 'relative', zIndex: 1 }}>
               {c.key}
             </div>
-            <div className="h-4" style={{ marginBottom: 8, letterSpacing: '-0.01em', lineHeight: 1.3, position: 'relative', zIndex: 1 }}>
+            <div className="h-4" style={{ marginBottom: 12, letterSpacing: '-0.01em', lineHeight: 1.3, position: 'relative', zIndex: 1 }}>
               {c.title}
             </div>
             <div className="text-muted" style={{ fontSize: 13, lineHeight: 1.55, marginBottom: 16, position: 'relative', zIndex: 1 }}>
