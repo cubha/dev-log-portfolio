@@ -1,197 +1,256 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
-import { Logo } from '@/src/components/common/Logo'
-import { ThemeToggle } from '@/src/components/common/ThemeToggle'
+import { useTheme } from 'next-themes'
 
-/** GNB 네비게이션 항목 */
 const NAV_ITEMS = [
-  { href: '/projects', label: 'Projects' },
-  { href: '/blog', label: 'Blog' },
   { href: '/about', label: 'About' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/blog', label: 'Writing' },
   { href: '/contact', label: 'Contact' },
 ]
 
-/**
- * 전역 헤더 네비게이션
- *
- * - sticky 포지셔닝으로 스크롤 시 상단 고정
- * - backdrop-blur + 반투명 배경 (라이트: white/70, 다크: slate-950/80)
- * - 스크롤 감지 후 border-bottom 표시
- * - 활성 페이지: brand-primary 텍스트 + brand-primary 언더라인
- * - 우측: ThemeToggle(다크모드 전환) + 햄버거(모바일)
- * - /admin 경로에서는 헤더 숨김
- */
 export function Header() {
   const pathname = usePathname()
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
 
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 8)
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  useEffect(() => {
-    setIsMobileOpen(false)
-  }, [pathname])
-
+  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => { setIsMobileOpen(false) }, [pathname])
   useEffect(() => {
     document.body.style.overflow = isMobileOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [isMobileOpen])
 
-  if (pathname?.startsWith('/admin')) {
-    return null
-  }
+  if (pathname?.startsWith('/admin')) return null
+
+  const isDark = resolvedTheme === 'dark'
 
   return (
     <>
       <header
-        className={`sticky top-0 z-50 w-full bg-background/70 backdrop-blur-md transition-all duration-300 border-b ${
-          isScrolled
-            ? 'border-brand-primary/10 shadow-sm'
-            : 'border-transparent'
-        }`}
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
+          height: 64,
+          padding: '0 clamp(20px, 4vw, 40px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid var(--border)',
+          background: 'color-mix(in srgb, var(--bg) 78%, transparent)',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+        }}
       >
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* 로고 */}
-            <Logo />
+        {/* Brand */}
+        <Link
+          href="/"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 13,
+            letterSpacing: '0.06em',
+            fontWeight: 500,
+            color: 'var(--fg)',
+            textDecoration: 'none',
+          }}
+        >
+          <span
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: '50%',
+              background: 'var(--accent)',
+              boxShadow: '0 0 8px var(--accent-line)',
+              display: 'inline-block',
+              flexShrink: 0,
+            }}
+          />
+          SILVER.DEV
+        </Link>
 
-            {/* 데스크탑 네비게이션 + 다크모드 토글 */}
-            <div className="hidden md:flex items-center gap-1">
+        {/* Desktop nav */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 30, fontSize: 13 }} className="hidden md:flex">
+          {NAV_ITEMS.map((item) => {
+            const isActive = item.href === '/blog'
+              ? pathname?.startsWith('/blog')
+              : pathname?.startsWith(item.href)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{
+                  color: isActive ? 'var(--fg)' : 'var(--fg-muted)',
+                  textDecoration: 'none',
+                  position: 'relative',
+                  padding: '4px 0',
+                  transition: 'color .15s',
+                }}
+                className="nav-link"
+              >
+                {item.label}
+                {isActive && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      right: 0,
+                      bottom: -2,
+                      height: 1,
+                      background: 'var(--accent)',
+                    }}
+                  />
+                )}
+              </Link>
+            )
+          })}
+
+          {/* Theme toggle */}
+          {mounted && (
+            <button
+              onClick={() => setTheme(isDark ? 'light' : 'dark')}
+              aria-label="테마 전환"
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: '50%',
+                border: '1px solid var(--border)',
+                background: 'transparent',
+                color: 'var(--fg-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: 14,
+                transition: 'color .15s, border-color .15s',
+              }}
+            >
+              {isDark ? '☾' : '☀'}
+            </button>
+          )}
+        </nav>
+
+        {/* Mobile: theme toggle + hamburger */}
+        <div className="flex md:hidden items-center gap-2">
+          {mounted && (
+            <button
+              onClick={() => setTheme(isDark ? 'light' : 'dark')}
+              aria-label="테마 전환"
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: '50%',
+                border: '1px solid var(--border)',
+                background: 'transparent',
+                color: 'var(--fg-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: 14,
+              }}
+            >
+              {isDark ? '☾' : '☀'}
+            </button>
+          )}
+          <button
+            onClick={() => setIsMobileOpen((p) => !p)}
+            aria-label={isMobileOpen ? '메뉴 닫기' : '메뉴 열기'}
+            style={{
+              width: 34,
+              height: 34,
+              border: '1px solid var(--border)',
+              background: 'transparent',
+              color: 'var(--fg-muted)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 5,
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            <span style={{ width: 16, height: 1.5, background: 'var(--fg-muted)', display: 'block', transition: 'transform .2s', transform: isMobileOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none' }} />
+            <span style={{ width: 16, height: 1.5, background: 'var(--fg-muted)', display: 'block', opacity: isMobileOpen ? 0 : 1, transition: 'opacity .2s' }} />
+            <span style={{ width: 16, height: 1.5, background: 'var(--fg-muted)', display: 'block', transition: 'transform .2s', transform: isMobileOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none' }} />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile drawer */}
+      {isMobileOpen && (
+        <>
+          <div
+            onClick={() => setIsMobileOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 40,
+              background: 'rgba(0,0,0,0.4)',
+              backdropFilter: 'blur(4px)',
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 50,
+              width: 260,
+              background: 'var(--bg)',
+              borderLeft: '1px solid var(--border)',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '80px 32px 32px',
+            }}
+          >
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {NAV_ITEMS.map((item) => {
-                const isActive = pathname?.startsWith(item.href)
-
+                const isActive = item.href === '/blog'
+                  ? pathname?.startsWith('/blog')
+                  : pathname?.startsWith(item.href)
                 return (
-                  <Link key={item.href} href={item.href} scroll={false}>
-                    <motion.div
-                      whileHover={{ y: -1 }}
-                      whileTap={{ scale: 0.96 }}
-                      className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150 ${
-                        isActive
-                          ? 'text-foreground font-semibold'
-                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/60 dark:hover:bg-white/5'
-                      }`}
-                    >
-                      {item.label}
-
-                      {/* 활성 언더라인 */}
-                      {isActive && (
-                        <motion.span
-                          layoutId="activeNavIndicator"
-                          className="absolute bottom-1 left-3 right-3 h-0.5 rounded-full bg-foreground/40"
-                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                        />
-                      )}
-                    </motion.div>
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    style={{
+                      fontSize: 15,
+                      fontWeight: isActive ? 600 : 400,
+                      color: isActive ? 'var(--fg)' : 'var(--fg-muted)',
+                      textDecoration: 'none',
+                      padding: '10px 0',
+                      borderBottom: '1px solid var(--border)',
+                      transition: 'color .15s',
+                    }}
+                  >
+                    {item.label}
                   </Link>
                 )
               })}
-
-              {/* 구분선 */}
-              <div className="w-px h-5 bg-slate-200 dark:bg-white/10 mx-1" />
-
-              {/* 다크모드 토글 */}
-              <ThemeToggle />
-            </div>
-
-            {/* 모바일 우측: 다크모드 토글 + 햄버거 */}
-            <div className="md:hidden flex items-center gap-1">
-              <ThemeToggle />
-              <button
-                onClick={() => setIsMobileOpen((prev) => !prev)}
-                className="flex items-center justify-center w-9 h-9 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
-                aria-label={isMobileOpen ? '메뉴 닫기' : '메뉴 열기'}
-              >
-                {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
+            </nav>
+            <div
+              style={{
+                marginTop: 'auto',
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 10,
+                letterSpacing: '0.1em',
+                color: 'var(--fg-subtle)',
+              }}
+            >
+              © 2026 SILVER.DEV
             </div>
           </div>
-        </nav>
-      </header>
-
-      {/* 모바일 드로어 오버레이 */}
-      <AnimatePresence>
-        {isMobileOpen && (
-          <>
-            {/* 딤 배경 */}
-            <motion.div
-              key="overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden"
-              onClick={() => setIsMobileOpen(false)}
-            />
-
-            {/* 슬라이드 드로어 */}
-            <motion.div
-              key="drawer"
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed top-0 right-0 z-50 h-full w-72 bg-white dark:bg-slate-950 shadow-2xl md:hidden flex flex-col"
-            >
-              {/* 드로어 헤더 */}
-              <div className="flex items-center justify-between px-5 h-16 border-b border-slate-100 dark:border-white/10">
-                <Logo />
-                <button
-                  onClick={() => setIsMobileOpen(false)}
-                  className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
-                  aria-label="메뉴 닫기"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* 드로어 네비게이션 */}
-              <nav className="flex flex-col gap-1 p-4 flex-1">
-                {NAV_ITEMS.map((item, i) => {
-                  const isActive = pathname?.startsWith(item.href)
-
-                  return (
-                    <motion.div
-                      key={item.href}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.06, duration: 0.2 }}
-                    >
-                      <Link
-                        href={item.href}
-                        scroll={false}
-                        className={`flex items-center px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                          isActive
-                            ? 'bg-foreground/8 text-foreground font-semibold'
-                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'
-                        }`}
-                      >
-                        {item.label}
-                        {isActive && (
-                          <span className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground/40" />
-                        )}
-                      </Link>
-                    </motion.div>
-                  )
-                })}
-              </nav>
-
-              {/* 드로어 하단 */}
-              <div className="px-5 py-4 border-t border-slate-100 dark:border-white/10">
-                <p className="text-xs text-slate-400 dark:text-slate-600">© 2026 Silver.dev</p>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+        </>
+      )}
     </>
   )
 }

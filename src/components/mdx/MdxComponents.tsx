@@ -5,7 +5,6 @@ import type { MDXComponents } from 'mdx/types'
 import type { ReactNode } from 'react'
 import { baseIdFromText } from '@/src/utils/blog/headingUtils'
 
-/** children에서 순수 텍스트를 재귀 추출 */
 const extractText = (node: ReactNode): string => {
   if (typeof node === 'string' || typeof node === 'number') return String(node)
   if (Array.isArray(node)) return node.map(extractText).join('')
@@ -19,10 +18,6 @@ const extractText = (node: ReactNode): string => {
 const getHeadingId = (children: ReactNode): string =>
   baseIdFromText(extractText(children).trim())
 
-/**
- * MDX 컴포넌트 팩토리 — 중복 heading ID를 순서대로 자동 처리 (-2, -3 suffix)
- * page.tsx에서 createMdxComponents()를 호출해 생성한 컴포넌트를 MDXComponent에 전달한다.
- */
 export const createMdxComponents = (): MDXComponents => {
   const idCountMap = new Map<string, number>()
 
@@ -38,7 +33,8 @@ export const createMdxComponents = (): MDXComponents => {
       <h2
         {...props}
         id={getUniqueId(children)}
-        className="mt-12 mb-4 text-lg font-bold text-foreground border-l-4 border-brand-primary pl-4 py-1 dark:border-brand-primary scroll-mt-20"
+        className="h-2"
+        style={{ margin: '48px 0 20px', borderLeft: '2px solid var(--accent)', paddingLeft: 16, scrollMarginTop: 96 }}
       >
         {children}
       </h2>
@@ -47,13 +43,13 @@ export const createMdxComponents = (): MDXComponents => {
       <h3
         {...props}
         id={getUniqueId(children)}
-        className="mt-10 mb-3 text-base font-semibold text-foreground dark:text-foreground scroll-mt-20"
+        style={{ margin: '32px 0 14px', fontSize: 18, fontWeight: 600, letterSpacing: '-0.015em', color: 'var(--fg)', lineHeight: 1.3, scrollMarginTop: 96 }}
       >
         {children}
       </h3>
     ),
     p: ({ children, ...props }) => (
-      <p {...props} className="mb-4 text-foreground leading-relaxed dark:text-foreground">
+      <p {...props} style={{ marginBottom: 28, fontSize: 16, lineHeight: 1.8, color: 'var(--fg)' }}>
         {children}
       </p>
     ),
@@ -63,31 +59,33 @@ export const createMdxComponents = (): MDXComponents => {
         target="_blank"
         rel="noopener noreferrer"
         {...props}
-        className="text-brand-secondary hover:underline dark:text-brand-secondary"
+        style={{ borderBottom: '1px solid var(--accent)', color: 'var(--fg)', paddingBottom: 1, textDecoration: 'none' }}
       >
         {children}
       </a>
     ),
     ul: ({ children, ...props }) => (
-      <ul {...props} className="mb-4 ml-6 list-disc space-y-1 text-foreground dark:text-foreground">
+      <ul {...props} style={{ marginBottom: 28, paddingLeft: 24, listStyleType: 'disc', color: 'var(--fg)' }}>
         {children}
       </ul>
     ),
+    ol: ({ children, ...props }) => (
+      <ol {...props} style={{ marginBottom: 28, paddingLeft: 24, listStyleType: 'decimal', color: 'var(--fg)' }}>
+        {children}
+      </ol>
+    ),
     li: ({ children, ...props }) => (
-      <li {...props} className="leading-relaxed">
+      <li {...props} style={{ lineHeight: 1.8, marginBottom: 6 }}>
         {children}
       </li>
     ),
     code: ({ children, className, ...props }) => {
       const isBlock = typeof className === 'string' && className.includes('language-')
+      if (isBlock) return <code {...props} className={className}>{children}</code>
       return (
         <code
           {...props}
-          className={
-            isBlock
-              ? className
-              : `rounded bg-foreground/10 px-1.5 py-0.5 text-sm font-mono text-foreground dark:bg-foreground/20 dark:text-foreground ${className ?? ''}`
-          }
+          style={{ background: 'var(--accent-dim)', padding: '2px 7px', borderRadius: 3, fontSize: '0.875em', fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg)' }}
         >
           {children}
         </code>
@@ -96,61 +94,58 @@ export const createMdxComponents = (): MDXComponents => {
     pre: ({ children, ...props }) => (
       <pre
         {...props}
-        className="mb-4 overflow-x-auto rounded-lg bg-[#24292e] p-4 text-sm text-[#e1e4e8] [&>code]:!text-inherit [&>code]:!bg-transparent [&>code]:!p-0 [&>code]:!rounded-none"
+        style={{ marginBottom: 32, overflowX: 'auto', borderRadius: 8, background: 'var(--code-bg)', padding: '20px 24px', fontSize: 13, lineHeight: 1.65 }}
       >
         {children}
       </pre>
     ),
     strong: ({ children, ...props }) => (
-      <strong {...props} className="font-bold text-foreground dark:text-foreground">
+      <strong {...props} style={{ fontWeight: 600, color: 'var(--fg)' }}>
         {children}
       </strong>
     ),
     blockquote: ({ children, ...props }) => (
       <blockquote
         {...props}
-        className="border-l-4 border-brand-secondary/50 pl-4 py-2 my-4 italic text-foreground/90 dark:border-brand-secondary/50 dark:text-foreground/90"
+        style={{ borderLeft: '2px solid var(--accent)', paddingLeft: 20, margin: '0 0 40px', fontStyle: 'italic', fontSize: 17, color: 'var(--fg-muted)', lineHeight: 1.6 }}
       >
         {children}
       </blockquote>
     ),
     table: ({ children, ...props }) => (
-      <div className="mb-4 overflow-x-auto not-prose">
-        <table {...props} className="w-full border-collapse text-sm">
+      <div style={{ marginBottom: 28, overflowX: 'auto' }}>
+        <table {...props} style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
           {children}
         </table>
       </div>
     ),
     thead: ({ children, ...props }) => (
-      <thead {...props} className="bg-foreground/5 dark:bg-foreground/10">
+      <thead {...props} style={{ background: 'var(--accent-dim)' }}>
         {children}
       </thead>
     ),
     tbody: ({ children, ...props }) => (
-      <tbody {...props} className="divide-y divide-foreground/10">
+      <tbody {...props}>
         {children}
       </tbody>
     ),
     tr: ({ children, ...props }) => (
-      <tr {...props} className="hover:bg-foreground/5 transition-colors">
+      <tr {...props}>
         {children}
       </tr>
     ),
     th: ({ children, ...props }) => (
-      <th
-        {...props}
-        className="px-4 py-2 text-left font-semibold text-foreground border border-foreground/15"
-      >
+      <th {...props} style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--fg)', border: '1px solid var(--border)' }}>
         {children}
       </th>
     ),
     td: ({ children, ...props }) => (
-      <td
-        {...props}
-        className="px-4 py-2 text-foreground/90 border border-foreground/15"
-      >
+      <td {...props} style={{ padding: '10px 16px', color: 'var(--fg-muted)', border: '1px solid var(--border)' }}>
         {children}
       </td>
+    ),
+    hr: ({ ...props }) => (
+      <hr {...props} style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '40px 0' }} />
     ),
   }
 }

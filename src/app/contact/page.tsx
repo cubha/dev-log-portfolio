@@ -5,18 +5,11 @@ import { LiveStatusWidget } from '@/src/components/contact/LiveStatusWidget'
 import { GuestbookForm } from '@/src/components/contact/GuestbookForm'
 import { GuestbookList } from '@/src/components/contact/GuestbookList'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
-import { ThemeCard } from '@/src/components/common/ThemeCard'
+import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
 import type { ContactLink } from '@/src/types/contact'
 
 export const dynamic = 'force-dynamic'
 
-/**
- * Contact 페이지 (Server Component)
- *
- * - contact_links 테이블에서 sort_order 순으로 데이터 fetch
- * - 관리자 여부 확인 후 ContactInfo에 isAdmin prop 전달
- * - 좌측: Contact Info | 우측: 방명록 폼 | 하단: 방명록 목록
- */
 export default async function ContactPage({
   searchParams,
 }: {
@@ -24,19 +17,15 @@ export default async function ContactPage({
 }) {
   const params = await searchParams
   const guestbookPage = Math.max(1, parseInt(params.guestbookPage ?? '1', 10) || 1)
-  // ── 1. 관리자 권한 확인 (공통 유틸리티) ──────────────────
   const { user, role, isAdmin } = await getCurrentUserRole()
 
-  // ── 2. contact_links 데이터 fetch ────────────────────────
   const supabase = await createClient()
 
-  // ── 3. 로그인 유저 닉네임/아바타 서버사이드 계산 ──────────
   let displayName: string | null = null
   let userAvatarUrl: string | null = null
 
   if (user) {
     userAvatarUrl = (user.user_metadata?.avatar_url as string | undefined) ?? null
-
     if (isAdmin) {
       displayName = 'Admin'
     } else if (user.app_metadata?.provider === 'github') {
@@ -59,55 +48,72 @@ export default async function ContactPage({
     .select('*')
     .order('sort_order', { ascending: true })
 
-  if (error) {
-    console.error('[ContactPage] contact_links fetch error:', error)
-  }
-
-  // 오류 시 빈 배열로 폴백
+  if (error) console.error('[ContactPage] contact_links fetch error:', error)
   const contactLinks: ContactLink[] = data ?? []
 
+  const px = 'clamp(20px, 5.5vw, 80px)'
+
   return (
-    <>
-      <div className="min-h-screen bg-background">
-        <div className="max-w-4xl mx-auto px-4 md:px-6 py-12">
-          {/* 페이지 헤더 */}
-          <div className="mb-10 text-center">
-            <h1 className="text-3xl font-bold text-foreground">Contact</h1>
+    <main>
+      <AuthStateInitializer isAdmin={isAdmin} />
+
+      {/* Page header */}
+      <section style={{ padding: `72px ${px} 40px` }}>
+        <div className="page-context" style={{ marginBottom: 32 }}>PORTFOLIO · CONTACT ─────────────</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr clamp(200px, 27.8vw, 400px)', gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 60 }}>
+          <h1 className="h-1" style={{ margin: 0, maxWidth: 900, letterSpacing: '-0.04em' }}>
+            새 프로젝트든, <span className="metallic">가벼운 인사</span>든 환영합니다.
+          </h1>
+          <p className="text-muted" style={{ fontSize: 14, lineHeight: 1.7 }}>
+            보통 하루 안에 답장드립니다. 아래 방명록은 공개, 이메일은 비공개로 받고 있습니다.
+          </p>
+        </div>
+      </section>
+
+      {/* Contact info + Guestbook form */}
+      <section
+        style={{
+          padding: `0 ${px} 80px`,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: 'clamp(40px, 5.5vw, 80px)',
+          borderTop: '1px solid var(--border)',
+          paddingTop: 56,
+        }}
+      >
+        {/* Left: Contact info + Live Status */}
+        <div>
+          <div className="sv-label" style={{ marginBottom: 28 }}>CONTACT INFO</div>
+          <ContactInfo initialData={contactLinks} isAdmin={isAdmin} />
+          <div style={{ marginTop: 48 }}>
+            <div className="sv-label" style={{ marginBottom: 20 }}>LIVE STATUS</div>
+            <LiveStatusWidget />
           </div>
+        </div>
 
-          {/* 2열 레이아웃 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-            {/* 좌측: Contact Info + Live Status */}
-            <div className="flex flex-col gap-4">
-              <ThemeCard noHoverLift className="p-6">
-                <ContactInfo initialData={contactLinks} isAdmin={isAdmin} />
-              </ThemeCard>
-              <LiveStatusWidget />
-            </div>
-
-            {/* 우측: 방명록 폼 */}
-            <ThemeCard noHoverLift className="p-6 h-full">
-              <GuestbookForm
-                user={user}
-                isAdmin={isAdmin}
-                displayName={displayName}
-                avatarUrl={userAvatarUrl}
-              />
-            </ThemeCard>
-          </div>
-
-          {/* 하단: 방명록 목록 */}
-          <GuestbookList
+        {/* Right: Guestbook form */}
+        <div>
+          <div className="sv-label" style={{ marginBottom: 28 }}>방명록 GUESTBOOK</div>
+          <GuestbookForm
+            user={user}
             isAdmin={isAdmin}
-            currentUserId={user?.id ?? null}
-            currentUserName={displayName}
-            page={guestbookPage}
+            displayName={displayName}
+            avatarUrl={userAvatarUrl}
           />
         </div>
-      </div>
+      </section>
 
-      {/* 로그인 유저: 플로팅 메뉴 */}
+      {/* Guestbook list */}
+      <section style={{ padding: `0 ${px} clamp(80px, 9vw, 140px)`, borderTop: '1px solid var(--border)', paddingTop: 56 }}>
+        <GuestbookList
+          isAdmin={isAdmin}
+          currentUserId={user?.id ?? null}
+          currentUserName={displayName}
+          page={guestbookPage}
+        />
+      </section>
+
       {role !== 'guest' && <FloatingUserButton isAdmin={isAdmin} />}
-    </>
+    </main>
   )
 }

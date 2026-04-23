@@ -42,18 +42,39 @@ export default async function ProjectsPage() {
     const typedProjects: Database['public']['Tables']['projects']['Row'][] = projects || []
 
     // 단일 return 문으로 통합된 레이아웃
+    const px = 'clamp(20px, 5.5vw, 80px)'
     return (
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-12">
+      <main>
         <AuthStateInitializer isAdmin={isAdmin} />
-        {errorMessage ? (
-          <ErrorState message={errorMessage} />
-        ) : typedProjects.length === 0 ? (
-          <EmptyState isAdmin={isAdmin} />
-        ) : (
-          <ProjectList projects={typedProjects} />
-        )}
+
+        {/* Page header */}
+        <section style={{ padding: `72px ${px} 40px` }}>
+          <div className="page-context" style={{ marginBottom: 32 }}>
+            PORTFOLIO · PROJECTS ─────────────
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr clamp(200px, 25vw, 360px)', gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 60 }}>
+            <h1 className="h-1" style={{ margin: 0, maxWidth: 820, letterSpacing: '-0.04em' }}>
+              제가 진행했던 프로젝트들의{' '}
+              <span className="metallic">연대기</span>입니다.
+            </h1>
+            <p className="text-muted" style={{ fontSize: 14, lineHeight: 1.7 }}>
+              금융권·제조업·공공 분야. 업무 / 개인 / 팀으로 분류.
+            </p>
+          </div>
+        </section>
+
+        <section style={{ padding: `0 ${px} clamp(80px, 9vw, 140px)` }}>
+          {errorMessage ? (
+            <ErrorState message={errorMessage} />
+          ) : typedProjects.length === 0 ? (
+            <EmptyState isAdmin={isAdmin} />
+          ) : (
+            <ProjectList projects={typedProjects} />
+          )}
+        </section>
+
         {userRole !== 'guest' && <FloatingUserButton isAdmin={isAdmin} />}
-      </div>
+      </main>
     )
   } catch (error) {
     // 최상위 try-catch: 예상치 못한 모든 에러를 안전하게 처리
@@ -61,9 +82,9 @@ export default async function ProjectsPage() {
     const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류'
 
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8 pt-8">
+      <main style={{ padding: 'clamp(60px, 5.5vw, 80px) clamp(20px, 5.5vw, 80px)' }}>
         <ErrorState message={errorMessage} />
-      </div>
+      </main>
     )
   }
 }

@@ -174,9 +174,14 @@ dev-log-portfolio/
 │   └── projects/
 │       └── dev-log-portfolio.mdx     # 포트폴리오 개발 회고
 │
-├── docs/                             # 📊 분석 문서
-│   └── analysis/
-│       └── ANALYSIS-2026-03-14.md   # 성능 분석 보고서
+├── docs/                             # 📊 문서
+│   ├── analysis/
+│   │   └── ANALYSIS-dev-log-portfolio-2026-04-23.md  # 전체 프로젝트 분석 보고서
+│   ├── design/                       # 🎨 디자인 Ground Truth (Silver V2)
+│   │   ├── DESIGN-TOKENS.md          # 디자인 토큰 canonical (컬러·타이포·간격·유틸 클래스)
+│   │   └── UX-BRIEF.md               # 화면 맵·레이아웃 원칙·인터랙션 패턴
+│   └── research/
+│       └── RESEARCH-*.md             # 기술 리서치 보고서
 │
 ├── supabase/                         # 🗄️ Supabase 관련 파일
 │   ├── schema.sql                    # 데이터베이스 스키마
@@ -443,9 +448,24 @@ chmod +x verify.sh
   - [x] 마크다운 미리보기 — 편집/미리보기 탭 토글 (`@mdx-js/mdx` evaluate 기반)
   - [x] 글 작성/수정 폼 검증 에러 UX 개선 — 에러 배너 상단 노출 + 해당 필드 자동 포커스
 
+- [x] **Silver V2 전면 리디자인** (feature/silver_sh)
+  - [x] globals.css Silver V2 디자인 토큰 전면 교체 (Pretendard + JetBrains Mono, Cool Silver 액센트)
+  - [x] Header · Footer Silver V2 교체 (sticky frosted glass, 브랜드 닷, 모바일 드로어)
+  - [x] CursorGlow 컴포넌트 신규 (커서 추적 radial gradient 글로우)
+  - [x] Home: Hero (메탈릭 이름) · AIWorkflow · BufferPhilosophy · TechStack · RecentBlog
+  - [x] About: 페이지 라벨 + 에세이 · Skills · ExperienceTabs 타임라인
+  - [x] Projects: 비대칭 에디토리얼 카드 그리드 + `.card` 메탈릭 테두리
+  - [x] Blog 목록: `.row-link` 행 리스트 + `.tag` 필터
+  - [x] Blog 상세: 3컬럼 레이아웃 (좌 메타 · 중 본문 · 우 TOC), BlogShareLinks 신규
+  - [x] Contact: 2컬럼 그리드 + `.sv-input` underline 폼
+  - [x] Login: 중앙 정렬 380px, `.metallic` 제목
+  - [x] 디자인 Ground Truth 수립 (`/init-design --deep`): DESIGN-TOKENS.md · UX-BRIEF.md 생성
+  - [x] 시맨틱 토큰 추가 (`--color-success`, `--color-error` 계열) + 하드코딩 7건 CSS 변수 교체
+
 ### 🚧 개발 예정
 
 - [ ] `/projects`, `/about` ISR 전환 (Suspense 경계 분리 후 적용 예정)
+- [ ] 어드민 페이지 `/admin/*` Silver V2 리디자인 (별도 세션)
 - [x] ~~**블로그 관리 진입점 개선**: `/admin/blog` 제거 → `/blog` 리스트에서 직접 인라인 관리 (v1.6.0에서 완료)~~
 
 ---
@@ -498,6 +518,18 @@ chmod +x verify.sh
 - 관리자 전용 블로그 수정 진입 버튼 (블로그 상세 페이지 상단, `isAdmin` 조건부 노출)
 - 커스텀 MDX 컴포넌트 — GFM 테이블(table/thead/tbody/tr/th/td), GitHub Dark 코드블록 스타일
 
+### Phase 13: Silver V2 전면 리디자인 + 디자인 시스템 수립 ✅ (2026-04-23)
+- 전 공개 페이지 Silver V2 테마 교체 — Pretendard + JetBrains Mono, Cool Silver 액센트(`#64748B` / `#C8D1DC`)
+- 메탈릭 그라디언트 시스템: `.btn`, `.card`, `.tag`, `.metallic` 텍스트 그라디언트
+- 커서 추적 Radial Gradient 글로우 (`CursorGlow` 컴포넌트), 다크/라이트 모드 완전 지원
+- Blog 상세 3컬럼 레이아웃 (좌 메타 사이드바 240px · 중 본문 · 우 TOC 260px)
+- `BlogShareLinks` 컴포넌트 신규 (트위터 공유 + 클립보드 복사, SSR 안전)
+- `/init-design --deep` 실행 — `docs/design/DESIGN-TOKENS.md` · `UX-BRIEF.md` Ground Truth 생성
+- 시맨틱 토큰 신규 등록: `--color-success`, `--color-success-glow`, `--color-error`, `--color-error-border`, `--color-error-bg`
+- 하드코딩 컬러 7건 CSS 변수 교체 (Footer, login, BlogList)
+- TypeScript 타입 개선: `as any` / `as unknown as AboutProfile` 제거, `satisfies` 패턴 적용
+- `/api/mdx/[slug]` slug allowlist 검증 추가 (path traversal 방어)
+
 ### Phase 12: 블로그 관리 인라인화 ✅ (2026-03-26)
 - `/admin/blog` 관리 페이지 제거 → 블로그 리스트(`/blog`)에서 직접 인라인 CRUD
 - 관리자 접근 시 전체 포스트(draft/archived 포함) 표시 + 상태 필터(전체/발행/임시저장/보관)
@@ -515,6 +547,35 @@ chmod +x verify.sh
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v2.0.0 — 2026-04-23 (Silver V2 전면 리디자인)
+
+**디자인 전면 교체:**
+- 전 공개 페이지 Silver V2 테마 적용 — Pretendard + JetBrains Mono, Cool Silver 액센트 팔레트
+- 메탈릭 그라디언트 버튼(`.btn`), 카드(`.card`), 태그(`.tag`), 텍스트(`.metallic`) 시스템 구축
+- 커서 추적 Radial Gradient 글로우 (`CursorGlow`), 다크/라이트 모드 완전 지원
+- 글로벌 헤더: sticky frosted glass (color-mix + backdrop-filter), 모바일 드로어 260px
+- Blog 상세 3컬럼 레이아웃 (좌 메타 240px · 중 본문 · 우 TOC 260px, xl 이상)
+
+**디자인 시스템 수립:**
+- `/init-design --deep` 실행 — `docs/design/DESIGN-TOKENS.md` · `UX-BRIEF.md` Ground Truth 생성
+- 시맨틱 토큰 신규 등록: `--color-success`, `--color-error` 계열 5개
+- 하드코딩 컬러 7건 CSS 변수(`var(--)`) 교체
+
+**코드 품질 개선 (Quick Win):**
+- `getTrainings.ts`, `getProfile.ts`, `getProfileClient.ts`: `as any` / `as unknown as` 제거, `satisfies` 패턴 적용
+- `/api/mdx/[slug]`: slug allowlist 정규식 검증 추가 (path traversal 방어)
+
+**신규 파일:**
+- `BlogShareLinks.tsx` — 트위터 공유 + 클립보드 복사 (SSR 안전, `useEffect` window 접근)
+- `docs/design/DESIGN-TOKENS.md` — 디자인 토큰 canonical
+- `docs/design/UX-BRIEF.md` — 화면 맵 · 레이아웃 원칙
+
+### v1.6.2 — 2026-04-16 (TOC 안정화 + 비발행 접근 제어)
+
+**버그 수정:**
+- 블로그 TOC `IntersectionObserver` 안정화 — 스크롤 오프셋 88px 보정, 헤딩 ID 중복 처리 개선
+- 비발행(`draft`/`archived`) 글 직접 URL 접근 시 관리자 외 403 처리
 
 ### v1.6.1 — 2026-04-16 (블로그 폼 검증 UX 개선)
 

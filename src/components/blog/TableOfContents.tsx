@@ -35,11 +35,8 @@ export const TableOfContents = ({ items }: TableOfContentsProps) => {
             visibleIdsRef.current.delete(entry.target.id)
           }
         })
-        // items 순서(DOM 위에서 아래)를 기준으로 첫 번째 가시 섹션 선택
         const firstVisible = items.find((item) => visibleIdsRef.current.has(item.id))
-        if (firstVisible) {
-          setActiveId(firstVisible.id)
-        }
+        if (firstVisible) setActiveId(firstVisible.id)
       },
       { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
     )
@@ -51,38 +48,50 @@ export const TableOfContents = ({ items }: TableOfContentsProps) => {
   const handleClick = useCallback((id: string) => {
     const el = document.getElementById(id)
     if (!el) return
-    // 클릭 즉시 활성 표시, 1초간 observer 재정의 방지
     setActiveId(id)
     clickCooldownRef.current = true
     setTimeout(() => { clickCooldownRef.current = false }, 1000)
-    const y = el.getBoundingClientRect().top + window.scrollY - 80
+    const y = el.getBoundingClientRect().top + window.scrollY - 88
     window.scrollTo({ top: y, behavior: 'smooth' })
   }, [])
 
   if (items.length === 0) return null
 
   return (
-    <nav className="hidden xl:block sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
-      <p className="text-xs font-semibold text-foreground/40 uppercase tracking-wider mb-3">
-        목차
-      </p>
-      <ul className="space-y-1.5 text-sm border-l border-foreground/10">
-        {items.map((item, idx) => (
-          <li key={`${item.id}-${idx}`}>
+    <nav style={{ position: 'sticky', top: 88, maxHeight: 'calc(100vh - 8rem)', overflowY: 'auto' }}>
+      <div className="sv-label" style={{ marginBottom: 16 }}>ON THIS PAGE</div>
+      <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {items.map((item, idx) => {
+          const isActive = activeId === item.id
+          return (
             <button
+              key={`${item.id}-${idx}`}
               type="button"
               onClick={() => handleClick(item.id)}
-              className={`block w-full text-left transition-colors duration-200 cursor-pointer pl-3 py-0.5 -ml-px border-l-2 ${
-                activeId === item.id
-                  ? 'border-foreground/70 text-foreground font-medium'
-                  : 'border-transparent text-foreground/40 hover:text-foreground/70'
-              }`}
+              style={{
+                textAlign: 'left',
+                fontSize: 13,
+                color: isActive ? 'var(--fg)' : 'var(--fg-muted)',
+                paddingLeft: 12,
+                paddingTop: 0,
+                paddingBottom: 0,
+                paddingRight: 0,
+                background: 'none',
+                borderTop: 'none',
+                borderRight: 'none',
+                borderBottom: 'none',
+                borderLeft: isActive ? '1px solid var(--accent)' : '1px solid var(--border)',
+                cursor: 'pointer',
+                transition: 'color 0.2s, border-color 0.2s',
+                lineHeight: 1.4,
+                outline: 'none',
+              }}
             >
-              <span className="line-clamp-2">{item.text}</span>
+              {item.text}
             </button>
-          </li>
-        ))}
-      </ul>
+          )
+        })}
+      </div>
     </nav>
   )
 }

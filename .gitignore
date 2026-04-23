@@ -64,5 +64,6 @@ Desktop.ini
 # playwright
 .playwright-mcp/
 
-# research
-docs/
+# research/analysis 산출물 (design 시스템 문서 docs/design/은 추적)
+docs/research/
+docs/analysis/

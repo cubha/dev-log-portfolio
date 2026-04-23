@@ -1,13 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Briefcase, GraduationCap, Award, BookOpen } from 'lucide-react'
-import { ThemeCard } from '@/src/components/common/ThemeCard'
-import { StatusBadge } from '@/src/components/common/StatusBadge'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { Experience, Education, Training } from '@/src/types/profile'
 
-// ─── 날짜 유틸 ───────────────────────────────────────────────────────────────
 function fmt(d: string | null): string {
   if (!d) return ''
   const [y, m] = d.split('-')
@@ -17,26 +13,18 @@ function fmt(d: string | null): string {
 function buildRange(start: string, end: string | null, isCurrent: boolean): string {
   const s = fmt(start)
   const e = isCurrent ? '현재' : end ? fmt(end) : ''
-  return e ? `${s} – ${e}` : s
+  return e ? `${s} ~ ${e}` : s
 }
 
-/** 경력 연수 계산 (소수점 1자리, "총 n년 m개월" 형태) */
 function calcTotalCareer(experiences: Experience[]): string {
   if (!experiences.length) return ''
   const now = new Date()
-
   let totalMonths = 0
   for (const exp of experiences) {
     const start = new Date(exp.start_date + '-01')
-    const end = exp.is_current || !exp.end_date
-      ? now
-      : new Date(exp.end_date + '-01')
-    const months =
-      (end.getFullYear() - start.getFullYear()) * 12 +
-      (end.getMonth() - start.getMonth())
-    totalMonths += Math.max(0, months)
+    const end = exp.is_current || !exp.end_date ? now : new Date(exp.end_date + '-01')
+    totalMonths += Math.max(0, (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()))
   }
-
   const years = Math.floor(totalMonths / 12)
   const months = totalMonths % 12
   if (years === 0) return `총 ${months}개월의 경력`
@@ -44,7 +32,6 @@ function calcTotalCareer(experiences: Experience[]): string {
   return `총 ${years}년 ${months}개월의 경력`
 }
 
-// ─── Props ───────────────────────────────────────────────────────────────────
 interface ExperienceTabsSectionProps {
   experiences: Experience[]
   educations: Education[]
@@ -54,103 +41,108 @@ interface ExperienceTabsSectionProps {
   showTraining: boolean
 }
 
-// ─── 탭 패널 트랜지션 ────────────────────────────────────────────────────────
-const panelVariants = {
-  initial: { opacity: 0, y: 14 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.28, ease: 'easeOut' as const } },
-  exit:    { opacity: 0, y: -10, transition: { duration: 0.18, ease: 'easeIn' as const } },
-}
+type TabId = 'experience' | 'education' | 'training'
 
-// ─── 타임라인 카드 ────────────────────────────────────────────────────────────
-interface CardItem {
+interface TimelineItem {
   key: string
   title: string
   subtitle: string
   dateRange: string
   description: string | null
   isCurrent?: boolean
-  badge?: { label: string; className: string }
-  dotIcon: React.ReactNode
 }
 
-function TimelineList({ items }: { items: CardItem[] }) {
+function TimelineItems({ items }: { items: TimelineItem[] }) {
   if (!items.length) {
     return (
-      <div className="flex items-center justify-center py-16 text-foreground/35 text-sm">
+      <div
+        className="sv-mono text-subtle"
+        style={{ fontSize: 12, padding: '24px 0', letterSpacing: '0.08em' }}
+      >
         등록된 항목이 없습니다.
       </div>
     )
   }
   return (
-    <div className="relative pl-12">
-      {/* Vertical line — centered on dot (dot: 24px, center at 12px) */}
+    <div style={{ position: 'relative' }}>
       <div
-        className="absolute left-[11px] top-6 w-px bg-gradient-to-b from-foreground/20 via-foreground/8 to-transparent"
-        style={{ bottom: 24 }}
+        style={{
+          position: 'absolute',
+          left: 6,
+          top: 14,
+          bottom: 0,
+          width: 1,
+          background: 'var(--border)',
+        }}
       />
-      <div className="space-y-6">
-        {items.map((item, i) => (
-          <motion.div
-            key={item.key}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-30px' }}
-            transition={{
-              duration: 0.5,
-              ease: [0.22, 1, 0.36, 1],
-              delay: i * 0.08,
+      {items.map((item) => (
+        <div
+          key={item.key}
+          style={{ position: 'relative', paddingLeft: 40, marginBottom: 40 }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              left: 2,
+              top: 8,
+              width: 9,
+              height: 9,
+              borderRadius: '50%',
+              background: 'var(--bg)',
+              border: '1px solid var(--accent)',
             }}
-            className="relative"
+          />
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'baseline',
+              marginBottom: 6,
+              gap: 16,
+              flexWrap: 'wrap',
+            }}
           >
-            {/* Silver Dot — 24px, centered at left-[0] */}
-            <div className="absolute -left-12 top-[14px] w-6 h-6 rounded-full bg-silver-metal flex items-center justify-center ring-2 ring-background flex-shrink-0">
-              {item.dotIcon}
-            </div>
-            {/* 카드 */}
-            <ThemeCard noHoverLift className="p-5">
-              <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-semibold text-foreground">{item.title}</h3>
-                    {item.isCurrent && (
-                      <StatusBadge size="sm">재직중</StatusBadge>
-                    )}
-                    {item.badge && (
-                      <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${item.badge.className}`}>
-                        {item.badge.label}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-foreground/55 mt-0.5">{item.subtitle}</p>
-                </div>
-                <p className="text-xs text-foreground/40 tabular-nums flex-shrink-0 mt-0.5">
-                  {item.dateRange}
-                </p>
-              </div>
-              {item.description && (
-                <p className="mt-3 pt-3 text-sm text-foreground/60 leading-relaxed whitespace-pre-line border-t border-foreground/8">
-                  {item.description}
-                </p>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
+              <div className="h-4">{item.title}</div>
+              {item.isCurrent && (
+                <span
+                  className="sv-mono"
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: '0.12em',
+                    padding: '3px 8px',
+                    border: '1px solid var(--accent)',
+                    color: 'var(--accent)',
+                  }}
+                >
+                  CURRENT
+                </span>
               )}
-            </ThemeCard>
-          </motion.div>
-        ))}
-      </div>
+            </div>
+            <div
+              className="sv-mono text-subtle"
+              style={{ fontSize: 11, letterSpacing: '0.06em', flexShrink: 0 }}
+            >
+              {item.dateRange}
+            </div>
+          </div>
+          <div
+            className="sv-mono text-muted"
+            style={{ fontSize: 12, marginBottom: 10, letterSpacing: '0.04em' }}
+          >
+            {item.subtitle}
+          </div>
+          {item.description && (
+            <div className="text-muted" style={{ fontSize: 14, lineHeight: 1.65, maxWidth: 720 }}>
+              {item.description}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   )
 }
 
-// ─── 요약 텍스트 ──────────────────────────────────────────────────────────────
-function SummaryBanner({ icon, text }: { icon: React.ReactNode; text: string }) {
-  return (
-    <div className="flex items-center gap-2 text-sm font-medium text-foreground/55 mb-6">
-      <span className="text-foreground/35">{icon}</span>
-      <span>{text}</span>
-    </div>
-  )
-}
-
-// ─── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 export function ExperienceTabsSection({
   experiences,
   educations,
@@ -159,143 +151,107 @@ export function ExperienceTabsSection({
   showEducation,
   showTraining,
 }: ExperienceTabsSectionProps) {
-  // 보이는 탭만 구성
-  type TabId = 'experience' | 'education' | 'training'
-  const tabs: { id: TabId; label: string; Icon: typeof Briefcase }[] = []
-  if (showExperience && experiences.length > 0)
-    tabs.push({ id: 'experience', label: '경력 사항',      Icon: Briefcase })
-  if (showEducation && educations.length > 0)
-    tabs.push({ id: 'education',  label: '학력 사항',      Icon: GraduationCap })
-  if (showTraining && trainings.length > 0)
-    tabs.push({ id: 'training',   label: '교육 및 자격증', Icon: Award })
+  const tabs: { id: TabId; label: string }[] = []
+  if (showExperience && experiences.length > 0) tabs.push({ id: 'experience', label: '경력 사항' })
+  if (showEducation && educations.length > 0)   tabs.push({ id: 'education',  label: '학력 사항' })
+  if (showTraining && trainings.length > 0)     tabs.push({ id: 'training',   label: '교육 및 자격증' })
 
   const [activeTab, setActiveTab] = useState<TabId>(tabs[0]?.id ?? 'experience')
 
   if (tabs.length === 0) return null
 
-  // 탭별 아이템 변환
-  const expItems: CardItem[] = experiences.map((exp) => ({
-    key: `exp-${exp.id}`,
-    title:     exp.company_name,
-    subtitle:  exp.position,
-    dateRange: buildRange(exp.start_date, exp.end_date, exp.is_current),
-    description: exp.description,
-    isCurrent: exp.is_current,
-    dotIcon: <Briefcase className="w-3 h-3 text-white dark:text-slate-950" />,
+  const expItems: TimelineItem[] = experiences.map((e) => ({
+    key: `exp-${e.id}`,
+    title: e.company_name,
+    subtitle: e.position,
+    dateRange: buildRange(e.start_date, e.end_date, e.is_current),
+    description: e.description,
+    isCurrent: e.is_current,
   }))
 
-  const eduItems: CardItem[] = educations.map((edu) => ({
-    key: `edu-${edu.id}`,
-    title:     edu.school_name,
-    subtitle:  `${edu.major} · ${edu.status}`,
-    dateRange: buildRange(edu.start_date, edu.end_date, false),
+  const eduItems: TimelineItem[] = educations.map((e) => ({
+    key: `edu-${e.id}`,
+    title: e.school_name,
+    subtitle: `${e.major} · ${e.status}`,
+    dateRange: buildRange(e.start_date, e.end_date, false),
     description: null,
-    dotIcon: <GraduationCap className="w-3 h-3 text-white dark:text-slate-950" />,
   }))
 
-  const trainItems: CardItem[] = trainings.map((tr) => ({
-    key: `tr-${tr.id}`,
-    title:     tr.title,
-    subtitle:  tr.institution,
-    dateRange: tr.type === 'education' && tr.start_date && tr.end_date
-      ? `${fmt(tr.start_date)} – ${fmt(tr.end_date)}`
-      : fmt(tr.acquired_date),
-    description: tr.description,
-    badge: tr.type === 'certification'
-      ? { label: '자격증', className: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' }
-      : { label: '교육',   className: 'bg-sky-50 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400' },
-    dotIcon: tr.type === 'certification'
-      ? <Award    className="w-3 h-3 text-white dark:text-slate-950" />
-      : <BookOpen className="w-3 h-3 text-white dark:text-slate-950" />,
+  const trainItems: TimelineItem[] = trainings.map((t) => ({
+    key: `tr-${t.id}`,
+    title: t.title,
+    subtitle: t.institution,
+    dateRange: t.type === 'education' && t.start_date && t.end_date
+      ? `${fmt(t.start_date)} ~ ${fmt(t.end_date)}`
+      : fmt(t.acquired_date),
+    description: t.description,
   }))
 
-  // 요약 텍스트
-  const summaryMap: Record<TabId, { icon: React.ReactNode; text: string }> = {
-    experience: {
-      icon: <Briefcase className="w-4 h-4" />,
-      text: calcTotalCareer(experiences) || `${experiences.length}건의 경력`,
-    },
-    education: {
-      icon: <GraduationCap className="w-4 h-4" />,
-      text: `${educations.length}건의 학력 사항`,
-    },
-    training: {
-      icon: <Award className="w-4 h-4" />,
-      text: `${trainings.filter(t => t.type === 'certification').length}건의 자격증 · ${trainings.filter(t => t.type === 'education').length}건의 교육 수료`,
-    },
+  const itemMap: Record<TabId, TimelineItem[]> = {
+    experience: expItems,
+    education: eduItems,
+    training: trainItems,
   }
 
   return (
-    <section>
-      {/* 섹션 헤더 */}
-      <div className="mb-12 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="flex items-center gap-3 mb-8"
-      >
-        <span className="w-1 h-7 bg-foreground/30 rounded-full" />
-        <h2 className="text-2xl font-bold text-foreground">Experience</h2>
-      </motion.div>
-
-      {/* ─── 탭 메뉴 ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-40px' }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-        className="relative flex gap-0 mb-8 border-b border-foreground/10 dark:border-brand-primary/10"
-      >
-        {tabs.map(({ id, label, Icon }) => {
-          const isActive = activeTab === id
-          return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'clamp(100px, 12.5vw, 180px) 1fr',
+        gap: 'clamp(40px, 5.5vw, 80px)',
+      }}
+    >
+      {/* Left: label + tab buttons */}
+      <div>
+        <div className="sv-label">CAREER</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+          {tabs.map(({ id, label }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`relative flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors duration-200 ${
-                isActive
-                  ? 'text-foreground'
-                  : 'text-foreground/45 hover:text-foreground/75'
-              }`}
+              style={{
+                textAlign: 'left',
+                background: 'none',
+                border: 'none',
+                padding: '8px 0 8px 14px',
+                borderLeft: activeTab === id
+                  ? '1px solid var(--accent)'
+                  : '1px solid var(--border)',
+                color: activeTab === id ? 'var(--fg)' : 'var(--fg-muted)',
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 12,
+                letterSpacing: '0.06em',
+                cursor: 'pointer',
+                transition: 'color .15s, border-color .15s',
+              }}
             >
-              <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-foreground' : 'text-foreground/40'}`} />
-              {label}
-              {/* 활성 탭 언더라인 — Silver Gradient */}
-              {isActive && (
-                <motion.span
-                  layoutId="tab-underline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-silver-metal"
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                />
-              )}
+              {label.toUpperCase()}
             </button>
-          )
-        })}
-      </motion.div>
+          ))}
+        </div>
+        {activeTab === 'experience' && (
+          <div
+            className="sv-mono text-subtle"
+            style={{ fontSize: 11, marginTop: 24, lineHeight: 1.6 }}
+          >
+            {calcTotalCareer(experiences)}
+            <br />FULL-TIME · FREELANCE
+          </div>
+        )}
+      </div>
 
-      {/* ─── 탭 컨텐츠 ── */}
+      {/* Right: timeline */}
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
-          variants={panelVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.22 }}
         >
-          {/* 요약 배너 */}
-          <SummaryBanner
-            icon={summaryMap[activeTab].icon}
-            text={summaryMap[activeTab].text}
-          />
-
-          {/* 타임라인 */}
-          {activeTab === 'experience' && <TimelineList items={expItems} />}
-          {activeTab === 'education'  && <TimelineList items={eduItems} />}
-          {activeTab === 'training'   && <TimelineList items={trainItems} />}
+          <TimelineItems items={itemMap[activeTab]} />
         </motion.div>
       </AnimatePresence>
-    </section>
+    </div>
   )
 }

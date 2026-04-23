@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/src/utils/supabase/server'
-import type { AboutProfile } from '@/src/types/profile'
+import type { AboutProfile, StorySection } from '@/src/types/profile'
 
 /**
  * About 프로필 가져오기
@@ -27,5 +27,11 @@ export async function getProfile(): Promise<AboutProfile | null> {
     return null
   }
 
-  return data as unknown as AboutProfile
+  // story_json: DB는 Json 타입, 런타임은 StorySection[]. null 날짜 필드는 undefined로 정규화
+  return {
+    ...data,
+    story_json: (data.story_json ?? []) as unknown as StorySection[],
+    created_at: data.created_at ?? undefined,
+    updated_at: data.updated_at ?? undefined,
+  } satisfies AboutProfile
 }

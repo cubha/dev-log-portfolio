@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import { Database } from '@/src/types/supabase'
 import { Plus, Search, X } from 'lucide-react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -9,7 +9,7 @@ import { projectFilterAtom, searchQueryAtom, FILTER_OPTIONS, type ProjectFilter 
 import { ProjectCard } from './ProjectCard'
 import { ProjectDetailModal } from './ProjectDetailModal'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 type Project = Database['public']['Tables']['projects']['Row']
 
@@ -50,157 +50,90 @@ export function ProjectList({ projects }: { projects: Project[] }) {
     <>
       <ProjectDetailModal />
 
-      {/* 페이지 헤더 */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-1">
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">프로젝트</h1>
-          {isAdmin && (
-            <Link
-              href="/admin/projects?mode=new"
-              onClick={() => setEditingProject(null)}
-              className="group flex items-center gap-2 px-3 py-1.5 text-foreground/70 bg-background border border-foreground/20 rounded-lg hover:bg-foreground/5 hover:border-foreground/40 hover:text-foreground transition-all shadow-sm hover:shadow-md"
-              title="새 프로젝트 추가"
+      {/* Filter + Search bar */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 24,
+          borderTop: '1px solid var(--border)',
+          borderBottom: '1px solid var(--border)',
+          padding: '18px 0',
+          marginBottom: 40,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div className="sv-label" style={{ margin: 0 }}>FILTER</div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {FILTER_OPTIONS.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              onClick={() => setActiveFilter(filter)}
+              className={`tag ${activeFilter === filter ? 'active' : ''}`}
+              style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer', background: 'transparent' }}
             >
-              <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-200" />
-              <span className="text-xs font-medium hidden sm:inline">새 프로젝트</span>
-            </Link>
+              {filter}
+            </button>
+          ))}
+        </div>
+        <div
+          style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--fg-muted)', position: 'relative' }}
+        >
+          <Search className="w-3.5 h-3.5" style={{ flexShrink: 0 }} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="프로젝트 검색 (제목, 기술, 회사 …)"
+            className="sv-input"
+            style={{ width: 'clamp(180px, 19.4vw, 280px)', padding: '6px 2px', borderBottom: 'none', fontSize: 13 }}
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              style={{ color: 'var(--fg-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           )}
         </div>
-        <p className="text-foreground/60 text-sm">
-          제가 작업한 프로젝트들을 소개합니다.
-        </p>
+        {isAdmin && (
+          <Link
+            href="/admin/projects?mode=new"
+            onClick={() => setEditingProject(null)}
+            className="btn"
+            style={{ padding: '6px 14px', fontSize: 12 }}
+          >
+            <Plus className="w-3.5 h-3.5" />새 프로젝트
+          </Link>
+        )}
       </div>
 
-      {/* SearchBar */}
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
-        className="mb-4"
-      >
-        <SearchBar query={searchQuery} onQueryChange={setSearchQuery} />
-      </motion.div>
-
-      {/* FilterBar */}
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-      >
-        <FilterBar
+      {/* Asymmetric editorial grid */}
+      {filteredProjects.length === 0 ? (
+        <EmptyFilterState
           activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
+          searchQuery={searchQuery}
+          onReset={() => { setSearchQuery(''); setActiveFilter('전체') }}
         />
-      </motion.div>
-
-      {/* CSS Grid */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.42 }}
-        className="w-full"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.length === 0 ? (
-            <div className="col-span-full">
-              <EmptyFilterState
-                activeFilter={activeFilter}
-                searchQuery={searchQuery}
-                onReset={() => { setSearchQuery(''); setActiveFilter('전체') }}
-              />
-            </div>
-          ) : (
-            filteredProjects.map((project, index) => (
+      ) : (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+            {filteredProjects.map((project, index) => (
               <ProjectCard key={project.id} project={project} index={index} />
-            ))
-          )}
-        </div>
-      </motion.div>
+            ))}
+          </div>
+          <div
+            className="sv-mono text-subtle"
+            style={{ fontSize: 11, letterSpacing: '0.1em', marginTop: 40, textAlign: 'center' }}
+          >
+            {filteredProjects.length} OF {projects.length} PROJECTS
+          </div>
+        </>
+      )}
     </>
-  )
-}
-
-function SearchBar({
-  query,
-  onQueryChange,
-}: {
-  query: string
-  onQueryChange: (q: string) => void
-}) {
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  return (
-    <div className="relative flex items-center">
-      <Search className="absolute left-3.5 w-4 h-4 text-foreground/40 pointer-events-none" />
-      <input
-        ref={inputRef}
-        type="text"
-        value={query}
-        onChange={(e) => onQueryChange(e.target.value)}
-        placeholder="프로젝트 검색 (제목, 기술스택, 회사 ...)"
-        className="w-full pl-10 pr-10 py-2.5 bg-background border border-foreground/20 rounded-xl text-sm text-foreground placeholder:text-foreground/35 focus:outline-none focus:border-foreground/40 focus:ring-1 focus:ring-foreground/10 transition-colors duration-200"
-      />
-      <AnimatePresence>
-        {query && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.7 }}
-            transition={{ duration: 0.15 }}
-            type="button"
-            onClick={() => { onQueryChange(''); inputRef.current?.focus() }}
-            className="absolute right-3 p-0.5 text-foreground/40 hover:text-foreground transition-colors"
-            aria-label="검색어 초기화"
-          >
-            <X className="w-4 h-4" />
-          </motion.button>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
-
-function FilterBar({
-  activeFilter,
-  onFilterChange,
-}: {
-  activeFilter: ProjectFilter
-  onFilterChange: (filter: ProjectFilter) => void
-}) {
-  return (
-    <div className="flex items-center gap-3 mb-10 flex-wrap">
-      {FILTER_OPTIONS.map((filter) => {
-        const isActive = activeFilter === filter
-
-        return (
-          <motion.button
-            key={filter}
-            type="button"
-            onClick={() => onFilterChange(filter)}
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            className={`
-              relative px-5 py-2 rounded-full text-sm font-semibold
-              transition-colors duration-200 cursor-pointer
-              ${
-                isActive
-                  ? 'bg-silver-metal text-white dark:text-slate-950 shadow-md'
-                  : 'bg-background text-foreground/60 border border-foreground/20 hover:border-foreground/40 hover:text-foreground'
-              }
-            `}
-          >
-            {filter}
-            {isActive && (
-              <motion.span
-                layoutId="filterIndicator"
-                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-foreground/40 rounded-full"
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              />
-            )}
-          </motion.button>
-        )
-      })}
-    </div>
   )
 }
 
