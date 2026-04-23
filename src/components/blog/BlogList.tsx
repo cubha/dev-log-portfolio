@@ -210,23 +210,27 @@ function BlogRow({ post, index, isAdmin = false }: { post: BlogPost; index: numb
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="row-link"
+      className="row-link blog-row-grid"
       style={{
-        display: 'grid',
-        gridTemplateColumns: 'clamp(100px, 9.7vw, 140px) 1fr clamp(80px, 8.3vw, 120px)',
         gap: 'clamp(16px, 2.8vw, 40px)',
         alignItems: 'start',
         textDecoration: 'none',
         color: 'inherit',
       }}
     >
-      {/* Date */}
-      <div className="sv-mono text-subtle" style={{ fontSize: 12, letterSpacing: '0.06em', paddingTop: 4 }}>
+      {/* Date — 데스크탑 전용 1열 */}
+      <div className="sv-mono text-subtle hidden md:block" style={{ fontSize: 12, letterSpacing: '0.06em', paddingTop: 4 }}>
         {date}
       </div>
 
       {/* Title + excerpt + tags */}
       <div>
+        {/* 모바일에서만 날짜 인라인 표시 */}
+        {date && (
+          <div className="sv-mono text-subtle md:hidden" style={{ fontSize: 11, letterSpacing: '0.06em', marginBottom: 8 }}>
+            {date}
+          </div>
+        )}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
           <div className="h-3" style={{ letterSpacing: '-0.02em' }}>{post.title}</div>
           {isAdmin && post.status !== 'published' && (
@@ -299,8 +303,8 @@ function BlogRow({ post, index, isAdmin = false }: { post: BlogPost; index: numb
         )}
       </div>
 
-      {/* Reading time */}
-      <div className="sv-mono text-subtle" style={{ fontSize: 11, letterSpacing: '0.08em', textAlign: 'right', paddingTop: 4 }}>
+      {/* Reading time — 데스크탑 전용 3열 */}
+      <div className="sv-mono text-subtle hidden md:block" style={{ fontSize: 11, letterSpacing: '0.08em', textAlign: 'right', paddingTop: 4 }}>
         {readingTime} MIN READ
       </div>
     </Link>

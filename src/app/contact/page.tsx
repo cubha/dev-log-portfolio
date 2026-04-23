@@ -60,7 +60,7 @@ export default async function ContactPage({
       {/* Page header */}
       <section style={{ padding: `72px ${px} 40px` }}>
         <div className="page-context" style={{ marginBottom: 32 }}>PORTFOLIO · CONTACT ─────────────</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr clamp(200px, 27.8vw, 400px)', gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 60 }}>
+        <div className="grid page-header-grid page-header-grid-2col-27vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 60 }}>
           <h1 className="h-1" style={{ margin: 0, maxWidth: 900, letterSpacing: '-0.04em' }}>
             새 프로젝트든, <span className="metallic">가벼운 인사</span>든 환영합니다.
           </h1>
@@ -73,12 +73,11 @@ export default async function ContactPage({
       {/* Contact info + Guestbook form */}
       <section
         style={{
-          padding: `0 ${px} 80px`,
+          padding: `56px ${px} 80px`,
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 'clamp(40px, 5.5vw, 80px)',
           borderTop: '1px solid var(--border)',
-          paddingTop: 56,
         }}
       >
         {/* Left: Contact info + Live Status */}
@@ -104,7 +103,7 @@ export default async function ContactPage({
       </section>
 
       {/* Guestbook list */}
-      <section style={{ padding: `0 ${px} clamp(80px, 9vw, 140px)`, borderTop: '1px solid var(--border)', paddingTop: 56 }}>
+      <section style={{ padding: `56px ${px} clamp(80px, 9vw, 140px)`, borderTop: '1px solid var(--border)' }}>
         <GuestbookList
           isAdmin={isAdmin}
           currentUserId={user?.id ?? null}

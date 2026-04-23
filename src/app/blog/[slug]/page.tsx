@@ -122,8 +122,8 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
       {/* 3-col grid on xl+, single col below */}
       <div
-        className="xl:grid xl:grid-cols-[240px_minmax(0,1fr)_260px] xl:gap-14"
-        style={{ padding: `72px ${px} 120px`, alignItems: 'start' }}
+        className="xl:grid xl:grid-cols-[240px_minmax(0,1fr)_260px] xl:gap-14 blog-detail-grid"
+        style={{ paddingLeft: px, paddingRight: px, paddingBottom: 120, alignItems: 'start' }}
       >
         {/* Left sidebar */}
         <aside className="hidden xl:block blog-detail-sidebar" style={{ position: 'sticky', top: 88, height: 'fit-content' }}>

@@ -450,6 +450,35 @@ input[type="datetime-local"] { color-scheme: light; }
   padding-left: 0.25rem;
 }
 
+/* ─── Responsive layout utilities ──────────────────────────────────────── */
+
+/* 블로그 상세 grid wrapper: 모바일 24px, xl 72px top padding */
+.blog-detail-grid { padding-top: 24px; }
+@media (min-width: 1280px) { .blog-detail-grid { padding-top: 72px; } }
+
+/* 블로그 목록 row: 모바일 1열, md 이상 날짜+내용+MIN READ 3열 */
+.blog-row-grid { display: grid; grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .blog-row-grid { grid-template-columns: clamp(100px, 9.7vw, 140px) 1fr clamp(80px, 8.3vw, 120px); }
+}
+
+/* 2열 헤더 그리드: 모바일 단열, md 이상 2열 */
+.page-header-grid { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .page-header-grid-2col-25vw  { grid-template-columns: 1fr clamp(200px, 25vw, 360px); }
+  .page-header-grid-2col-27vw  { grid-template-columns: 1fr clamp(200px, 27.8vw, 400px); }
+}
+
+/* About Essay / ExperienceTabsSection / SkillsSection: 모바일 단열, md 이상 2열 */
+.two-col-label-grid { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .two-col-label-grid { grid-template-columns: clamp(100px, 12.5vw, 180px) 1fr; }
+}
+.two-col-label-grid-sm { grid-template-columns: 1fr; }
+@media (min-width: 768px) {
+  .two-col-label-grid-sm { grid-template-columns: clamp(80px, 11.1vw, 160px) 1fr; }
+}
+
 /* ─── Misc admin utilities ──────────────────────────────────────────────── */
 
 .toggle-silver[aria-checked="true"] {

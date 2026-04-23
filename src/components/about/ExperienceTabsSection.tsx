@@ -195,11 +195,8 @@ export function ExperienceTabsSection({
 
   return (
     <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'clamp(100px, 12.5vw, 180px) 1fr',
-        gap: 'clamp(40px, 5.5vw, 80px)',
-      }}
+      className="grid two-col-label-grid"
+      style={{ gap: 'clamp(40px, 5.5vw, 80px)' }}
     >
       {/* Left: label + tab buttons */}
       <div>

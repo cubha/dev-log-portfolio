@@ -21,7 +21,7 @@ export default async function BlogPage() {
         <div className="page-context" style={{ marginBottom: 32 }}>
           PORTFOLIO · WRITING ─────────────
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'end', marginBottom: 60 }}>
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between" style={{ marginBottom: 60 }}>
           <h1 className="h-1" style={{ margin: 0, letterSpacing: '-0.04em' }}>
             개발 경험과 기술적 인사이트를 공유합니다.
           </h1>
