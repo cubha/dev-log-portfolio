@@ -60,7 +60,7 @@ export default async function ContactPage({
       {/* Page header */}
       <section style={{ padding: `72px ${px} 40px` }}>
         <div className="page-context" style={{ marginBottom: 32 }}>PORTFOLIO · CONTACT ─────────────</div>
-        <div className="grid page-header-grid page-header-grid-2col-27vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 60 }}>
+        <div className="grid page-header-grid page-header-grid-2col-27vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 120 }}>
           <h1 className="h-1" style={{ margin: 0, maxWidth: 900, letterSpacing: '-0.04em' }}>
             새 프로젝트든, <span className="metallic">가벼운 인사</span>든 환영합니다.
           </h1>
@@ -73,7 +73,7 @@ export default async function ContactPage({
       {/* Contact info + Guestbook form */}
       <section
         style={{
-          padding: `56px ${px} 80px`,
+          padding: `clamp(60px, 6vw, 96px) ${px} 80px`,
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 'clamp(40px, 5.5vw, 80px)',
