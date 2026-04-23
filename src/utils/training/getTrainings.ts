@@ -32,7 +32,7 @@ import type { Training } from '@/src/types/profile'
 export async function getAllTrainings(): Promise<Training[]> {
   try {
     const supabase = await createClient()
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('trainings')
       .select('*')
       .order('acquired_date', { ascending: false })
@@ -41,7 +41,8 @@ export async function getAllTrainings(): Promise<Training[]> {
       console.error('trainings 조회 오류:', error)
       return []
     }
-    return ((data ?? []) as unknown[]) as Training[]
+    // Supabase 자동 생성 타입의 type 필드가 string이지만 실제 값은 리터럴만 존재
+    return (data ?? []) as Training[]
   } catch (err) {
     console.error('trainings 조회 예외:', err)
     return []

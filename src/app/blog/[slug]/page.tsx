@@ -2,7 +2,7 @@
 
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Pencil } from 'lucide-react'
+import { Pencil } from 'lucide-react'
 import { compile, run } from '@mdx-js/mdx'
 import * as runtime from 'react/jsx-runtime'
 import remarkGfm from 'remark-gfm'
@@ -15,11 +15,11 @@ import { GiscusComments } from '@/src/components/blog/GiscusComments'
 import { TableOfContents } from '@/src/components/blog/TableOfContents'
 import type { TocItem } from '@/src/components/blog/TableOfContents'
 import { ReadingProgressBar } from '@/src/components/blog/ReadingProgressBar'
+import { BlogShareLinks } from '@/src/components/blog/BlogShareLinks'
 import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
 import { format } from 'date-fns'
-import { ko } from 'date-fns/locale'
 import type { MDXContent } from 'mdx/types'
 import type { Metadata } from 'next'
 
@@ -42,26 +42,15 @@ export default async function BlogDetailPage({ params }: PageProps) {
     getCurrentUserRole(),
     getPublishedPostSummaries(),
   ])
-  // 글이 없거나, 비발행 상태이면서 관리자가 아닌 경우 404
   if (!post || (post.status !== 'published' && !isAdmin)) notFound()
-  const isLoggedIn = !!user
 
-  // 전체 글 목록에서 이전/다음글 계산 (published_at 내림차순 기준)
   const currentIdx = allPosts.findIndex((p) => p.id === post.id)
   const adjacent = {
     prev: currentIdx >= 0 && currentIdx < allPosts.length - 1
-      ? {
-          slug: allPosts[currentIdx + 1].slug,
-          title: allPosts[currentIdx + 1].title,
-          published_at: allPosts[currentIdx + 1].published_at,
-        }
+      ? { slug: allPosts[currentIdx + 1].slug, title: allPosts[currentIdx + 1].title, published_at: allPosts[currentIdx + 1].published_at }
       : null,
     next: currentIdx > 0
-      ? {
-          slug: allPosts[currentIdx - 1].slug,
-          title: allPosts[currentIdx - 1].title,
-          published_at: allPosts[currentIdx - 1].published_at,
-        }
+      ? { slug: allPosts[currentIdx - 1].slug, title: allPosts[currentIdx - 1].title, published_at: allPosts[currentIdx - 1].published_at }
       : null,
   }
 
@@ -78,10 +67,8 @@ export default async function BlogDetailPage({ params }: PageProps) {
   const MDXComponent = Content as MDXContent
   const mdxComponents = createMdxComponents()
 
-  // 읽기 시간 계산 (한국어 기준 ~500자/분)
   const readingTime = Math.max(1, Math.ceil(post.content.length / 500))
 
-  // 마크다운 헤딩에서 TOC 데이터 추출 (h2만) — 코드 블록 내부 ## 제외, 중복 id는 -2, -3 suffix로 구분
   const contentWithoutCodeBlocks = post.content.replace(/```[\s\S]*?```/g, '')
   const tocItems: TocItem[] = []
   const idCountMap = new Map<string, number>()
@@ -96,70 +83,123 @@ export default async function BlogDetailPage({ params }: PageProps) {
     tocItems.push({ id, text, level: match[1].length })
   }
 
+  const px = 'clamp(16px, 3.9vw, 56px)'
+  const publishedDate = post.published_at
+    ? format(new Date(post.published_at), 'yyyy.MM.dd')
+    : post.updated_at
+    ? format(new Date(post.updated_at), 'yyyy.MM.dd')
+    : null
+
   return (
-    <div className="max-w-5xl mx-auto px-4 md:px-6 py-12">
+    <main>
       <ReadingProgressBar />
       <AuthStateInitializer isAdmin={isAdmin} />
-      {/* 상단 내비 */}
-      <div className="flex items-center justify-between mb-8">
-        <Link
-          href="/blog"
-          className="inline-flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>블로그 목록</span>
+
+      {/* Mobile top bar (< xl) */}
+      <div
+        className="xl:hidden"
+        style={{
+          padding: `32px ${px} 24px`,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          borderBottom: '1px solid var(--border)',
+        }}
+      >
+        <Link href="/blog" className="sv-mono" style={{ fontSize: 12, color: 'var(--fg-muted)', textDecoration: 'none', letterSpacing: '0.04em' }}>
+          ← ALL POSTS
         </Link>
         {isAdmin && (
           <Link
             href={`/blog/edit/${post.id}`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-foreground/5 hover:bg-foreground/10 text-foreground/70 hover:text-foreground transition-colors"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--fg-muted)', textDecoration: 'none', padding: '4px 10px', border: '1px solid var(--border)', background: 'none' }}
           >
-            <Pencil className="w-3.5 h-3.5" />
-            <span>수정</span>
+            <Pencil style={{ width: 12, height: 12 }} />
+            수정
           </Link>
         )}
       </div>
 
-      {/* 헤더 */}
-      <header className="mb-10 max-w-3xl">
-        <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-          {post.title}
-        </h1>
-        {post.description && (
-          <p className="text-lg text-foreground/60 mb-4">{post.description}</p>
-        )}
-        <div className="flex flex-wrap items-center gap-4 text-sm text-foreground/50">
-          {post.published_at && (
-            <span className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4" />
-              {format(new Date(post.published_at), 'yyyy년 M월 d일', { locale: ko })}
-            </span>
-          )}
-          <span>{readingTime}분 읽기</span>
-        </div>
-        {post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-4">
-            {post.tags.map((tag) => (
-              <span
-                key={tag}
-                className="px-2.5 py-0.5 text-xs font-medium bg-foreground/5 text-foreground/70 rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
+      {/* 3-col grid on xl+, single col below */}
+      <div
+        className="xl:grid xl:grid-cols-[240px_minmax(0,1fr)_260px] xl:gap-14"
+        style={{ padding: `72px ${px} 120px`, alignItems: 'start' }}
+      >
+        {/* Left sidebar */}
+        <aside className="hidden xl:block blog-detail-sidebar" style={{ position: 'sticky', top: 88, height: 'fit-content' }}>
+          <Link href="/blog" className="sv-mono" style={{ fontSize: 12, color: 'var(--fg-muted)', textDecoration: 'none', letterSpacing: '0.04em', display: 'inline-flex', gap: 8, alignItems: 'center', marginBottom: 32 }}>
+            ← ALL POSTS
+          </Link>
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {publishedDate && (
+              <div>
+                <div className="sv-label" style={{ marginBottom: 6 }}>PUBLISHED</div>
+                <div className="sv-mono" style={{ fontSize: 13, color: 'var(--fg)' }}>{publishedDate}</div>
+              </div>
+            )}
+            <div>
+              <div className="sv-label" style={{ marginBottom: 6 }}>READ TIME</div>
+              <div className="sv-mono" style={{ fontSize: 13, color: 'var(--fg)' }}>{readingTime} MIN</div>
+            </div>
+            {post.tags.length > 0 && (
+              <div>
+                <div className="sv-label" style={{ marginBottom: 10 }}>TAGS</div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {post.tags.map((tag) => (
+                    <span key={tag} className="tag" style={{ fontSize: 10 }}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div>
+              <div className="sv-label" style={{ marginBottom: 10 }}>SHARE</div>
+              <BlogShareLinks title={post.title} />
+            </div>
+            {isAdmin && (
+              <div style={{ paddingTop: 4 }}>
+                <Link
+                  href={`/blog/edit/${post.id}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--fg-muted)', textDecoration: 'none', padding: '4px 10px', border: '1px solid var(--border)', background: 'none' }}
+                >
+                  <Pencil style={{ width: 12, height: 12 }} />
+                  수정
+                </Link>
+              </div>
+            )}
           </div>
-        )}
-      </header>
+        </aside>
 
-      {/* 본문 + TOC 2컬럼 레이아웃 */}
-      <div className="xl:grid xl:grid-cols-[minmax(0,3fr)_200px] xl:gap-8">
-        <div className="min-w-0">
-          {/* MDX 콘텐츠 */}
-          <article className="prose prose-lg dark:prose-invert max-w-none">
-            <MDXComponent components={mdxComponents} />
-          </article>
+        {/* Main article */}
+        <article style={{ maxWidth: 720, minWidth: 0 }}>
+          {/* Mobile meta */}
+          <div className="xl:hidden" style={{ marginBottom: 32, display: 'flex', flexWrap: 'wrap', gap: 16 }}>
+            {publishedDate && (
+              <span className="sv-mono" style={{ fontSize: 11, color: 'var(--fg-subtle)', letterSpacing: '0.08em' }}>{publishedDate}</span>
+            )}
+            <span className="sv-mono" style={{ fontSize: 11, color: 'var(--fg-subtle)', letterSpacing: '0.08em' }}>{readingTime} MIN READ</span>
+          </div>
 
-          {/* 이전/다음글 네비게이션 */}
+          <div className="sv-eyebrow" style={{ marginBottom: 24, color: 'var(--accent)' }}>WRITING</div>
+          <h1 className="h-1 metallic" style={{ margin: '0 0 24px', lineHeight: 1.05 }}>
+            {post.title}
+          </h1>
+          {post.description && (
+            <div className="text-muted" style={{ fontSize: 19, lineHeight: 1.55, marginBottom: 48 }}>
+              {post.description}
+            </div>
+          )}
+
+          {/* Mobile tags */}
+          {post.tags.length > 0 && (
+            <div className="xl:hidden" style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 40 }}>
+              {post.tags.map((tag) => (
+                <span key={tag} className="tag" style={{ fontSize: 10 }}>{tag}</span>
+              ))}
+            </div>
+          )}
+
+          <MDXComponent components={mdxComponents} />
+
           <PostNavigation
             prev={adjacent.prev}
             next={adjacent.next}
@@ -167,19 +207,21 @@ export default async function BlogDetailPage({ params }: PageProps) {
             currentSlug={slug}
           />
 
-          {/* 댓글 */}
-          <GiscusComments />
-        </div>
+          <div style={{ marginTop: 56, borderTop: '1px solid var(--border)', paddingTop: 28 }}>
+            <div className="sv-label" style={{ marginBottom: 16 }}>GISCUS · COMMENTS</div>
+            <GiscusComments />
+          </div>
+        </article>
 
-        {/* TOC 사이드바 (xl 이상에서만 표시) */}
+        {/* Right TOC */}
         {tocItems.length > 0 && (
-          <aside className="hidden xl:block">
+          <aside className="hidden xl:block" style={{ position: 'sticky', top: 88, height: 'fit-content' }}>
             <TableOfContents items={tocItems} />
           </aside>
         )}
       </div>
 
-      {isLoggedIn && <FloatingUserButton isAdmin={isAdmin} />}
-    </div>
+      {user && <FloatingUserButton isAdmin={isAdmin} />}
+    </main>
   )
 }

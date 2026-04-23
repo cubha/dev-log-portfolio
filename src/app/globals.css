@@ -1,305 +1,547 @@
-/* Pretendard 폰트 CDN 로드 */
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+/* Pretendard + JetBrains Mono */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Design Tokens
-   ─────────────────────────────────────────────────────────────────────────
-   Spacing scale (4px grid): 1/2/3/4/5/6/8/10/12/16/24
-   Section padding: py-24 (96px)
-   Card padding: p-5 (20px) or p-6 (24px)
-   Card gap: gap-4 (16px)
-   Section gap: gap-6 (24px)
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ─── Silver V2 Design Tokens ──────────────────────────────────────────── */
 
-@layer base {
-  :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+:root {
+  /* Surface */
+  --bg: #FAFAF8;
+  --bg-1: #F4F4F0;
+  --bg-2: #EDEDE8;
+  /* Text */
+  --fg: #18181B;
+  --fg-muted: #64748B;
+  --fg-subtle: #94A3B8;
+  /* Border */
+  --border: rgba(15,23,42,0.08);
+  --border-strong: rgba(15,23,42,0.14);
+  /* Accent */
+  --accent: #64748B;
+  --accent-hover: #475569;
+  --accent-dim: rgba(100,116,139,0.08);
+  --accent-line: rgba(100,116,139,0.35);
+  /* Misc */
+  --code-bg: #1A1A1A;
+  --card-hover: rgba(15,23,42,0.02);
+  /* Semantic */
+  --color-success: #22C55E;
+  --color-success-glow: rgba(34,197,94,0.5);
+  --color-error: #ef4444;
+  --color-error-border: rgba(239,68,68,0.4);
+  --color-error-bg: rgba(239,68,68,0.06);
+  /* Metallic border gradients */
+  --metal-border: linear-gradient(135deg, #475569 0%, #94A3B8 50%, #334155 100%);
+  --metal-border-soft: linear-gradient(135deg, rgba(71,85,105,0.10) 0%, rgba(148,163,184,0.18) 50%, rgba(51,65,85,0.10) 100%);
+  --metal-border-strong: linear-gradient(135deg, rgba(71,85,105,0.3) 0%, rgba(148,163,184,0.45) 50%, rgba(51,65,85,0.3) 100%);
+  --metal-fill: linear-gradient(135deg, rgba(71,85,105,0.05) 0%, rgba(148,163,184,0.10) 50%, rgba(51,65,85,0.05) 100%);
+  --metal-text: linear-gradient(120deg, #1E293B 0%, #334155 22%, #64748B 42%, #7C8A99 52%, #475569 72%, #1E293B 100%);
+  --card-highlight: radial-gradient(380px circle at 0% 0%, rgba(71,85,105,0.08), transparent 60%);
 
-    --metal-start: 215 16% 40%;
-    --metal-mid: 214 20% 75%;
-    --metal-end: 215 16% 40%;
-
-    --brand-secondary: 201 96% 40%;
-
-    /* Surface layers (light) — 순수 흰색 카드, body gradient 98%→94% 위에 부각 */
-    --surface: 0 0% 100%;
-    --elevated: 220 13% 97%;
-  }
-
-  .dark {
-    --background: 215 5% 12%;
-    --foreground: 215 5% 87%;
-
-    --metal-start: 215 5% 23%;
-    --metal-mid: 215 6% 64%;
-    --metal-end: 215 5% 23%;
-
-    --brand-secondary: 200 60% 45%;
-
-    /* Surface layers (dark) — body gradient 12%→17%, surface는 그 위에 떠야 함 */
-    --surface: 215 5% 20%;
-    --elevated: 215 5% 24%;
-  }
+  /* Legacy HSL vars — Tailwind color utilities / admin pages */
+  --background: 50 20% 98%;
+  --foreground: 240 5% 11%;
+  --surface: 50 13% 96%;
+  --elevated: 50 13% 93%;
+  --metal-start: 215 16% 40%;
+  --metal-mid: 214 20% 75%;
+  --metal-end: 215 16% 40%;
+  --brand-secondary: 201 96% 40%;
 }
+
+.dark {
+  /* Surface */
+  --bg: #0D0D0D;
+  --bg-1: #121212;
+  --bg-2: #171717;
+  /* Text */
+  --fg: #E8EAED;
+  --fg-muted: #8A8F98;
+  --fg-subtle: #5A5F68;
+  /* Border */
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+  /* Accent */
+  --accent: #C8D1DC;
+  --accent-hover: #E2E8F0;
+  --accent-dim: rgba(200,209,220,0.12);
+  --accent-line: rgba(200,209,220,0.35);
+  /* Misc */
+  --code-bg: #0A0A0A;
+  --card-hover: rgba(255,255,255,0.025);
+  /* Semantic */
+  --color-success: #22C55E;
+  --color-success-glow: rgba(34,197,94,0.5);
+  --color-error: #ef4444;
+  --color-error-border: rgba(239,68,68,0.4);
+  --color-error-bg: rgba(239,68,68,0.06);
+  /* Metallic border gradients */
+  --metal-border: linear-gradient(135deg, #94A3B8 0%, #E2E8F0 50%, #64748B 100%);
+  --metal-border-soft: linear-gradient(135deg, rgba(148,163,184,0.15) 0%, rgba(226,232,240,0.25) 50%, rgba(100,116,139,0.15) 100%);
+  --metal-border-strong: linear-gradient(135deg, rgba(148,163,184,0.4) 0%, rgba(226,232,240,0.6) 50%, rgba(100,116,139,0.4) 100%);
+  --metal-fill: linear-gradient(135deg, rgba(148,163,184,0.08) 0%, rgba(226,232,240,0.12) 50%, rgba(100,116,139,0.08) 100%);
+  --metal-text: linear-gradient(120deg, #64748B 0%, #CBD5E1 22%, #FFFFFF 42%, #F1F5F9 52%, #94A3B8 72%, #475569 100%);
+  --card-highlight: radial-gradient(380px circle at 0% 0%, rgba(226,232,240,0.08), transparent 60%);
+
+  /* Legacy HSL vars — admin pages */
+  --background: 215 5% 12%;
+  --foreground: 215 5% 87%;
+  --surface: 215 5% 20%;
+  --elevated: 215 5% 24%;
+  --brand-secondary: 200 60% 45%;
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────── */
 
 html {
   overflow-x: hidden;
-  background: linear-gradient(to bottom, hsl(210, 40%, 98%), hsl(214, 32%, 94%));
-  background-attachment: fixed;
-}
-
-html.dark {
-  background: linear-gradient(to bottom, hsl(215, 5%, 12%), hsl(215, 5%, 17%));
-  background-attachment: fixed;
+  background: var(--bg);
 }
 
 body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* ─── Metallic gradient (Hero "은승호 입니다." + "The Assembly Line" only) ── */
+
+.metallic {
+  background-image: linear-gradient(120deg,
+    #1E293B 0%, #334155 22%, #64748B 42%,
+    #7C8A99 52%, #475569 72%, #1E293B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.dark .metallic {
+  background-image: linear-gradient(120deg,
+    #64748B 0%, #CBD5E1 22%, #FFFFFF 42%,
+    #F1F5F9 52%, #94A3B8 72%, #475569 100%);
+}
+
+/* ─── Typography utilities ──────────────────────────────────────────────── */
+
+.sv-mono {
+  font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  font-feature-settings: "ss01" on, "cv01" on;
+}
+.sv-eyebrow {
+  font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  font-weight: 500;
+}
+.sv-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+  display: block;
+  margin-bottom: 10px;
+}
+.page-context {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+}
+
+/* ─── Type Scale ────────────────────────────────────────────────────────── */
+
+.h-hero {
+  font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(64px, 10.5vw, 152px);
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+}
+.h-section {
+  font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(44px, 6.1vw, 88px);
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+.h-1 {
+  font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 4.4vw, 64px);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+.h-2 {
+  font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(24px, 2.8vw, 40px);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.h-3 {
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+.h-4 {
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+.text-muted { color: var(--fg-muted); }
+.text-subtle { color: var(--fg-subtle); }
+
+/* ─── Cursor Glow ───────────────────────────────────────────────────────── */
+
+.cursor-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(600px circle at var(--mx, 30%) var(--my, 20%),
+    var(--accent-dim), transparent 60%);
+  z-index: 0;
+  opacity: 0.6;
+}
+.dark .cursor-glow { opacity: 0.9; }
+
+/* ─── Buttons ───────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
   background: transparent;
-  color: hsl(var(--foreground));
-  font-family: 'Pretendard Variable', sans-serif;
-  transition: color 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid transparent;
+  background-image: linear-gradient(var(--bg), var(--bg)), var(--metal-border);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  transition: color .2s, transform .18s, box-shadow .18s;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+}
+.btn .arrow { transition: transform .18s; display: inline-block; }
+.btn:hover {
+  background-image: linear-gradient(var(--metal-fill), var(--metal-fill)), var(--metal-border);
+  color: var(--fg);
+}
+.btn:hover .arrow {
+  transform: translateX(4px);
+  background: var(--metal-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.btn:active { box-shadow: inset 0 1px 2px rgba(0,0,0,0.25); }
+
+/* Primary — fg color, metallic hover fill */
+.btn-primary { color: var(--fg); }
+.btn-primary:hover {
+  background-image: linear-gradient(135deg, rgba(71,85,105,0.1), rgba(148,163,184,0.18), rgba(51,65,85,0.1)), var(--metal-border);
+}
+.dark .btn-primary:hover {
+  background-image: linear-gradient(135deg, rgba(148,163,184,0.18), rgba(226,232,240,0.22), rgba(100,116,139,0.18)), var(--metal-border);
 }
 
-@layer utilities {
-  /* ─── Surface Tokens ─────────────────────────────────────────────────── */
+/* Ghost — no border, metallic underline on hover */
+.btn-ghost {
+  background: none !important;
+  background-image: none !important;
+  border: none;
+  padding: 13px 4px;
+  color: var(--fg-muted);
+  text-decoration: none;
+  position: relative;
+}
+.btn-ghost::after {
+  content: '';
+  position: absolute;
+  left: 4px; right: 4px; bottom: 8px;
+  height: 1px;
+  background: var(--metal-text);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .28s cubic-bezier(.4,0,.2,1);
+}
+.btn-ghost:hover { color: var(--fg); }
+.btn-ghost:hover::after { transform: scaleX(1); }
 
-  .bg-surface {
-    background-color: hsl(var(--surface));
-  }
-  .bg-elevated {
-    background-color: hsl(var(--elevated));
-  }
+/* ─── Tags ──────────────────────────────────────────────────────────────── */
 
-  /* ─── Silver Metal ──────────────────────────────────────────────────── */
-
-  .bg-silver-metal {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--metal-start)) 0%,
-      hsl(var(--metal-mid)) 50%,
-      hsl(var(--metal-end)) 100%
-    );
-    background-size: 200% auto;
-    transition: 0.5s;
-  }
-
-  .text-silver-metal {
-    background: linear-gradient(
-      to right,
-      hsl(var(--metal-start)),
-      hsl(var(--metal-mid)),
-      hsl(var(--metal-start))
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-size: 200% auto;
-  }
-
-  .animate-shine:hover {
-    animation: shine 1.5s linear infinite;
-    background-image: linear-gradient(
-      110deg,
-      hsl(var(--metal-start)) 45%,
-      hsl(var(--metal-mid)) 50%,
-      hsl(var(--metal-start)) 55%
-    );
-    background-size: 200% 100%;
-  }
-
-  @keyframes shine {
-    to {
-      background-position-x: -200%;
-    }
-  }
-
-  /* ─── ThemeCard Rim Light System ─────────────────────────────────── */
-
-  .border-rim-light {
-    border-top-color: rgba(0, 0, 0, 0.06);
-    border-left-color: rgba(0, 0, 0, 0.03);
-  }
-  .dark .border-rim-light {
-    border-top-color: rgba(255, 255, 255, 0.14);
-    border-left-color: rgba(255, 255, 255, 0.07);
-  }
-
-  .bg-card-surface::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.03) 0%,
-      transparent 44%
-    );
-    pointer-events: none;
-  }
-
-  .shadow-sharp {
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.08),
-      0 2px 6px rgba(0, 0, 0, 0.04);
-  }
-  .dark .shadow-sharp {
-    box-shadow:
-      0 1px 1px rgba(0, 0, 0, 0.50),
-      0 2px 4px rgba(0, 0, 0, 0.20);
-  }
-
-  .hover\:border-rim-intense:hover {
-    border-top-color: rgba(0, 0, 0, 0.12);
-  }
-  .dark .hover\:border-rim-intense:hover {
-    border-top-color: rgba(255, 255, 255, 0.25);
-  }
-
-  /* ─── Ambient Glow (seamless edge, single tone) ─────────────────── */
-
-  .ambient-glow {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(120px);
-    pointer-events: none;
-    will-change: transform;
-    background: radial-gradient(
-      circle,
-      hsl(var(--brand-secondary) / 0.10) 0%,
-      hsl(var(--brand-secondary) / 0.04) 40%,
-      transparent 70%
-    );
-  }
-  .dark .ambient-glow {
-    background: radial-gradient(
-      circle,
-      hsl(var(--brand-secondary) / 0.14) 0%,
-      hsl(var(--brand-secondary) / 0.05) 40%,
-      transparent 70%
-    );
-  }
-
-  /* 효과 레이어 가장자리를 부드럽게 페이드 */
-  .effects-fade {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    mask-image:
-      linear-gradient(to right, transparent, black 12%, black 88%, transparent),
-      linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
-    mask-composite: intersect;
-    -webkit-mask-image:
-      linear-gradient(to right, transparent, black 12%, black 88%, transparent),
-      linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
-    -webkit-mask-composite: source-in;
-  }
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  font-size: 11.5px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.03em;
+  border-radius: 999px;
+  color: var(--fg-muted);
+  background-color: rgba(0,0,0,0.02);
+  background-image: linear-gradient(var(--bg), var(--bg)), var(--metal-border-soft);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border: 1px solid transparent;
+  transition: color .18s, background-image .18s;
+}
+.dark .tag { background-color: rgba(255,255,255,0.03); }
+.tag:hover {
+  color: var(--fg);
+  background-image: linear-gradient(var(--bg), var(--bg)), var(--metal-border-strong);
+}
+.tag.active {
+  color: var(--fg);
+  background-image: linear-gradient(var(--metal-fill), var(--metal-fill)), var(--metal-border);
 }
 
-/* ─── Hero Silver Button ──────────────────────────────────────────────── */
+/* ─── Card ──────────────────────────────────────────────────────────────── */
 
-.btn-silver-hero {
-  background-image: linear-gradient(
-    110deg,
-    hsl(var(--metal-start)) 45%,
-    hsl(var(--metal-mid))   50%,
-    hsl(var(--metal-start)) 55%
-  );
-  background-size: 200% 100%;
-  animation: shine 3s linear infinite;
+.card {
+  position: relative;
+  border: 1px solid transparent;
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--bg), var(--bg)), var(--metal-border-soft);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  transition: background-image .25s, box-shadow .2s, transform .18s;
 }
-.btn-silver-hero:hover {
-  animation: shine 0.65s linear infinite;
-  box-shadow: 0 8px 30px hsl(var(--metal-start) / 0.35);
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--card-highlight);
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
 }
-
-/* ─── Glass Card ──────────────────────────────────────────────────────── */
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-top-color: rgba(255, 255, 255, 0.60);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.06),
-    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+.card:hover {
+  background-image: linear-gradient(var(--bg), var(--bg)), var(--metal-border-strong);
 }
-.dark .glass-card {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top-color: rgba(255, 255, 255, 0.18);
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.3),
-    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+.card:hover::before { opacity: 1; }
+.card:active { box-shadow: inset 0 1px 2px rgba(0,0,0,0.22); }
+.card .card-arrow { color: var(--fg-muted); transition: color .2s, transform .2s; }
+.card:hover .card-arrow {
+  color: transparent;
+  background: var(--metal-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transform: translate(4px, -4px);
 }
 
-/* ─── MDX Modal ───────────────────────────────────────────────────────── */
+/* ─── Row link (Blog list) ──────────────────────────────────────────────── */
+
+.row-link {
+  position: relative;
+  border-top: 1px solid var(--border);
+  padding: 28px 0;
+  cursor: pointer;
+  transition: padding-left .2s;
+}
+.row-link::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+}
+.row-link:hover { padding-left: 16px; }
+.row-link:hover::before { transform: scaleY(1); }
+
+/* ─── Underline input ───────────────────────────────────────────────────── */
+
+.sv-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-strong);
+  padding: 14px 2px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--fg);
+  outline: none;
+  transition: border-color .2s;
+}
+.sv-input::placeholder { color: var(--fg-subtle); }
+.sv-input:focus { border-bottom-color: var(--accent); }
+
+/* ─── Code block ────────────────────────────────────────────────────────── */
+
+.codeblock {
+  background: var(--code-bg);
+  color: #E8EAED;
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* ─── Admin input ───────────────────────────────────────────────────────── */
+
+.admin-input {
+  background-color: var(--bg);
+  color: var(--fg);
+  border-color: var(--border-strong);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.admin-input::placeholder { color: var(--fg-subtle); }
+.admin-input:hover { border-color: rgba(0,0,0,0.28); }
+.dark .admin-input:hover { border-color: rgba(255,255,255,0.28); }
+.admin-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+input[type="date"],
+input[type="datetime-local"] { color-scheme: light; }
+.dark input[type="date"],
+.dark input[type="datetime-local"] { color-scheme: dark; }
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────── */
+
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: var(--bg); }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--accent-line);
+  border-radius: 10px;
+}
+
+/* ─── MDX Modal ─────────────────────────────────────────────────────────── */
 
 .mdx-modal-content hr {
   border: none;
-  border-top: 1px solid hsl(var(--foreground) / 0.12);
+  border-top: 1px solid var(--border-strong);
   margin: 1.5rem 0;
 }
 .mdx-modal-content ol {
   list-style-type: decimal;
   margin-left: 1.5rem;
   margin-bottom: 1rem;
-  color: hsl(var(--foreground));
+  color: var(--fg);
 }
 .mdx-modal-content ol li {
   line-height: 1.75;
   padding-left: 0.25rem;
 }
 
-/* ─── Scrollbar ───────────────────────────────────────────────────────── */
-
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: hsl(var(--background)); }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: hsl(var(--metal-start) / 0.4);
-  border-radius: 10px;
-}
-
-/* ─── Admin ───────────────────────────────────────────────────────────── */
-
-.admin-input {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  border-color: hsl(var(--foreground) / 0.15);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.admin-input::placeholder {
-  color: hsl(var(--foreground) / 0.30);
-}
-.admin-input:hover {
-  border-color: hsl(var(--foreground) / 0.28);
-}
-.admin-input:focus {
-  outline: none;
-  border-color: hsl(var(--metal-start) / 0.5);
-  box-shadow: 0 0 0 2px hsl(var(--metal-start) / 0.18);
-}
-
-input[type="date"],
-input[type="datetime-local"] {
-  color-scheme: light;
-}
-.dark input[type="date"],
-.dark input[type="datetime-local"] {
-  color-scheme: dark;
-}
+/* ─── Misc admin utilities ──────────────────────────────────────────────── */
 
 .toggle-silver[aria-checked="true"] {
-  background: linear-gradient(
-    135deg,
-    hsl(var(--metal-start)) 0%,
-    hsl(var(--metal-mid)) 50%,
-    hsl(var(--metal-end)) 100%
-  );
+  background-image: var(--metal-border);
 }
+
+/* ─── Legacy V1 utilities — admin pages / ThemeCard compat ─────────────── */
+
+.border-rim-light {
+  border-top-color: rgba(0,0,0,0.06);
+  border-left-color: rgba(0,0,0,0.03);
+}
+.dark .border-rim-light {
+  border-top-color: rgba(255,255,255,0.14);
+  border-left-color: rgba(255,255,255,0.07);
+}
+.bg-card-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 44%);
+  pointer-events: none;
+}
+.shadow-sharp {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+}
+.dark .shadow-sharp {
+  box-shadow: 0 1px 1px rgba(0,0,0,0.50), 0 2px 4px rgba(0,0,0,0.20);
+}
+.hover\:border-rim-intense:hover { border-top-color: rgba(0,0,0,0.12); }
+.dark .hover\:border-rim-intense:hover { border-top-color: rgba(255,255,255,0.25); }
+
+.ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  background: radial-gradient(circle, hsl(var(--brand-secondary) / 0.10) 0%, transparent 70%);
+}
+.dark .ambient-glow {
+  background: radial-gradient(circle, hsl(var(--brand-secondary) / 0.14) 0%, transparent 70%);
+}
+.effects-fade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mask-image:
+    linear-gradient(to right, transparent, black 12%, black 88%, transparent),
+    linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, black 12%, black 88%, transparent),
+    linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  -webkit-mask-composite: source-in;
+}
+.bg-silver-metal {
+  background: linear-gradient(135deg,
+    hsl(var(--metal-start)) 0%, hsl(var(--metal-mid)) 50%, hsl(var(--metal-end)) 100%);
+}
+.text-silver-metal {
+  background: linear-gradient(to right,
+    hsl(var(--metal-start)), hsl(var(--metal-mid)), hsl(var(--metal-start)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+}
+.animate-shine:hover {
+  animation: shine 1.5s linear infinite;
+  background-image: linear-gradient(110deg,
+    hsl(var(--metal-start)) 45%, hsl(var(--metal-mid)) 50%, hsl(var(--metal-start)) 55%);
+  background-size: 200% 100%;
+}
+@keyframes shine { to { background-position-x: -200%; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.glass-card {
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.35);
+}
+.dark .glass-card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.btn-silver-hero {
+  background-image: linear-gradient(110deg,
+    hsl(var(--metal-start)) 45%, hsl(var(--metal-mid)) 50%, hsl(var(--metal-start)) 55%);
+  background-size: 200% 100%;
+  animation: shine 3s linear infinite;
+}
+.btn-silver-hero:hover { animation: shine 0.65s linear infinite; }

@@ -11,6 +11,9 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params
+  if (!/^[a-zA-Z0-9_-]+$/.test(slug)) {
+    return NextResponse.json({ html: null }, { status: 400 })
+  }
   const raw = await getRawMdxContent(slug)
   if (!raw) return NextResponse.json({ html: null }, { status: 404 })
 
