@@ -5,6 +5,7 @@ import { LiveStatusWidget } from '@/src/components/contact/LiveStatusWidget'
 import { GuestbookForm } from '@/src/components/contact/GuestbookForm'
 import { GuestbookList } from '@/src/components/contact/GuestbookList'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
+import { PageHeader } from '@/src/components/common/PageHeader'
 import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
 import type { ContactLink } from '@/src/types/contact'
 
@@ -57,18 +58,13 @@ export default async function ContactPage({
     <main>
       <AuthStateInitializer isAdmin={isAdmin} />
 
-      {/* Page header */}
-      <section style={{ padding: `72px ${px} 40px` }}>
-        <div className="page-context" style={{ marginBottom: 32 }}>PORTFOLIO · CONTACT ─────────────</div>
-        <div className="grid page-header-grid page-header-grid-2col-27vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 120 }}>
-          <h1 className="h-1" style={{ margin: 0, maxWidth: 900, letterSpacing: '-0.04em' }}>
-            새 프로젝트든, <span className="metallic">가벼운 인사</span>든 환영합니다.
-          </h1>
-          <p className="text-muted hidden md:block" style={{ fontSize: 14, lineHeight: 1.7 }}>
-            보통 하루 안에 답장드립니다. 아래 방명록은 공개, 이메일은 비공개로 받고 있습니다.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        context="PORTFOLIO · CONTACT ─────────────"
+        title={<>새 프로젝트든, <span className="metallic">가벼운 인사</span>든 환영합니다.</>}
+        desc="보통 하루 안에 답장드립니다. 아래 방명록은 공개, 이메일은 비공개로 받고 있습니다."
+        titleStyle={{ maxWidth: 900 }}
+        marginBottom={120}
+      />
 
       {/* Contact info + Guestbook form */}
       <section
