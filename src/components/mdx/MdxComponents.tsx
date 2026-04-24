@@ -1,5 +1,3 @@
-// src/components/mdx/MdxComponents.tsx
-
 import React from 'react'
 import type { MDXComponents } from 'mdx/types'
 import type { ReactNode } from 'react'

@@ -1,5 +1,3 @@
-// src/utils/mdx.ts
-
 import { readdir, readFile } from 'node:fs/promises'
 import type { Dirent } from 'node:fs'
 import { join } from 'node:path'

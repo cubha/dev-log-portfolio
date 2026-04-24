@@ -1,5 +1,3 @@
-// src/app/projects/[slug]/page.tsx
-
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
@@ -17,7 +15,6 @@ type PageProps = {
   params: Promise<{ slug: string }>
 }
 
-/** slug에 해당하는 MDX 정적 경로 생성 */
 export async function generateStaticParams() {
   const slugs = await getAllMdxSlugs()
   return slugs.map((slug) => ({ slug }))
@@ -69,7 +66,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   )
 }
 
-/** slug → 읽기 쉬운 제목 변환 */
 function slugToTitle(slug: string): string {
   return slug
     .split('-')

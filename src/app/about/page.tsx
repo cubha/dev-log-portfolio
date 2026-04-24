@@ -28,27 +28,16 @@ export default async function AboutPage() {
   const { role: userRole, isAdmin } = await getCurrentUserRole()
   const supabase = await createClient()
 
-  let profileData: AboutProfile | null = null
-
-  const [skillsData, experiencesData, educationsData, trainingsData] = await Promise.all([
+  const [skillsData, experiencesData, educationsData, trainingsData, profileRes] = await Promise.all([
     getAllSkills(),
     getAllExperiences(),
     getAllEducations(),
     getAllTrainings(),
-    (async () => {
-      try {
-        const { data, error } = await supabase
-          .from('about_profiles')
-          .select('*')
-          .order('updated_at', { ascending: false })
-          .limit(1)
-          .single()
-        if (!error && data) profileData = data as unknown as AboutProfile
-      } catch (e) {
-        console.error('프로필 조회 오류:', e)
-      }
-    })(),
+    supabase.from('about_profiles').select('*').order('updated_at', { ascending: false }).limit(1).single(),
   ])
+
+  const profile: AboutProfile | null =
+    !profileRes.error && profileRes.data ? (profileRes.data as unknown as AboutProfile) : null
 
   const px = 'clamp(20px, 5.5vw, 80px)'
 
@@ -59,14 +48,14 @@ export default async function AboutPage() {
         <div className="page-context" style={{ marginBottom: 40 }}>
           PORTFOLIO · ABOUT ─────────────
         </div>
-        <div className="grid page-header-grid page-header-grid-2col-25vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'start', marginBottom: 120 }}>
+        <div className="grid page-header-grid page-header-grid-2col-25vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'start', marginBottom: 100 }}>
           <div>
             <h1 className="h-1" style={{ margin: '0 0 28px', maxWidth: 900, lineHeight: 1.1 }}>
               기술의 변화를{' '}
               <span className="metallic">실무의 효율</span>로 전환하는 데 집중하는 풀스택 개발자.
             </h1>
             <p className="text-muted" style={{ fontSize: 15, lineHeight: 1.7, maxWidth: 640 }}>
-              {(profileData as AboutProfile | null)?.intro_text ?? '금융권 SI 출신 · 서울시 중심 활동 · 원격지 유연 대응 가능'}
+              {profile?.intro_text ?? '금융권 SI 출신 · 서울시 중심 활동 · 원격지 유연 대응 가능'}
             </p>
           </div>
           <div className="text-left md:text-right hidden md:block">
@@ -91,7 +80,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* ─── Technical Skills ────────────────────────────────���───── */}
+      {/* ─── Technical Skills ────────────────────────────────────── */}
       <section style={{ padding: `clamp(60px, 5.5vw, 80px) ${px} 120px`, borderTop: '1px solid var(--border)' }}>
         <SkillsSection skills={skillsData} />
       </section>
@@ -102,9 +91,9 @@ export default async function AboutPage() {
           experiences={experiencesData}
           educations={educationsData}
           trainings={trainingsData}
-          showExperience={(profileData as AboutProfile | null)?.show_experience ?? true}
-          showEducation={(profileData as AboutProfile | null)?.show_education ?? true}
-          showTraining={(profileData as AboutProfile | null)?.show_training ?? true}
+          showExperience={profile?.show_experience ?? true}
+          showEducation={profile?.show_education ?? true}
+          showTraining={profile?.show_training ?? true}
         />
       </section>
 
