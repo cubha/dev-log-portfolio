@@ -182,6 +182,7 @@ body {
   font-size: clamp(32px, 4.4vw, 64px);
   letter-spacing: -0.04em;
   line-height: 1.05;
+  height: auto;
 }
 .h-2 {
   font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
@@ -189,17 +190,20 @@ body {
   font-size: clamp(24px, 2.8vw, 40px);
   letter-spacing: -0.03em;
   line-height: 1.1;
+  height: auto;
 }
 .h-3 {
   font-weight: 600;
   font-size: 22px;
   letter-spacing: -0.015em;
   line-height: 1.3;
+  height: auto;
 }
 .h-4 {
   font-weight: 600;
   font-size: 17px;
   letter-spacing: -0.01em;
+  height: auto;
 }
 .text-muted { color: var(--fg-muted); }
 .text-subtle { color: var(--fg-subtle); }
