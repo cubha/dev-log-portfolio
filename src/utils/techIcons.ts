@@ -1,5 +1,3 @@
-// src/utils/techIcons.ts
-
 import React from 'react'
 import type { SimpleIcon } from 'simple-icons'
 

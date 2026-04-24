@@ -1,5 +1,3 @@
-// src/utils/blog/headingUtils.ts
-
 /**
  * 마크다운 텍스트에서 heading id 생성에 사용할 순수 텍스트를 추출한다.
  * - `[Text](url)` 형태의 링크 → Text만 추출
