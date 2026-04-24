@@ -9,12 +9,14 @@ export function BufferPhilosophySection() {
   return (
     <section
       style={{
-        padding: '0 clamp(20px, 5.5vw, 80px) clamp(80px, 9vw, 140px)',
+        paddingTop: 'clamp(60px, 5.5vw, 80px)',
+        paddingRight: 'clamp(20px, 5.5vw, 80px)',
+        paddingBottom: 'clamp(80px, 9vw, 140px)',
+        paddingLeft: 'clamp(20px, 5.5vw, 80px)',
         display: 'grid',
         gridTemplateColumns: 'clamp(240px, 23.6vw, 340px) 1fr',
         gap: 'clamp(40px, 5.5vw, 80px)',
         borderTop: '1px solid var(--border)',
-        paddingTop: 'clamp(60px, 5.5vw, 80px)',
       }}
     >
       <div>
