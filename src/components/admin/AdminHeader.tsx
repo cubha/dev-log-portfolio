@@ -26,19 +26,22 @@ export function AdminHeader() {
   return (
     <>
       {/* ── 상단 헤더 ───────────────────────────────────────────────────── */}
-      <header className="bg-background border-b border-foreground/10 sticky top-0 z-10 shadow-sm">
+      <header
+        className="sticky top-0 z-10 shadow-sm border-b border-[var(--border)]"
+        style={{ background: 'var(--bg)' }}
+      >
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             {/* 타이틀 */}
             <div className="flex items-center gap-3">
               <div className="p-2 bg-silver-metal rounded-lg">
-                <Wrench className="w-5 h-5 text-white dark:text-slate-950" />
+                <Wrench className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-base font-bold text-foreground leading-tight">
+                <h1 className="text-base font-bold leading-tight" style={{ color: 'var(--fg)' }}>
                   Portfolio Admin
                 </h1>
-                <p className="text-xs text-foreground/50">관리자 대시보드</p>
+                <p className="text-xs text-subtle">관리자 대시보드</p>
               </div>
             </div>
 
@@ -47,7 +50,7 @@ export function AdminHeader() {
               <ThemeToggle />
               <Link
                 href="/"
-                className="flex items-center gap-1.5 px-3 py-2 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/5 rounded-lg transition-all"
+                className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted hover:text-[var(--fg)] hover:bg-[var(--surface)] rounded-lg transition-all"
               >
                 <Home className="w-4 h-4" />
                 <span className="hidden sm:inline font-medium">메인으로</span>
@@ -70,7 +73,10 @@ export function AdminSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-60 bg-background border-r border-foreground/10 min-h-[calc(100vh-65px)] p-3">
+    <aside
+      className="w-60 min-h-[calc(100vh-65px)] p-3 border-r border-[var(--border)]"
+      style={{ background: 'var(--bg)' }}
+    >
       <nav className="space-y-1">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + '/')
@@ -81,14 +87,14 @@ export function AdminSidebar() {
               className={[
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group',
                 isActive
-                  ? 'bg-foreground/8 text-foreground border border-foreground/10'
-                  : 'text-foreground/60 hover:bg-foreground/5 hover:text-foreground',
+                  ? 'bg-[var(--surface)] text-[var(--fg)] border border-[var(--border)]'
+                  : 'text-muted hover:bg-[var(--surface)] hover:text-[var(--fg)]',
               ].join(' ')}
             >
               <Icon
                 className={[
                   'w-4 h-4 transition-transform group-hover:scale-110',
-                  isActive ? 'text-foreground' : 'text-foreground/50',
+                  isActive ? 'text-[var(--fg)]' : 'text-subtle',
                 ].join(' ')}
               />
               {label}

@@ -7,6 +7,7 @@ import { ScrollToTop } from "@/src/components/common/ScrollToTop"
 import { PageViewTracker } from "@/src/components/common/PageViewTracker";
 import { Header } from "@/src/components/layout/Header";
 import { Footer } from "@/src/components/layout/Footer";
+import { TopProgressBar } from "@/src/components/common/TopProgressBar";
 
 export const metadata: Metadata = {
   title: "Silver.dev — Dev Log Portfolio",
@@ -44,6 +45,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <JotaiProvider>
+            <TopProgressBar />
             <PageViewTracker />
             <ScrollToTop />
             {/* sticky 헤더: /admin 경로에서는 컴포넌트 내부에서 null 반환 */}

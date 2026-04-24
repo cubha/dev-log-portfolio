@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Pencil, Trash2, X, Check, AlertCircle, Award, BookOpen } from 'lucide-react'
+import { useDeleteConfirm } from '@/src/hooks/useDeleteConfirm'
 import { SilverButton } from '@/src/components/common/SilverButton'
 import { MonthPickerInput } from '@/src/components/ui/MonthPickerInput'
 import {
@@ -10,6 +11,7 @@ import {
   updateTraining,
   deleteTraining,
 } from '@/src/utils/training/trainingActions'
+import { revalidateAboutPage } from '@/src/actions/revalidate'
 import { TRAINING_TYPE_OPTIONS } from '@/src/types/profile'
 import type { Training, TrainingInsert } from '@/src/types/profile'
 
@@ -49,8 +51,6 @@ export function TrainingManager() {
   const [form, setForm]             = useState<TrainingInsert>(EMPTY)
   const [isSaving, setIsSaving]     = useState(false)
   const [formError, setFormError]   = useState<string | null>(null)
-
-  const [deletingId, setDeletingId] = useState<number | null>(null)
 
   // ── 데이터 로드 ──────────────────────────────────────────────────────────
   const load = useCallback(async () => {
@@ -144,17 +144,18 @@ export function TrainingManager() {
     } else {
       close()
       load()
+      revalidateAboutPage()
     }
     setIsSaving(false)
   }
 
   // ── 삭제 ──────────────────────────────────────────────────────────────────
-  async function handleDelete(id: number) {
-    if (deletingId !== id) { setDeletingId(id); return }
-    const { error } = await deleteTraining(id)
-    if (!error) load()
-    setDeletingId(null)
-  }
+  const { deletingId, handleDelete, cancelDelete } = useDeleteConfirm<number>(
+    async (id) => {
+      const { error } = await deleteTraining(id)
+      if (!error) { load(); revalidateAboutPage() }
+    }
+  )
 
   function set<K extends keyof TrainingInsert>(key: K, val: TrainingInsert[K]) {
     setForm(p => ({ ...p, [key]: val }))
@@ -166,8 +167,8 @@ export function TrainingManager() {
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-foreground">교육/자격증 관리</h2>
-          <p className="text-sm text-foreground/50 mt-0.5">수료한 교육과 취득 자격증을 관리합니다.</p>
+          <h2 className="text-xl font-bold" style={{ color: 'var(--fg)' }}>교육/자격증 관리</h2>
+          <p className="text-sm text-subtle mt-0.5">수료한 교육과 취득 자격증을 관리합니다.</p>
         </div>
         <SilverButton type="button" size="md" onClick={openAdd} className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
@@ -186,10 +187,10 @@ export function TrainingManager() {
       {/* 로딩 */}
       {isLoading ? (
         <div className="flex items-center justify-center h-32">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground/30" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--border)]" />
         </div>
       ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-40 text-foreground/40">
+        <div className="flex flex-col items-center justify-center h-40 text-subtle">
           <Award className="w-10 h-10 mb-3 opacity-30" />
           <p className="font-medium">등록된 교육/자격증이 없습니다</p>
           <p className="text-sm mt-1">&lsquo;항목 추가&rsquo; 버튼으로 시작하세요</p>
@@ -199,18 +200,19 @@ export function TrainingManager() {
           {items.map((item) => (
             <div
               key={item.id}
-              className="group flex items-start justify-between gap-4 p-5 bg-background rounded-xl border border-foreground/8 hover:border-foreground/20 hover:shadow-sm transition-all"
+              className="group flex items-start justify-between gap-4 p-5 rounded-xl hover:shadow-sm transition-all"
+              style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
             >
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 w-9 h-9 rounded-lg bg-silver-metal flex items-center justify-center flex-shrink-0">
                   {item.type === 'certification'
-                    ? <Award className="w-4 h-4 text-white dark:text-slate-950" />
-                    : <BookOpen className="w-4 h-4 text-white dark:text-slate-950" />
+                    ? <Award className="w-4 h-4 text-white " />
+                    : <BookOpen className="w-4 h-4 text-white " />
                   }
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-foreground">{item.title}</span>
+                    <span className="font-semibold" style={{ color: 'var(--fg)' }}>{item.title}</span>
                     <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${
                       item.type === 'certification'
                         ? 'bg-purple-50 text-purple-700'
@@ -219,12 +221,12 @@ export function TrainingManager() {
                       {TRAINING_TYPE_OPTIONS.find(t => t.value === item.type)?.label ?? item.type}
                     </span>
                   </div>
-                  <p className="text-sm text-foreground/60">{item.institution}</p>
-                  <p className="text-xs text-foreground/40 mt-1 tabular-nums">
+                  <p className="text-sm text-muted">{item.institution}</p>
+                  <p className="text-xs text-subtle mt-1 tabular-nums">
                     {formatDateRange(item)}
                   </p>
                   {item.description && (
-                    <p className="text-xs text-foreground/50 mt-1 leading-relaxed line-clamp-2">
+                    <p className="text-xs text-subtle mt-1 leading-relaxed line-clamp-2">
                       {item.description}
                     </p>
                   )}
@@ -235,7 +237,7 @@ export function TrainingManager() {
               <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                 <button
                   onClick={() => openEdit(item)}
-                  className="p-1.5 rounded-lg text-foreground/40 hover:text-brand-secondary hover:bg-brand-secondary/5 transition-all"
+                  className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] hover:bg-[var(--surface)] transition-all"
                   title="수정"
                 >
                   <Pencil className="w-4 h-4" />
@@ -249,8 +251,8 @@ export function TrainingManager() {
                       <Check className="w-3 h-3" />확인
                     </button>
                     <button
-                      onClick={() => setDeletingId(null)}
-                      className="p-1.5 rounded-lg text-foreground/40 hover:bg-foreground/8 transition-colors"
+                      onClick={cancelDelete}
+                      className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -258,7 +260,7 @@ export function TrainingManager() {
                 ) : (
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="p-1.5 rounded-lg text-foreground/40 hover:text-red-500 hover:bg-red-50 transition-all"
+                    className="p-1.5 rounded-lg text-subtle hover:text-red-500 hover:bg-red-50 transition-all"
                     title="삭제"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -274,13 +276,16 @@ export function TrainingManager() {
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={close} />
-          <div className="relative bg-background rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-foreground/10">
+          <div
+            className="relative rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+          >
             {/* 헤더 */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-foreground/8">
-              <h2 className="text-base font-bold text-foreground">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)]">
+              <h2 className="text-base font-bold" style={{ color: 'var(--fg)' }}>
                 {editing ? '항목 수정' : '항목 추가'}
               </h2>
-              <button onClick={close} className="p-1.5 rounded-lg text-foreground/40 hover:bg-foreground/8 transition-colors">
+              <button onClick={close} className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -289,7 +294,7 @@ export function TrainingManager() {
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
               {/* 종류 */}
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                   종류
                 </label>
                 <div className="flex gap-2">
@@ -308,8 +313,8 @@ export function TrainingManager() {
                       }}
                       className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-all ${
                         form.type === opt.value
-                          ? 'bg-silver-metal text-white dark:text-slate-950 border-transparent shadow-sm'
-                          : 'border-foreground/10 text-foreground/60 hover:border-foreground/20 hover:bg-foreground/5'
+                          ? 'bg-silver-metal text-white border-transparent shadow-sm'
+                          : 'text-muted hover:bg-[var(--surface)]'
                       }`}
                     >
                       {opt.label}
@@ -320,7 +325,7 @@ export function TrainingManager() {
 
               {/* 명칭 */}
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                   명칭 <span className="text-red-400 normal-case tracking-normal">*</span>
                 </label>
                 <input
@@ -335,7 +340,7 @@ export function TrainingManager() {
 
               {/* 기관 */}
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                   기관 <span className="text-red-400 normal-case tracking-normal">*</span>
                 </label>
                 <input
@@ -351,7 +356,7 @@ export function TrainingManager() {
               {form.type === 'education' ? (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                    <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                       시작일 <span className="text-red-400 normal-case tracking-normal">*</span>
                     </label>
                     <MonthPickerInput
@@ -362,7 +367,7 @@ export function TrainingManager() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                    <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                       수료일 <span className="text-red-400 normal-case tracking-normal">*</span>
                     </label>
                     <MonthPickerInput
@@ -375,7 +380,7 @@ export function TrainingManager() {
                 </div>
               ) : (
                 <div>
-                  <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                     취득일 <span className="text-red-400 normal-case tracking-normal">*</span>
                   </label>
                   <MonthPickerInput
@@ -389,8 +394,8 @@ export function TrainingManager() {
 
               {/* 설명 */}
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
-                  설명 <span className="text-foreground/40 normal-case font-normal">(선택)</span>
+                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                  설명 <span className="text-subtle normal-case font-normal">(선택)</span>
                 </label>
                 <textarea
                   value={form.description ?? ''}
@@ -414,7 +419,7 @@ export function TrainingManager() {
                 <button
                   type="button"
                   onClick={close}
-                  className="flex-1 py-2.5 text-sm font-medium text-foreground/60 bg-foreground/8 rounded-lg hover:bg-foreground/12 transition-colors"
+                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-[var(--surface)] rounded-lg hover:bg-[var(--surface)] transition-colors"
                 >
                   취소
                 </button>

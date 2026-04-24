@@ -34,8 +34,8 @@ const ToolbarButton = ({ onClick, isActive, title, children }: ToolbarButtonProp
     title={title}
     className={`p-1.5 rounded transition-colors ${
       isActive
-        ? 'bg-sky-100 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400'
-        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100'
+        ? 'bg-[var(--surface)] text-[var(--accent)]'
+        : 'text-muted hover:bg-[var(--surface)] hover:text-[var(--fg)]'
     }`}
   >
     {children}
@@ -43,7 +43,7 @@ const ToolbarButton = ({ onClick, isActive, title, children }: ToolbarButtonProp
 )
 
 const Divider = () => (
-  <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
+  <div className="w-px h-5 mx-0.5" style={{ background: 'var(--border)' }} />
 )
 
 export const BlogEditorToolbar = ({ editor }: BlogEditorToolbarProps) => {
@@ -61,7 +61,7 @@ export const BlogEditorToolbar = ({ editor }: BlogEditorToolbarProps) => {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+    <div className="flex flex-wrap items-center gap-0.5 p-2" style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
       {/* 제목 */}
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}

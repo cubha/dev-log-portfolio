@@ -1,43 +1,43 @@
+const px = 'clamp(20px, 5.5vw, 80px)'
+
 export default function BlogLoading() {
   return (
-    <div className="max-w-4xl mx-auto px-4 md:px-6 py-12">
-      {/* 헤더 스켈레톤 */}
-      <div className="mb-6">
-        <div className="h-8 w-24 bg-foreground/10 rounded-lg animate-pulse mb-2" />
-        <div className="h-4 w-64 bg-foreground/8 rounded animate-pulse" />
-      </div>
-      {/* 검색바 스켈레톤 */}
-      <div className="h-10 w-full bg-foreground/8 rounded-xl animate-pulse mb-4" />
-      {/* 태그 스켈레톤 */}
-      <div className="flex gap-2 mb-8">
-        {[48, 56, 64, 52].map((w, i) => (
+    <main>
+      {/* PageHeader */}
+      <section style={{ padding: `72px ${px} 40px`, borderBottom: '1px solid var(--border)' }}>
+        <div className="skeleton" style={{ width: 240, height: 11, marginBottom: 40 }} />
+        <div className="skeleton" style={{ width: '65%', height: 'clamp(32px, 4.4vw, 64px)', borderRadius: 6 }} />
+      </section>
+
+      {/* Blog list — row-link 스타일로 미러링 */}
+      <section style={{ padding: `0 ${px} clamp(80px, 9vw, 140px)` }}>
+        {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="h-7 rounded-full bg-foreground/8 animate-pulse"
-            style={{ width: `${w}px` }}
-          />
-        ))}
-      </div>
-      {/* 카드 스켈레톤 */}
-      <div className="flex flex-col gap-4">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="p-5 border border-foreground/10 rounded-xl animate-pulse"
+            style={{
+              borderTop: '1px solid var(--border)',
+              padding: '28px 0',
+              display: 'grid',
+              gridTemplateColumns: 'clamp(100px,9.7vw,140px) 1fr clamp(80px,8.3vw,120px)',
+              gap: 24,
+              alignItems: 'center',
+            }}
           >
-            <div className="h-5 w-3/4 bg-foreground/10 rounded mb-2" />
-            <div className="h-4 w-full bg-foreground/8 rounded mb-1" />
-            <div className="h-4 w-2/3 bg-foreground/8 rounded mb-4" />
-            <div className="flex items-center justify-between">
-              <div className="flex gap-1.5">
-                <div className="h-5 w-14 bg-foreground/8 rounded-full" />
-                <div className="h-5 w-16 bg-foreground/8 rounded-full" />
+            {/* 날짜 */}
+            <div className="skeleton" style={{ width: 64, height: 11 }} />
+            {/* 제목 + 태그 */}
+            <div>
+              <div className="skeleton" style={{ width: `${[72, 60, 80, 65, 55][i - 1]}%`, height: 16, marginBottom: 12 }} />
+              <div style={{ display: 'flex', gap: 6 }}>
+                <div className="skeleton" style={{ width: 52, height: 22, borderRadius: 999 }} />
+                <div className="skeleton" style={{ width: 64, height: 22, borderRadius: 999 }} />
               </div>
-              <div className="h-4 w-24 bg-foreground/8 rounded" />
             </div>
+            {/* MIN READ */}
+            <div className="skeleton" style={{ width: 56, height: 11, justifySelf: 'end' }} />
           </div>
         ))}
-      </div>
-    </div>
+      </section>
+    </main>
   )
 }

@@ -39,16 +39,16 @@ function SilverSwitch({
 }) {
   return (
     <label className="flex items-center gap-2 cursor-pointer select-none">
-      <span className="text-xs font-medium text-foreground/60">{label}</span>
+      <span className="text-xs font-medium text-muted">{label}</span>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative w-11 h-6 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-foreground/20 ${
+        className={`relative w-11 h-6 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--border)] ${
           checked
             ? 'bg-silver-metal shadow-inner'
-            : 'bg-foreground/15'
+            : 'bg-[var(--surface)]'
         }`}
       >
         <motion.div
@@ -74,18 +74,17 @@ function SectionVisibilityBanner({
   onChange: (v: boolean) => void
 }) {
   return (
-    <div className={`flex items-center justify-between px-4 py-3 rounded-xl border mb-6 transition-colors ${
-      checked
-        ? 'bg-gradient-to-r from-slate-50 to-gray-50 border-slate-200 dark:from-slate-900/30 dark:to-gray-900/30 dark:border-slate-700/50'
-        : 'bg-foreground/3 border-foreground/8'
-    }`}>
+    <div
+      className="flex items-center justify-between px-4 py-3 rounded-xl border mb-6 transition-colors"
+      style={{ background: checked ? 'var(--surface)' : 'var(--surface)', border: '1px solid var(--border)' }}
+    >
       <div className="flex items-center gap-2">
-        <div className={`w-2 h-2 rounded-full transition-colors ${checked ? 'bg-green-400' : 'bg-foreground/20'}`} />
-        <span className="text-sm font-medium text-foreground/70">{label}</span>
+        <div className={`w-2 h-2 rounded-full transition-colors ${checked ? 'bg-green-400' : 'bg-[var(--border)]'}`} />
+        <span className="text-sm font-medium text-muted">{label}</span>
         <span className={`text-xs px-2 py-0.5 rounded-full font-medium transition-colors ${
           checked
-            ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
-            : 'bg-foreground/8 text-foreground/40'
+            ? 'bg-green-100 text-green-700'
+            : 'bg-[var(--surface)] text-subtle'
         }`}>
           {checked ? 'About 공개' : '숨김'}
         </span>
@@ -265,8 +264,8 @@ export default function AdminProfilePage() {
     return (
       <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-foreground/30 mb-4" />
-          <p className="text-foreground/60">프로필 데이터를 불러오는 중...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--border)] mb-4" />
+          <p className="text-muted">프로필 데이터를 불러오는 중...</p>
         </div>
       </div>
     )
@@ -278,13 +277,14 @@ export default function AdminProfilePage() {
       {/* 페이지 헤더 */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-1">프로필 편집</h1>
-          <p className="text-foreground/60">About 페이지에 표시될 나의 프로필을 관리합니다.</p>
+          <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--fg)' }}>프로필 편집</h1>
+          <p className="text-muted">About 페이지에 표시될 나의 프로필을 관리합니다.</p>
         </div>
         {activeTab === 'profile' && (
           <button
             onClick={() => setShowPreview(!showPreview)}
-            className="flex items-center gap-2 px-4 py-2 text-foreground/70 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-muted rounded-lg hover:bg-[var(--surface)] transition-colors"
+            style={{ border: '1px solid var(--border)' }}
           >
             <Eye className="w-5 h-5" />
             <span className="font-medium">{showPreview ? '미리보기 닫기' : '미리보기'}</span>
@@ -293,15 +293,18 @@ export default function AdminProfilePage() {
       </div>
 
       {/* ── 탭 네비게이션 (Silver Metal) ────────────────────────────────── */}
-      <div className="flex gap-1 p-1 bg-gradient-to-br from-slate-100 to-gray-100 dark:from-slate-900/40 dark:to-gray-900/40 rounded-xl border border-slate-200/60 dark:border-slate-700/40 w-fit mb-8 shadow-inner">
+      <div
+        className="flex gap-1 p-1 rounded-xl w-fit mb-8 shadow-inner"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+      >
         {TABS.map(({ id, label, Icon }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
             className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
               activeTab === id
-                ? 'bg-silver-metal text-white dark:text-slate-950 shadow-md'
-                : 'text-foreground/55 hover:text-foreground hover:bg-white/60 dark:hover:bg-slate-800/60'
+                ? 'bg-silver-metal text-white shadow-md'
+                : 'text-muted hover:text-[var(--fg)] hover:bg-[var(--bg)]'
             }`}
           >
             {activeTab === id && (
@@ -350,19 +353,23 @@ export default function AdminProfilePage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* 편집 폼 */}
-              <form onSubmit={handleSubmit} className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8">
+              <form
+                onSubmit={handleSubmit}
+                className="rounded-xl shadow-sm p-8"
+                style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+              >
                 <div className="space-y-8">
 
                   {/* ── 기본 정보 ── */}
                   <section>
-                    <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                      <User className="w-5 h-5 text-foreground/50" />
+                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--fg)' }}>
+                      <User className="w-5 h-5 text-subtle" />
                       기본 정보
                     </h2>
 
                     {/* 메인 카피 */}
                     <div className="mb-6">
-                      <label htmlFor="main_copy" className="block text-sm font-medium text-foreground/60 mb-2">
+                      <label htmlFor="main_copy" className="block text-sm font-medium text-muted mb-2">
                         메인 카피 (한 줄 요약) <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -373,13 +380,13 @@ export default function AdminProfilePage() {
                         onChange={handleChange}
                         required
                         placeholder="예: 문제 해결을 즐기는 풀스택 개발자"
-                        className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
+                        className="admin-input w-full px-4 py-3 border rounded-lg transition-all"
                       />
                     </div>
 
                     {/* 서두 소개글 (항상 공개 — 토글 없음) */}
                     <div className="mb-4">
-                      <label htmlFor="intro_text" className="block text-sm font-medium text-foreground/60 mb-2">
+                      <label htmlFor="intro_text" className="block text-sm font-medium text-muted mb-2">
                         서두 소개글 <span className="text-red-500">*</span>
                       </label>
                       <textarea
@@ -390,16 +397,16 @@ export default function AdminProfilePage() {
                         required
                         rows={4}
                         placeholder="나를 소개하는 짧은 글을 작성하세요..."
-                        className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all resize-none"
+                        className="admin-input w-full px-4 py-3 border rounded-lg transition-all resize-none"
                       />
-                      <p className="mt-1.5 text-xs text-foreground/40">
+                      <p className="mt-1.5 text-xs text-subtle">
                         줄바꿈이 About 페이지에 그대로 반영됩니다.
                       </p>
                     </div>
 
                     {/* 프로필 이미지 */}
                     <div>
-                      <label className="block text-sm font-medium text-foreground/60 mb-2">
+                      <label className="block text-sm font-medium text-muted mb-2">
                         <ImageIcon className="w-4 h-4 inline mr-1" />
                         프로필 이미지
                       </label>
@@ -410,7 +417,7 @@ export default function AdminProfilePage() {
                             src={previewUrl}
                             alt="프로필 미리보기"
                             fill
-                            className="object-cover rounded-full border-4 border-foreground/20"
+                            className="object-cover rounded-full border-4 border-[var(--border)]"
                             unoptimized={previewUrl.startsWith('blob:')}
                           />
                           <button
@@ -427,9 +434,10 @@ export default function AdminProfilePage() {
                       <div
                         className={`rounded-lg border-2 border-dashed p-6 transition-all ${
                           isDragging
-                            ? 'border-brand-secondary/60 bg-brand-secondary/5'
-                            : 'border-foreground/15 bg-background hover:border-foreground/30 hover:bg-foreground/3'
+                            ? 'border-[var(--accent)] bg-[var(--surface)]'
+                            : 'border-[var(--border)] hover:bg-[var(--surface)]'
                         }`}
+                        style={{ background: isDragging ? undefined : 'var(--bg)' }}
                         onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true) }}
                         onDragOver={(e)  => { e.preventDefault(); e.stopPropagation(); setIsDragging(true) }}
                         onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false) }}
@@ -438,10 +446,11 @@ export default function AdminProfilePage() {
                         <div className="text-center">
                           <label
                             htmlFor="profile_image"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-background border border-foreground/15 rounded-lg hover:border-foreground/30 hover:bg-foreground/5 transition-all cursor-pointer"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-[var(--surface)] transition-all cursor-pointer"
+                            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
                           >
-                            <Upload className="w-5 h-5 text-foreground/50" />
-                            <span className="text-sm font-medium text-foreground/70">
+                            <Upload className="w-5 h-5 text-subtle" />
+                            <span className="text-sm font-medium text-muted">
                               {previewUrl ? '다른 이미지 선택' : '이미지 선택'}
                             </span>
                           </label>
@@ -452,7 +461,7 @@ export default function AdminProfilePage() {
                             onChange={handleFileSelect}
                             className="hidden"
                           />
-                          <p className="mt-3 text-xs text-foreground/40">JPG, PNG, GIF (최대 5MB)</p>
+                          <p className="mt-3 text-xs text-subtle">JPG, PNG, GIF (최대 5MB)</p>
                         </div>
                       </div>
                     </div>
@@ -460,8 +469,8 @@ export default function AdminProfilePage() {
 
                   {/* ── About Me 스토리 섹션 ── */}
                   <section>
-                    <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                      <FileText className="w-5 h-5 text-foreground/50" />
+                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--fg)' }}>
+                      <FileText className="w-5 h-5 text-subtle" />
                       About Me
                     </h2>
                     <div className="space-y-4">
@@ -472,13 +481,14 @@ export default function AdminProfilePage() {
                             key={section.id}
                             className={`p-4 rounded-xl border transition-all ${
                               visible
-                                ? 'bg-gradient-to-br from-slate-50/80 to-gray-50/80 dark:from-slate-900/20 dark:to-gray-900/20 border-slate-200/60 dark:border-slate-700/40'
-                                : 'bg-foreground/2 border-foreground/6 opacity-60'
+                                ? ''
+                                : 'opacity-60'
                             }`}
+                          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
                           >
                             {/* 카드 헤더: 제목 + 토글 */}
                             <div className="flex items-center justify-between mb-3">
-                              <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                              <label className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--fg)' }}>
                                 <span className="text-xl">{section.icon}</span>
                                 {section.title}
                               </label>
@@ -502,13 +512,13 @@ export default function AdminProfilePage() {
                                     onChange={(e) => handleStoryChange(index, e.target.value)}
                                     rows={3}
                                     placeholder={`${section.title}에 대해 작성하세요...`}
-                                    className="w-full px-4 py-3 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all resize-none"
+                                    className="admin-input w-full px-4 py-3 border rounded-lg transition-all resize-none"
                                   />
                                 </motion.div>
                               )}
                             </AnimatePresence>
                             {!visible && (
-                              <p className="text-xs text-foreground/35 mt-1">About 페이지에서 이 항목을 숨깁니다</p>
+                              <p className="text-xs text-subtle mt-1">About 페이지에서 이 항목을 숨깁니다</p>
                             )}
                           </div>
                         )
@@ -517,11 +527,11 @@ export default function AdminProfilePage() {
                   </section>
 
                   {/* 제출 버튼 */}
-                  <div className="flex items-center gap-4 pt-4 border-t border-foreground/10">
+                  <div className="flex items-center gap-4 pt-4 border-t border-[var(--border)]">
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Save className="w-5 h-5" />
                       {isSubmitting ? '저장 중...' : '저장하기'}
@@ -530,7 +540,8 @@ export default function AdminProfilePage() {
                       type="button"
                       onClick={() => router.back()}
                       disabled={isSubmitting}
-                      className="px-6 py-3 text-foreground/60 bg-foreground/8 border border-foreground/10 rounded-lg hover:bg-foreground/12 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-6 py-3 text-muted bg-[var(--surface)] rounded-lg hover:bg-[var(--surface)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ border: '1px solid var(--border)' }}
                     >
                       취소
                     </button>
@@ -561,7 +572,8 @@ export default function AdminProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8"
+            className="rounded-xl shadow-sm p-8"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
           >
             <SectionVisibilityBanner
               label="경력 섹션 공개 여부"
@@ -580,7 +592,8 @@ export default function AdminProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8"
+            className="rounded-xl shadow-sm p-8"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
           >
             <SectionVisibilityBanner
               label="학력 섹션 공개 여부"
@@ -599,7 +612,8 @@ export default function AdminProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8"
+            className="rounded-xl shadow-sm p-8"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
           >
             <SectionVisibilityBanner
               label="교육/자격증 섹션 공개 여부"
@@ -639,7 +653,7 @@ export default function AdminProfilePage() {
               }
             }}
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-5 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 text-sm"
+            className="flex items-center gap-2 px-5 py-2.5 bg-silver-metal animate-shine text-white font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 text-sm"
           >
             <Save className="w-4 h-4" />
             {isSubmitting ? '저장 중...' : '공개 설정 저장'}

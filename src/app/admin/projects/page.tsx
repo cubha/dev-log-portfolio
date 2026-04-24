@@ -314,10 +314,10 @@ export default function ProjectFormPage() {
     <div className="max-w-4xl mx-auto">
       {/* 페이지 헤더 */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">
+        <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--fg)' }}>
           {isEditMode ? '프로젝트 수정' : '새 프로젝트 등록'}
         </h1>
-        <p className="text-foreground/60">
+        <p className="text-muted">
           {isEditMode
             ? '프로젝트 정보를 수정하세요'
             : '포트폴리오에 추가할 프로젝트 정보를 입력하세요'}
@@ -344,11 +344,11 @@ export default function ProjectFormPage() {
       )}
 
       {/* 프로젝트 등록 폼 */}
-      <form onSubmit={handleSubmit} className="bg-background rounded-xl shadow-sm border border-foreground/10 p-8">
+      <form onSubmit={handleSubmit} className="rounded-xl shadow-sm p-8" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
         <div className="space-y-6">
           {/* 구분 (category) */}
           <div>
-            <label className="block text-sm font-medium text-foreground/60 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               프로젝트 구분 <span className="text-red-500">*</span>
             </label>
             <div className="flex flex-wrap gap-4">
@@ -361,8 +361,8 @@ export default function ProjectFormPage() {
                   key={type.value}
                   className={`flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer transition-colors ${
                     formData.category === type.value
-                      ? 'border-foreground/40 bg-foreground/8'
-                      : 'border-foreground/10 hover:bg-foreground/5'
+                      ? 'border-[var(--accent)] bg-[var(--surface)]'
+                      : 'border-[var(--border)] hover:bg-[var(--surface)]'
                   }`}
                 >
                   <input
@@ -372,9 +372,9 @@ export default function ProjectFormPage() {
                     checked={formData.category === type.value}
                     onChange={handleChange}
                     required
-                    className="w-4 h-4 text-brand-primary border-foreground/20 focus:ring-foreground/30"
+                    className="w-4 h-4 text-[var(--accent)] border-[var(--border)] focus:ring-[var(--border)]"
                   />
-                  <span className="text-sm text-foreground/70">{type.label}</span>
+                  <span className="text-sm text-muted">{type.label}</span>
                 </label>
               ))}
             </div>
@@ -382,7 +382,7 @@ export default function ProjectFormPage() {
 
           {/* 제목 */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-foreground/60 mb-2">
+            <label htmlFor="title" className="block text-sm font-medium text-muted mb-2">
               프로젝트 제목 <span className="text-red-500">*</span>
             </label>
             <input
@@ -399,7 +399,7 @@ export default function ProjectFormPage() {
 
           {/* 설명 */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-foreground/60 mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-muted mb-2">
               프로젝트 설명 (주요 업무)
             </label>
             <textarea
@@ -416,7 +416,7 @@ export default function ProjectFormPage() {
           {/* 회사명 & 담당 역할 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="company_name" className="block text-sm font-medium text-foreground/60 mb-2">
+              <label htmlFor="company_name" className="block text-sm font-medium text-muted mb-2">
                 회사명 / 소속
               </label>
               <input
@@ -430,7 +430,7 @@ export default function ProjectFormPage() {
               />
             </div>
             <div>
-              <label htmlFor="project_role" className="block text-sm font-medium text-foreground/60 mb-2">
+              <label htmlFor="project_role" className="block text-sm font-medium text-muted mb-2">
                 담당 역할
               </label>
               <input
@@ -447,7 +447,7 @@ export default function ProjectFormPage() {
 
           {/* 참여 인원 */}
           <div>
-            <label htmlFor="team_size" className="block text-sm font-medium text-foreground/60 mb-2">
+            <label htmlFor="team_size" className="block text-sm font-medium text-muted mb-2">
               참여 인원
             </label>
             <input
@@ -466,7 +466,7 @@ export default function ProjectFormPage() {
               <option value="10">OO (10~99명)</option>
               <option value="100">OOO (100명 이상)</option>
             </datalist>
-            <p className="mt-1 text-xs text-foreground/40">
+            <p className="mt-1 text-xs text-subtle">
               직접 입력하거나 드롭다운에서 범위를 선택하세요. (O=0~9명, OO=10~99명, OOO=100명 이상)
             </p>
           </div>
@@ -474,7 +474,7 @@ export default function ProjectFormPage() {
           {/* 기간 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-foreground/60 mb-2">
+              <label className="block text-sm font-medium text-muted mb-2">
                 <Calendar className="w-4 h-4 inline mr-1" />
                 시작 연월 <span className="text-red-500">*</span>
               </label>
@@ -494,12 +494,12 @@ export default function ProjectFormPage() {
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-foreground/60">
+                <label className="block text-sm font-medium text-muted">
                   <Calendar className="w-4 h-4 inline mr-1" />
                   종료 연월 {!formData.is_ongoing && <span className="text-red-500">*</span>}
                 </label>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-foreground/60">진행중</span>
+                  <span className="text-sm text-muted">진행중</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -509,8 +509,8 @@ export default function ProjectFormPage() {
                         end_date: !prev.is_ongoing ? '' : prev.end_date,
                       }))
                     }}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:ring-offset-1 ${
-                      formData.is_ongoing ? 'bg-silver-metal' : 'bg-foreground/20'
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[var(--border)] focus:ring-offset-1 ${
+                      formData.is_ongoing ? 'bg-silver-metal' : 'bg-[var(--surface)]'
                     }`}
                     role="switch"
                     aria-checked={formData.is_ongoing}
@@ -553,7 +553,7 @@ export default function ProjectFormPage() {
 
           {/* 상세 업무 내용 (Dynamic List) */}
           <div>
-            <label className="block text-sm font-medium text-foreground/60 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               <Code className="w-4 h-4 inline mr-1" />
               상세 업무 내용
             </label>
@@ -566,9 +566,9 @@ export default function ProjectFormPage() {
                       value={task}
                       onChange={(e) => handleTaskChange(index, e.target.value)}
                       placeholder={`업무 ${index + 1}: 예) REST API 설계 및 구현`}
-                      className="w-full px-4 py-3 pl-10 border border-foreground/10 rounded-lg bg-background text-foreground placeholder:text-foreground/30 focus:ring-2 focus:ring-foreground/20 focus:border-foreground/30 transition-all"
+                      className="admin-input w-full px-4 py-3 pl-10 border rounded-lg transition-all"
                     />
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40 font-bold text-sm">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-subtle font-bold text-sm">
                       &gt;&gt;
                     </span>
                   </div>
@@ -585,20 +585,20 @@ export default function ProjectFormPage() {
               <button
                 type="button"
                 onClick={handleAddTask}
-                className="w-full px-4 py-3 border-2 border-dashed border-foreground/15 rounded-lg text-foreground/50 hover:border-foreground/30 hover:text-foreground hover:bg-foreground/3 transition-all flex items-center justify-center gap-2"
+                className="w-full px-4 py-3 border-2 border-dashed border-[var(--border)] rounded-lg text-subtle hover:border-[var(--accent)] hover:text-[var(--fg)] hover:bg-[var(--surface)] transition-all flex items-center justify-center gap-2"
               >
                 <Upload className="w-5 h-5" />
                 <span className="font-medium">상세 업무 추가</span>
               </button>
             </div>
-            <p className="mt-2 text-xs text-foreground/40">
+            <p className="mt-2 text-xs text-subtle">
               프로젝트에서 수행한 구체적인 업무 내용을 항목별로 추가하세요.
             </p>
           </div>
 
           {/* 프로젝트 유형 (LIVE DEMO 버튼 노출 조건) */}
           <div>
-            <label className="block text-sm font-medium text-foreground/60 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               프로젝트 유형 (LIVE DEMO 버튼 노출 조건)
             </label>
             <div className="flex flex-wrap gap-4">
@@ -611,8 +611,8 @@ export default function ProjectFormPage() {
                   key={type.value}
                   className={`flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer transition-colors ${
                     formData.project_type === type.value
-                      ? 'border-foreground/40 bg-foreground/8'
-                      : 'border-foreground/10 hover:bg-foreground/5'
+                      ? 'border-[var(--accent)] bg-[var(--surface)]'
+                      : 'border-[var(--border)] hover:bg-[var(--surface)]'
                   }`}
                 >
                   <input
@@ -621,9 +621,9 @@ export default function ProjectFormPage() {
                     value={type.value}
                     checked={formData.project_type === type.value}
                     onChange={handleChange}
-                    className="w-4 h-4 text-brand-primary border-foreground/20 focus:ring-foreground/30"
+                    className="w-4 h-4 text-[var(--accent)] border-[var(--border)] focus:ring-[var(--border)]"
                   />
-                  <span className="text-sm text-foreground/70">{type.label}</span>
+                  <span className="text-sm text-muted">{type.label}</span>
                 </label>
               ))}
             </div>
@@ -632,7 +632,7 @@ export default function ProjectFormPage() {
           {/* 라이브 데모 URL (project_type이 work가 아닌 경우에만 노출) */}
           {formData.project_type !== 'work' && (
             <div>
-              <label htmlFor="live_demo_url" className="block text-sm font-medium text-foreground/60 mb-2">
+              <label htmlFor="live_demo_url" className="block text-sm font-medium text-muted mb-2">
                 <LinkIcon className="w-4 h-4 inline mr-1" />
                 라이브 데모 URL (project_type이 work가 아닌 경우에만 노출)
               </label>
@@ -651,7 +651,7 @@ export default function ProjectFormPage() {
           {/* 링크 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="github_url" className="block text-sm font-medium text-foreground/60 mb-2">
+              <label htmlFor="github_url" className="block text-sm font-medium text-muted mb-2">
                 <LinkIcon className="w-4 h-4 inline mr-1" />
                 GitHub URL
               </label>
@@ -666,7 +666,7 @@ export default function ProjectFormPage() {
               />
             </div>
             <div>
-              <label htmlFor="link_url" className="block text-sm font-medium text-foreground/60 mb-2">
+              <label htmlFor="link_url" className="block text-sm font-medium text-muted mb-2">
                 <LinkIcon className="w-4 h-4 inline mr-1" />
                 배포 URL
               </label>
@@ -684,7 +684,7 @@ export default function ProjectFormPage() {
 
           {/* 썸네일 이미지 업로드 */}
           <div>
-            <label className="block text-sm font-medium text-foreground/60 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               <ImageIcon className="w-4 h-4 inline mr-1" />
               썸네일 이미지
             </label>
@@ -696,7 +696,7 @@ export default function ProjectFormPage() {
                   src={previewUrl}
                   alt="썸네일 미리보기"
                   fill
-                  className="object-cover rounded-lg border-2 border-foreground/20"
+                  className="object-cover rounded-lg border-2 border-[var(--border)]"
                   unoptimized={previewUrl.startsWith('blob:')}
                 />
                 {/* 이미지 제거 버튼 */}
@@ -715,8 +715,8 @@ export default function ProjectFormPage() {
             <div
               className={`rounded-lg border-2 border-dashed p-4 transition-all ${
                 isDragging
-                  ? 'border-brand-secondary/60 bg-brand-secondary/5'
-                  : 'border-foreground/15 bg-background hover:border-foreground/30 hover:bg-foreground/3'
+                  ? 'border-[var(--accent)] bg-[var(--surface)]'
+                  : 'border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--surface)]'
               }`}
               onDragEnter={handleDragEnter}
               onDragOver={handleDragOver}
@@ -726,10 +726,10 @@ export default function ProjectFormPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <label
                   htmlFor="thumbnail_file"
-                  className="flex items-center gap-2 px-4 py-3 bg-background border border-foreground/15 rounded-lg hover:border-foreground/30 hover:bg-foreground/5 transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-3 border border-[var(--border)] rounded-lg hover:border-[var(--accent)] hover:bg-[var(--surface)] transition-all cursor-pointer"
                 >
-                  <Upload className="w-5 h-5 text-foreground/50" />
-                  <span className="text-sm font-medium text-foreground/70">
+                  <Upload className="w-5 h-5 text-subtle" />
+                  <span className="text-sm font-medium text-muted">
                     {previewUrl ? '다른 이미지 선택' : '이미지 선택'}
                   </span>
                 </label>
@@ -740,37 +740,37 @@ export default function ProjectFormPage() {
                   onChange={handleFileSelect}
                   className="hidden"
                 />
-                <span className="text-xs text-foreground/40">
+                <span className="text-xs text-subtle">
                   JPG, PNG, GIF (최대 5MB)
                 </span>
               </div>
-              <p className="mt-3 text-xs text-foreground/40">
+              <p className="mt-3 text-xs text-subtle">
                 또는 이 영역으로 이미지를 드래그해서 놓아주세요.
               </p>
             </div>
           </div>
 
           {/* 주요 프로젝트 체크박스 */}
-          <div className="flex items-center gap-3 p-4 bg-foreground/3 rounded-lg border border-foreground/10">
+          <div className="flex items-center gap-3 p-4 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <input
               type="checkbox"
               id="is_featured"
               name="is_featured"
               checked={formData.is_featured}
               onChange={handleChange}
-              className="w-5 h-5 text-brand-primary border-foreground/20 rounded focus:ring-foreground/30"
+              className="w-5 h-5 text-[var(--accent)] border-[var(--border)] rounded focus:ring-[var(--border)]"
             />
-            <label htmlFor="is_featured" className="text-sm font-medium text-foreground/70 cursor-pointer">
+            <label htmlFor="is_featured" className="text-sm font-medium text-muted cursor-pointer">
               주요 프로젝트로 표시
             </label>
           </div>
 
           {/* 제출 버튼 */}
-          <div className="flex items-center gap-4 pt-4 border-t border-foreground/10">
+          <div className="flex items-center gap-4 pt-4 border-t border-[var(--border)]">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FolderKanban className="w-5 h-5" />
               {isSubmitting
@@ -785,7 +785,8 @@ export default function ProjectFormPage() {
               type="button"
               onClick={handleCancel}
               disabled={isSubmitting}
-              className="px-6 py-3 text-foreground/60 bg-foreground/8 border border-foreground/10 rounded-lg hover:bg-foreground/12 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 text-muted rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
             >
               취소
             </button>
