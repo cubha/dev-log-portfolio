@@ -558,6 +558,24 @@ input[type="datetime-local"] { color-scheme: light; }
 }
 @keyframes shine { to { background-position-x: -200%; } }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ─── Skeleton shimmer ──────────────────────────────────────────────────── */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-1) 0%,
+    var(--bg-2) 50%,
+    var(--bg-1) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  border-radius: 4px;
+}
 
 .glass-card {
   background: rgba(255,255,255,0.55);

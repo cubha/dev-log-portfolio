@@ -269,13 +269,14 @@ export function TechStackInput({ value, onChange }: TechStackInputProps) {
 
   return (
     <div ref={containerRef} className="relative">
-      <label className="block text-sm font-medium text-foreground/60 mb-2">
+      <label className="block text-sm font-medium text-muted mb-2">
         기술 스택
       </label>
 
       {/* 태그 컨테이너 */}
       <div
-        className="min-h-[52px] w-full px-3 py-2 border border-foreground/10 rounded-lg focus-within:ring-2 focus-within:ring-foreground/20 focus-within:border-foreground/30 transition-all bg-background flex flex-wrap gap-2 items-center cursor-text"
+        className="min-h-[52px] w-full px-3 py-2 border border-[var(--border)] rounded-lg focus-within:ring-2 focus-within:ring-[var(--border)] transition-all flex flex-wrap gap-2 items-center cursor-text"
+        style={{ background: 'var(--bg)' }}
         onClick={() => inputRef.current?.focus()}
       >
         {/* 선택된 태그들 */}
@@ -297,19 +298,19 @@ export function TechStackInput({ value, onChange }: TechStackInputProps) {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder={value.length === 0 ? '기술을 입력하세요 (예: React, TypeScript)' : ''}
-          className="flex-1 min-w-[200px] outline-none bg-transparent text-sm text-foreground placeholder:text-foreground/30"
+          className="flex-1 min-w-[200px] outline-none bg-transparent text-sm text-[var(--fg)] placeholder:text-subtle"
         />
       </div>
 
       {/* 자동완성 제안 */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-background border border-foreground/10 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-1 rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
           {suggestions.map((tech) => (
             <button
               key={tech}
               type="button"
               onClick={() => addTech(tech)}
-              className="w-full px-4 py-2 text-left hover:bg-foreground/5 flex items-center gap-2 transition-colors group"
+              className="w-full px-4 py-2 text-left hover:bg-[var(--surface)] flex items-center gap-2 transition-colors group"
             >
               <div className="relative w-4 h-4">
                 <Image
@@ -323,14 +324,14 @@ export function TechStackInput({ value, onChange }: TechStackInputProps) {
                   }}
                 />
               </div>
-              <span className="text-sm text-foreground/70 group-hover:text-foreground">{tech}</span>
+              <span className="text-sm text-muted group-hover:text-[var(--fg)]">{tech}</span>
             </button>
           ))}
         </div>
       )}
 
       {/* 도움말 텍스트 */}
-      <p className="mt-1 text-xs text-foreground/40">
+      <p className="mt-1 text-xs text-subtle">
         Enter 또는 쉼표(,)로 태그를 추가할 수 있습니다. 커스텀 기술명도 입력 가능합니다.
       </p>
     </div>

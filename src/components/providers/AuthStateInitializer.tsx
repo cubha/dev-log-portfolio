@@ -30,19 +30,24 @@ export function AuthStateInitializerClient() {
     const supabase = createClient()
 
     const syncAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+          setIsLoggedIn(false)
+          setIsAdmin(false)
+          return
+        }
+        setIsLoggedIn(true)
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+        setIsAdmin(profile?.role === 'admin')
+      } catch {
         setIsLoggedIn(false)
         setIsAdmin(false)
-        return
       }
-      setIsLoggedIn(true)
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-      setIsAdmin(profile?.role === 'admin')
     }
 
     syncAuth()

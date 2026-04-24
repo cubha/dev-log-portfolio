@@ -24,8 +24,8 @@ export default async function AdminDashboardPage() {
     return (
       <div>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">대시보드</h1>
-          <p className="text-foreground/60">포트폴리오 관리 현황을 한눈에 확인하세요</p>
+          <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--fg)' }}>대시보드</h1>
+          <p className="text-muted">포트폴리오 관리 현황을 한눈에 확인하세요</p>
         </div>
 
         {/* 콘텐츠 통계 카드 */}
@@ -57,12 +57,15 @@ export default async function AdminDashboardPage() {
         <VisitorAnalyticsCard stats={stats} />
 
         {/* 빠른 액션 */}
-        <div className="mt-6 bg-background rounded-xl border border-foreground/10 p-6 shadow-sm">
-          <h2 className="text-xl font-bold text-foreground mb-4">빠른 액션</h2>
+        <div
+          className="mt-6 rounded-xl p-6 shadow-sm"
+          style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+        >
+          <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--fg)' }}>빠른 액션</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <QuickAction href="/admin/projects?mode=new" icon={<FolderKanban className="w-5 h-5 text-white dark:text-slate-950" />} title="프로젝트 관리" desc="프로젝트 추가 및 수정" />
-            <QuickAction href="/admin/skills" icon={<Code2 className="w-5 h-5 text-white dark:text-slate-950" />} title="기술 스택 관리" desc="기술 스택 추가 및 수정" />
-            <QuickAction href="/admin/profile" icon={<User className="w-5 h-5 text-white dark:text-slate-950" />} title="프로필 관리" desc="About 프로필 편집" />
+            <QuickAction href="/admin/projects?mode=new" icon={<FolderKanban className="w-5 h-5 text-white" />} title="프로젝트 관리" desc="프로젝트 추가 및 수정" />
+            <QuickAction href="/admin/skills" icon={<Code2 className="w-5 h-5 text-white" />} title="기술 스택 관리" desc="기술 스택 추가 및 수정" />
+            <QuickAction href="/admin/profile" icon={<User className="w-5 h-5 text-white" />} title="프로필 관리" desc="About 프로필 편집" />
           </div>
         </div>
       </div>
@@ -83,10 +86,13 @@ export default async function AdminDashboardPage() {
 
 function VisitorAnalyticsCard({ stats }: { stats: PageViewStats }) {
   return (
-    <div className="rounded-2xl overflow-hidden border border-foreground/[0.08] bg-foreground/[0.02] shadow-sm">
+    <div
+      className="rounded-2xl overflow-hidden shadow-sm"
+      style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
+    >
 
       {/* ① 상단 accent gradient 라인 */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-brand-secondary/60 to-transparent" />
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--accent)]/60 to-transparent" />
 
       {/* ② 헤더 */}
       <div className="flex items-center justify-between px-6 py-3.5">
@@ -96,17 +102,17 @@ function VisitorAnalyticsCard({ stats }: { stats: PageViewStats }) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
           </span>
-          <span className="text-[10px] font-bold tracking-[0.22em] text-foreground/40 uppercase select-none">
+          <span className="text-[10px] font-bold tracking-[0.22em] text-subtle uppercase select-none">
             Visitor Analytics
           </span>
         </div>
-        <span className="text-[10px] text-foreground/25 tracking-wider tabular-nums">
+        <span className="text-[10px] text-subtle tracking-wider tabular-nums">
           UTC+9 · 실시간
         </span>
       </div>
 
       {/* ③ 핵심 수치 — 3열 */}
-      <div className="grid grid-cols-3 border-t border-foreground/[0.07]">
+      <div className="grid grid-cols-3 border-t border-[var(--border)]">
         <MetricCell
           label="오늘 방문"
           value={stats.todayTotal}
@@ -127,8 +133,8 @@ function VisitorAnalyticsCard({ stats }: { stats: PageViewStats }) {
       </div>
 
       {/* ④ 차트 + 인기페이지 */}
-      <div className="grid grid-cols-1 md:grid-cols-5 border-t border-foreground/[0.07]">
-        <div className="md:col-span-3 p-5 md:border-r border-b md:border-b-0 border-foreground/[0.07]">
+      <div className="grid grid-cols-1 md:grid-cols-5 border-t border-[var(--border)]">
+        <div className="md:col-span-3 p-5 md:border-r border-b md:border-b-0 border-[var(--border)]">
           <SectionLabel>Daily Views — 최근 7일</SectionLabel>
           <VisitBarChart data={stats.last7Days} />
         </div>
@@ -161,28 +167,26 @@ function MetricCell({
     <div
       className={[
         'px-6 py-5 space-y-0.5',
-        bordered ? 'border-x border-foreground/[0.07]' : '',
+        bordered ? 'border-x border-[var(--border)]' : '',
       ].join(' ')}
     >
-      <p className="text-[9px] font-bold tracking-[0.2em] text-foreground/35 uppercase mb-1.5">
+      <p className="text-[9px] font-bold tracking-[0.2em] text-subtle uppercase mb-1.5">
         {label}
       </p>
       <p
-        className={[
-          'text-[2rem] leading-none font-extrabold tabular-nums transition-colors',
-          accent ? 'text-brand-secondary' : 'text-foreground',
-        ].join(' ')}
+        className="text-[2rem] leading-none font-extrabold tabular-nums transition-colors"
+        style={{ color: accent ? 'var(--accent)' : 'var(--fg)' }}
       >
         {value.toLocaleString()}
       </p>
-      <p className="text-[10px] text-foreground/35 pt-0.5">{sub}</p>
+      <p className="text-[10px] text-subtle pt-0.5">{sub}</p>
     </div>
   )
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[9px] font-bold tracking-[0.2em] text-foreground/30 uppercase mb-4 select-none">
+    <p className="text-[9px] font-bold tracking-[0.2em] text-subtle uppercase mb-4 select-none">
       {children}
     </p>
   )
@@ -217,8 +221,8 @@ function VisitBarChart({ data }: { data: DailyView[] }) {
             const isToday = i === todayIdx
             return (
               <linearGradient key={i} id={`g${i}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={isToday ? 'hsl(var(--brand-secondary))' : 'hsl(var(--foreground))'} stopOpacity={isToday ? 0.8 : 0.35} />
-                <stop offset="100%" stopColor={isToday ? 'hsl(var(--brand-secondary))' : 'hsl(var(--foreground))'} stopOpacity={isToday ? 0.2 : 0.06} />
+                <stop offset="0%" stopColor={isToday ? 'var(--accent)' : 'var(--fg)'} stopOpacity={isToday ? 0.8 : 0.35} />
+                <stop offset="100%" stopColor={isToday ? 'var(--accent)' : 'var(--fg)'} stopOpacity={isToday ? 0.2 : 0.06} />
               </linearGradient>
             )
           })}
@@ -287,7 +291,7 @@ function TopPagesList({ pages }: { pages: PageRank[] }) {
   if (pages.length === 0) {
     return (
       <div className="flex items-center justify-center h-24">
-        <p className="text-[11px] text-foreground/25 tracking-wider">데이터 없음</p>
+        <p className="text-[11px] text-subtle tracking-wider">데이터 없음</p>
       </div>
     )
   }
@@ -304,24 +308,24 @@ function TopPagesList({ pages }: { pages: PageRank[] }) {
         return (
           <li key={page.path}>
             <div className="flex items-center gap-2.5 mb-1.5">
-              <span className="text-[9px] font-bold tabular-nums text-foreground/20 w-4 shrink-0 font-mono">
+              <span className="text-[9px] font-bold tabular-nums text-subtle w-4 shrink-0 font-mono">
                 {rankLabel}
               </span>
               <span
-                className="text-[11px] font-medium text-foreground/70 truncate flex-1 min-w-0"
+                className="text-[11px] font-medium text-muted truncate flex-1 min-w-0"
                 title={page.path}
               >
                 {pathLabel}
               </span>
-              <span className="text-[11px] font-bold tabular-nums text-foreground/50 shrink-0">
+              <span className="text-[11px] font-bold tabular-nums text-subtle shrink-0">
                 {page.count.toLocaleString()}
               </span>
             </div>
             {/* 프로그레스 바 */}
-            <div className="h-[2px] bg-foreground/[0.06] rounded-full overflow-hidden">
+            <div className="h-[2px] bg-[var(--surface)] rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-brand-secondary/50 to-brand-secondary/20"
-                style={{ width: `${pct}%` }}
+                className="h-full rounded-full"
+                style={{ width: `${pct}%`, background: 'linear-gradient(to right, color-mix(in srgb, var(--accent) 50%, transparent), color-mix(in srgb, var(--accent) 20%, transparent))' }}
               />
             </div>
           </li>
@@ -345,21 +349,25 @@ function StatCard({
   description: string
 }) {
   const colorMap = {
-    blue:   'text-brand-primary from-brand-primary/20 to-brand-primary/5',
-    purple: 'text-brand-secondary from-brand-secondary/20 to-brand-secondary/5',
-    green:  'text-green-500 from-green-500/20 to-green-500/5',
+    blue:   { text: 'text-[var(--accent)]', gradFrom: 'from-[var(--accent)]/20', gradTo: 'to-[var(--accent)]/5' },
+    purple: { text: 'text-[var(--accent)]', gradFrom: 'from-[var(--accent)]/20', gradTo: 'to-[var(--accent)]/5' },
+    green:  { text: 'text-green-500', gradFrom: 'from-green-500/20', gradTo: 'to-green-500/5' },
   }
+  const c = colorMap[color]
 
   return (
-    <div className="bg-background rounded-xl border border-foreground/10 p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div
+      className="rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+      style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+    >
       <div className="flex items-start justify-between mb-4">
-        <div className={`p-3 bg-gradient-to-br ${colorMap[color]} rounded-lg`}>
-          <div className={colorMap[color].split(' ')[0]}>{icon}</div>
+        <div className={`p-3 bg-gradient-to-br ${c.gradFrom} ${c.gradTo} rounded-lg`}>
+          <div className={c.text}>{icon}</div>
         </div>
       </div>
-      <p className="text-foreground/60 text-sm mb-1">{title}</p>
-      <p className="text-3xl font-bold text-foreground mb-1">{value}</p>
-      <p className="text-foreground/50 text-xs">{description}</p>
+      <p className="text-muted text-sm mb-1">{title}</p>
+      <p className="text-3xl font-bold mb-1" style={{ color: 'var(--fg)' }}>{value}</p>
+      <p className="text-subtle text-xs">{description}</p>
     </div>
   )
 }
@@ -379,16 +387,17 @@ function QuickAction({
   return (
     <Link
       href={href}
-      className="group flex items-center justify-between p-4 bg-foreground/3 hover:bg-foreground/5 border border-foreground/10 hover:border-foreground/20 rounded-lg transition-all hover:shadow-md"
+      className="group flex items-center justify-between p-4 rounded-lg transition-all hover:shadow-md"
+      style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
     >
       <div className="flex items-center gap-3">
         <div className="p-2 bg-silver-metal rounded-lg">{icon}</div>
         <div>
-          <p className="font-semibold text-foreground">{title}</p>
-          <p className="text-sm text-foreground/50">{desc}</p>
+          <p className="font-semibold" style={{ color: 'var(--fg)' }}>{title}</p>
+          <p className="text-sm text-subtle">{desc}</p>
         </div>
       </div>
-      <ArrowRight className="w-5 h-5 text-foreground/40 group-hover:text-foreground group-hover:translate-x-1 transition-all" />
+      <ArrowRight className="w-5 h-5 text-subtle group-hover:text-[var(--fg)] group-hover:translate-x-1 transition-all" />
     </Link>
   )
 }

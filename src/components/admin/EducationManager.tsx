@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Pencil, Trash2, X, Check, AlertCircle, GraduationCap } from 'lucide-react'
+import { useDeleteConfirm } from '@/src/hooks/useDeleteConfirm'
 import { SilverButton } from '@/src/components/common/SilverButton'
 import { MonthPickerInput } from '@/src/components/ui/MonthPickerInput'
 import {
@@ -10,6 +11,7 @@ import {
   updateEducation,
   deleteEducation,
 } from '@/src/utils/education/educationActions'
+import { revalidateAboutPage } from '@/src/actions/revalidate'
 import { EDUCATION_STATUS_OPTIONS } from '@/src/types/profile'
 import type { Education, EducationInsert } from '@/src/types/profile'
 
@@ -47,9 +49,6 @@ export function EducationManager() {
   const [form, setForm]             = useState<EducationInsert>(EMPTY)
   const [isSaving, setIsSaving]     = useState(false)
   const [formError, setFormError]   = useState<string | null>(null)
-
-  // 삭제 2단계
-  const [deletingId, setDeletingId] = useState<number | null>(null)
 
   // ── 데이터 로드 ──────────────────────────────────────────────────────────
   const load = useCallback(async () => {
@@ -114,17 +113,18 @@ export function EducationManager() {
     } else {
       close()
       load()
+      revalidateAboutPage()
     }
     setIsSaving(false)
   }
 
   // ── 삭제 ──────────────────────────────────────────────────────────────────
-  async function handleDelete(id: number) {
-    if (deletingId !== id) { setDeletingId(id); return }
-    const { error } = await deleteEducation(id)
-    if (!error) load()
-    setDeletingId(null)
-  }
+  const { deletingId, handleDelete, cancelDelete } = useDeleteConfirm<number>(
+    async (id) => {
+      const { error } = await deleteEducation(id)
+      if (!error) { load(); revalidateAboutPage() }
+    }
+  )
 
   function set<K extends keyof EducationInsert>(key: K, val: EducationInsert[K]) {
     setForm(p => ({ ...p, [key]: val }))
@@ -133,7 +133,7 @@ export function EducationManager() {
   // 상태에 따른 배지 색상
   const statusColor: Record<string, string> = {
     '졸업':   'bg-green-50 text-green-700',
-    '재학중': 'bg-brand-secondary/10 text-brand-secondary',
+    '재학중': 'bg-[var(--surface)] text-[var(--accent)]',
     '휴학':   'bg-yellow-50 text-yellow-700',
     '중퇴':   'bg-red-50 text-red-600',
     '수료':   'bg-purple-50 text-purple-700',
@@ -144,8 +144,8 @@ export function EducationManager() {
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-foreground">학력 관리</h2>
-          <p className="text-sm text-foreground/50 mt-0.5">학력 사항을 추가하고 관리합니다.</p>
+          <h2 className="text-xl font-bold" style={{ color: 'var(--fg)' }}>학력 관리</h2>
+          <p className="text-sm text-subtle mt-0.5">학력 사항을 추가하고 관리합니다.</p>
         </div>
         <SilverButton type="button" size="md" onClick={openAdd} className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
@@ -164,10 +164,10 @@ export function EducationManager() {
       {/* 로딩 */}
       {isLoading ? (
         <div className="flex items-center justify-center h-32">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground/30" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--border)]" />
         </div>
       ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-40 text-foreground/40">
+        <div className="flex flex-col items-center justify-center h-40 text-subtle">
           <GraduationCap className="w-10 h-10 mb-3 opacity-30" />
           <p className="font-medium">등록된 학력이 없습니다</p>
           <p className="text-sm mt-1">&lsquo;학력 추가&rsquo; 버튼으로 시작하세요</p>
@@ -177,21 +177,22 @@ export function EducationManager() {
           {items.map((edu) => (
             <div
               key={edu.id}
-              className="group flex items-start justify-between gap-4 p-5 bg-background rounded-xl border border-foreground/8 hover:border-foreground/20 hover:shadow-sm transition-all"
+              className="group flex items-start justify-between gap-4 p-5 rounded-xl hover:shadow-sm transition-all"
+              style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
             >
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 w-9 h-9 rounded-lg bg-silver-metal flex items-center justify-center flex-shrink-0">
-                  <GraduationCap className="w-4 h-4 text-white dark:text-slate-950" />
+                  <GraduationCap className="w-4 h-4 text-white " />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-foreground">{edu.school_name}</span>
-                    <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${statusColor[edu.status] ?? 'bg-foreground/10 text-foreground/60'}`}>
+                    <span className="font-semibold" style={{ color: 'var(--fg)' }}>{edu.school_name}</span>
+                    <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${statusColor[edu.status] ?? 'bg-[var(--surface)] text-muted'}`}>
                       {edu.status}
                     </span>
                   </div>
-                  <p className="text-sm text-foreground/60">{edu.major}</p>
-                  <p className="text-xs text-foreground/40 mt-1 tabular-nums">{dateRange(edu)}</p>
+                  <p className="text-sm text-muted">{edu.major}</p>
+                  <p className="text-xs text-subtle mt-1 tabular-nums">{dateRange(edu)}</p>
                 </div>
               </div>
 
@@ -199,7 +200,7 @@ export function EducationManager() {
               <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                 <button
                   onClick={() => openEdit(edu)}
-                  className="p-1.5 rounded-lg text-foreground/40 hover:text-brand-secondary hover:bg-brand-secondary/5 transition-all"
+                  className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] hover:bg-[var(--surface)] transition-all"
                   title="수정"
                 >
                   <Pencil className="w-4 h-4" />
@@ -213,8 +214,8 @@ export function EducationManager() {
                       <Check className="w-3 h-3" />확인
                     </button>
                     <button
-                      onClick={() => setDeletingId(null)}
-                      className="p-1.5 rounded-lg text-foreground/40 hover:bg-foreground/8 transition-colors"
+                      onClick={cancelDelete}
+                      className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -222,7 +223,7 @@ export function EducationManager() {
                 ) : (
                   <button
                     onClick={() => handleDelete(edu.id)}
-                    className="p-1.5 rounded-lg text-foreground/40 hover:text-red-500 hover:bg-red-50 transition-all"
+                    className="p-1.5 rounded-lg text-subtle hover:text-red-500 hover:bg-red-50 transition-all"
                     title="삭제"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -238,13 +239,16 @@ export function EducationManager() {
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={close} />
-          <div className="relative bg-background rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-foreground/10">
+          <div
+            className="relative rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+          >
             {/* 헤더 */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-foreground/8">
-              <h2 className="text-base font-bold text-foreground">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)]">
+              <h2 className="text-base font-bold" style={{ color: 'var(--fg)' }}>
                 {editing ? '학력 수정' : '학력 추가'}
               </h2>
-              <button onClick={close} className="p-1.5 rounded-lg text-foreground/40 hover:bg-foreground/8 transition-colors">
+              <button onClick={close} className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -253,7 +257,7 @@ export function EducationManager() {
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
               {/* 학교명 */}
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                   학교명 <span className="text-red-400 normal-case tracking-normal">*</span>
                 </label>
                 <input
@@ -269,7 +273,7 @@ export function EducationManager() {
               {/* 전공 + 상태 */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                     전공 <span className="text-red-400 normal-case tracking-normal">*</span>
                   </label>
                   <input
@@ -281,7 +285,7 @@ export function EducationManager() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                     상태
                   </label>
                   <select
@@ -299,7 +303,7 @@ export function EducationManager() {
               {/* 기간 */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                     입학일 <span className="text-red-400 normal-case tracking-normal">*</span>
                   </label>
                   <MonthPickerInput
@@ -310,8 +314,8 @@ export function EducationManager() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
-                    졸업/수료일 <span className="text-foreground/40 normal-case font-normal">(선택)</span>
+                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                    졸업/수료일 <span className="text-subtle normal-case font-normal">(선택)</span>
                   </label>
                   <MonthPickerInput
                     value={form.end_date ?? null}
@@ -335,7 +339,7 @@ export function EducationManager() {
                 <button
                   type="button"
                   onClick={close}
-                  className="flex-1 py-2.5 text-sm font-medium text-foreground/60 bg-foreground/8 rounded-lg hover:bg-foreground/12 transition-colors"
+                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-[var(--surface)] rounded-lg hover:bg-[var(--surface)] transition-colors"
                 >
                   취소
                 </button>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Pencil, Trash2, X, Check, AlertCircle, Briefcase } from 'lucide-react'
+import { useDeleteConfirm } from '@/src/hooks/useDeleteConfirm'
 import { SilverButton } from '@/src/components/common/SilverButton'
 import { MonthPickerInput } from '@/src/components/ui/MonthPickerInput'
 import {
@@ -10,6 +11,7 @@ import {
   updateExperience,
   deleteExperience,
 } from '@/src/utils/experience/experienceActions'
+import { revalidateAboutPage } from '@/src/actions/revalidate'
 import type { Experience, ExperienceInsert } from '@/src/types/profile'
 
 // ─── 날짜 포맷 ───────────────────────────────────────────────────────────────
@@ -47,9 +49,6 @@ export function ExperienceManager() {
   const [form, setForm]             = useState<ExperienceInsert>(EMPTY)
   const [isSaving, setIsSaving]     = useState(false)
   const [formError, setFormError]   = useState<string | null>(null)
-
-  // 삭제 2단계
-  const [deletingId, setDeletingId] = useState<number | null>(null)
 
   // ── 데이터 로드 ──────────────────────────────────────────────────────────
   const load = useCallback(async () => {
@@ -116,17 +115,18 @@ export function ExperienceManager() {
     } else {
       close()
       load()
+      revalidateAboutPage()
     }
     setIsSaving(false)
   }
 
   // ── 삭제 ──────────────────────────────────────────────────────────────────
-  async function handleDelete(id: number) {
-    if (deletingId !== id) { setDeletingId(id); return }
-    const { error } = await deleteExperience(id)
-    if (!error) load()
-    setDeletingId(null)
-  }
+  const { deletingId, handleDelete, cancelDelete } = useDeleteConfirm<number>(
+    async (id) => {
+      const { error } = await deleteExperience(id)
+      if (!error) { load(); revalidateAboutPage() }
+    }
+  )
 
   // ── 필드 핸들러 ──────────────────────────────────────────────────────────
   function set<K extends keyof ExperienceInsert>(key: K, val: ExperienceInsert[K]) {
@@ -138,8 +138,8 @@ export function ExperienceManager() {
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-foreground">경력 관리</h2>
-          <p className="text-sm text-foreground/50 mt-0.5">회사 경력을 추가하고 관리합니다.</p>
+          <h2 className="text-xl font-bold" style={{ color: 'var(--fg)' }}>경력 관리</h2>
+          <p className="text-sm text-subtle mt-0.5">회사 경력을 추가하고 관리합니다.</p>
         </div>
         <SilverButton type="button" size="md" onClick={openAdd} className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
@@ -158,10 +158,10 @@ export function ExperienceManager() {
       {/* 로딩 */}
       {isLoading ? (
         <div className="flex items-center justify-center h-32">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground/30" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--border)]" />
         </div>
       ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-40 text-foreground/40">
+        <div className="flex flex-col items-center justify-center h-40 text-subtle">
           <Briefcase className="w-10 h-10 mb-3 opacity-30" />
           <p className="font-medium">등록된 경력이 없습니다</p>
           <p className="text-sm mt-1">&lsquo;경력 추가&rsquo; 버튼으로 시작하세요</p>
@@ -171,23 +171,24 @@ export function ExperienceManager() {
           {items.map((exp) => (
             <div
               key={exp.id}
-              className="group flex items-start justify-between gap-4 p-5 bg-background rounded-xl border border-foreground/8 hover:border-foreground/20 hover:shadow-sm transition-all"
+              className="group flex items-start justify-between gap-4 p-5 rounded-xl hover:shadow-sm transition-all"
+              style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
             >
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 w-9 h-9 rounded-lg bg-silver-metal flex items-center justify-center flex-shrink-0">
-                  <Briefcase className="w-4 h-4 text-white dark:text-slate-950" />
+                  <Briefcase className="w-4 h-4 text-white " />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-foreground">{exp.company_name}</span>
+                    <span className="font-semibold" style={{ color: 'var(--fg)' }}>{exp.company_name}</span>
                     {exp.is_current && (
-                      <span className="px-2 py-0.5 bg-brand-secondary/10 text-brand-secondary text-xs rounded-full font-medium">재직중</span>
+                      <span className="px-2 py-0.5 text-xs rounded-full font-medium" style={{ background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent)' }}>재직중</span>
                     )}
                   </div>
-                  <p className="text-sm text-foreground/60">{exp.position}</p>
-                  <p className="text-xs text-foreground/40 mt-1 tabular-nums">{dateRange(exp)}</p>
+                  <p className="text-sm text-muted">{exp.position}</p>
+                  <p className="text-xs text-subtle mt-1 tabular-nums">{dateRange(exp)}</p>
                   {exp.description && (
-                    <p className="text-xs text-foreground/50 mt-2 leading-relaxed line-clamp-2">
+                    <p className="text-xs text-subtle mt-2 leading-relaxed line-clamp-2">
                       {exp.description}
                     </p>
                   )}
@@ -198,7 +199,7 @@ export function ExperienceManager() {
               <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                 <button
                   onClick={() => openEdit(exp)}
-                  className="p-1.5 rounded-lg text-foreground/40 hover:text-brand-secondary hover:bg-brand-secondary/5 transition-all"
+                  className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] hover:bg-[var(--surface)] transition-all"
                   title="수정"
                 >
                   <Pencil className="w-4 h-4" />
@@ -212,8 +213,8 @@ export function ExperienceManager() {
                       <Check className="w-3 h-3" />확인
                     </button>
                     <button
-                      onClick={() => setDeletingId(null)}
-                      className="p-1.5 rounded-lg text-foreground/40 hover:bg-foreground/8 transition-colors"
+                      onClick={cancelDelete}
+                      className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -221,7 +222,7 @@ export function ExperienceManager() {
                 ) : (
                   <button
                     onClick={() => handleDelete(exp.id)}
-                    className="p-1.5 rounded-lg text-foreground/40 hover:text-red-500 hover:bg-red-50 transition-all"
+                    className="p-1.5 rounded-lg text-subtle hover:text-red-500 hover:bg-red-50 transition-all"
                     title="삭제"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -237,13 +238,16 @@ export function ExperienceManager() {
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={close} />
-          <div className="relative bg-background rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-foreground/10">
+          <div
+            className="relative rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+          >
             {/* 헤더 */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-foreground/8">
-              <h2 className="text-base font-bold text-foreground">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)]">
+              <h2 className="text-base font-bold" style={{ color: 'var(--fg)' }}>
                 {editing ? '경력 수정' : '경력 추가'}
               </h2>
-              <button onClick={close} className="p-1.5 rounded-lg text-foreground/40 hover:bg-foreground/8 transition-colors">
+              <button onClick={close} className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -252,7 +256,7 @@ export function ExperienceManager() {
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
               {/* 회사명 */}
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                   회사명 <span className="text-red-400 normal-case tracking-normal">*</span>
                 </label>
                 <input
@@ -267,7 +271,7 @@ export function ExperienceManager() {
 
               {/* 직책 */}
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                   직책 / 포지션 <span className="text-red-400 normal-case tracking-normal">*</span>
                 </label>
                 <input
@@ -282,7 +286,7 @@ export function ExperienceManager() {
               {/* 기간 */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                     시작일 <span className="text-red-400 normal-case tracking-normal">*</span>
                   </label>
                   <MonthPickerInput
@@ -293,7 +297,7 @@ export function ExperienceManager() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
                     종료일
                   </label>
                   <MonthPickerInput
@@ -311,17 +315,17 @@ export function ExperienceManager() {
               <label className="flex items-center gap-3 cursor-pointer select-none">
                 <div
                   onClick={() => set('is_current', !form.is_current)}
-                  className={`relative w-10 h-5 rounded-full transition-all duration-300 cursor-pointer ${form.is_current ? 'bg-silver-metal' : 'bg-foreground/20'}`}
+                  className={`relative w-10 h-5 rounded-full transition-all duration-300 cursor-pointer ${form.is_current ? 'bg-silver-metal' : 'bg-[var(--surface)]'}`}
                 >
                   <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300 ${form.is_current ? 'left-5' : 'left-0.5'}`} />
                 </div>
-                <span className="text-sm text-foreground/70">현재 재직중</span>
+                <span className="text-sm text-muted">현재 재직중</span>
               </label>
 
               {/* 업무 내용 */}
               <div>
-                <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
-                  업무 내용 <span className="text-foreground/40 normal-case font-normal tracking-normal">(선택)</span>
+                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                  업무 내용 <span className="text-subtle normal-case font-normal tracking-normal">(선택)</span>
                 </label>
                 <textarea
                   value={form.description ?? ''}
@@ -345,7 +349,7 @@ export function ExperienceManager() {
                 <button
                   type="button"
                   onClick={close}
-                  className="flex-1 py-2.5 text-sm font-medium text-foreground/60 bg-foreground/8 rounded-lg hover:bg-foreground/12 transition-colors"
+                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-[var(--surface)] rounded-lg hover:bg-[var(--surface)] transition-colors"
                 >
                   취소
                 </button>
