@@ -78,7 +78,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ─── Essay ───────────────────────────────────────────────── */}
-      <section className="grid two-col-label-grid" style={{ padding: `clamp(60px, 6vw, 96px) ${px} 120px`, gap: 'clamp(40px, 5.5vw, 80px)' }}>
+      <section className="grid two-col-label-grid" style={{ padding: `clamp(60px, 6vw, 96px) ${px} 120px`, gap: 'clamp(40px, 5.5vw, 80px)', borderTop: '1px solid var(--border)' }}>
         <div className="sv-label">ABOUT</div>
         <div style={{ maxWidth: 820 }}>
           {ESSAY.map((p, i) => (

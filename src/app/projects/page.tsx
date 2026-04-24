@@ -63,7 +63,7 @@ export default async function ProjectsPage() {
           </div>
         </section>
 
-        <section style={{ padding: `clamp(60px, 6vw, 96px) ${px} clamp(80px, 9vw, 140px)` }}>
+        <section style={{ padding: `clamp(60px, 6vw, 96px) ${px} clamp(80px, 9vw, 140px)`, borderTop: '1px solid var(--border)' }}>
           {errorMessage ? (
             <ErrorState message={errorMessage} />
           ) : typedProjects.length === 0 ? (
