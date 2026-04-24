@@ -4,6 +4,7 @@ import { Database } from '@/src/types/supabase'
 import { FolderKanban } from 'lucide-react'
 import { ProjectList } from '@/src/components/projects/ProjectList'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
+import { PageHeader } from '@/src/components/common/PageHeader'
 import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
 import Link from 'next/link'
 
@@ -27,20 +28,12 @@ export default async function ProjectsPage() {
       <main>
         <AuthStateInitializer isAdmin={isAdmin} />
 
-        <section style={{ padding: `72px ${px} 40px` }}>
-          <div className="page-context" style={{ marginBottom: 32 }}>
-            PORTFOLIO · PROJECTS ─────────────
-          </div>
-          <div className="grid page-header-grid page-header-grid-2col-25vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'end', marginBottom: 100 }}>
-            <h1 className="h-1" style={{ margin: 0, maxWidth: 820, letterSpacing: '-0.04em' }}>
-              제가 진행했던 프로젝트들의{' '}
-              <span className="metallic">연대기</span>입니다.
-            </h1>
-            <p className="text-muted hidden md:block" style={{ fontSize: 14, lineHeight: 1.7 }}>
-              금융권·제조업·공공 분야. 업무 / 개인 / 팀으로 분류.
-            </p>
-          </div>
-        </section>
+        <PageHeader
+          context="PORTFOLIO · PROJECTS ─────────────"
+          title={<>제가 진행했던 프로젝트들의{' '}<span className="metallic">연대기</span>입니다.</>}
+          desc="금융권·제조업·공공 분야. 업무 / 개인 / 팀으로 분류."
+          titleStyle={{ maxWidth: 820 }}
+        />
 
         <section style={{ padding: `clamp(60px, 6vw, 96px) ${px} clamp(80px, 9vw, 140px)`, borderTop: '1px solid var(--border)' }}>
           {error ? (

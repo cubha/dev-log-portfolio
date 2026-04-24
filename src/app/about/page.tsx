@@ -1,6 +1,7 @@
 import { createClient } from '@/src/utils/supabase/server'
 import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
+import { PageHeader } from '@/src/components/common/PageHeader'
 import { SkillsSection } from '@/src/components/about/SkillsSection'
 import { ExperienceTabsSection } from '@/src/components/about/ExperienceTabsSection'
 import { getAllSkills } from '@/src/utils/skills/getSkills'
@@ -43,28 +44,20 @@ export default async function AboutPage() {
 
   return (
     <main>
-      {/* ─── Page Header ─────────────────────────────────────────── */}
-      <section style={{ padding: `72px ${px} 40px` }}>
-        <div className="page-context" style={{ marginBottom: 40 }}>
-          PORTFOLIO · ABOUT ─────────────
-        </div>
-        <div className="grid page-header-grid page-header-grid-2col-25vw" style={{ gap: 'clamp(40px, 5.5vw, 80px)', alignItems: 'start', marginBottom: 100 }}>
+      <PageHeader
+        context="PORTFOLIO · ABOUT ─────────────"
+        title={<>기술의 변화를{' '}<span className="metallic">실무의 효율</span>로 전환하는 데 집중하는 풀스택 개발자.</>}
+        desc={profile?.intro_text ?? '금융권 SI 출신 · 서울시 중심 활동 · 원격지 유연 대응 가능'}
+        aside={
           <div>
-            <h1 className="h-1" style={{ margin: '0 0 28px', maxWidth: 900, lineHeight: 1.1 }}>
-              기술의 변화를{' '}
-              <span className="metallic">실무의 효율</span>로 전환하는 데 집중하는 풀스택 개발자.
-            </h1>
-            <p className="text-muted" style={{ fontSize: 15, lineHeight: 1.7, maxWidth: 640 }}>
-              {profile?.intro_text ?? '금융권 SI 출신 · 서울시 중심 활동 · 원격지 유연 대응 가능'}
-            </p>
-          </div>
-          <div className="text-left md:text-right hidden md:block">
             <div className="sv-mono text-subtle" style={{ fontSize: 11, letterSpacing: '0.1em', marginBottom: 6 }}>CURRENTLY</div>
             <div className="sv-mono" style={{ fontSize: 13, color: 'var(--fg)' }}>새 프로젝트 상담 가능</div>
             <div className="sv-mono text-muted" style={{ fontSize: 12, marginTop: 4 }}>2026 Q2 ~</div>
           </div>
-        </div>
-      </section>
+        }
+        titleStyle={{ maxWidth: 900, marginBottom: 28 }}
+        descStyle={{ fontSize: 15 }}
+      />
 
       {/* ─── Essay ───────────────────────────────────────────────── */}
       <section className="grid two-col-label-grid" style={{ padding: `clamp(60px, 6vw, 96px) ${px} 120px`, gap: 'clamp(40px, 5.5vw, 80px)', borderTop: '1px solid var(--border)' }}>
