@@ -2,24 +2,57 @@
 
 import { useEffect } from 'react'
 import { useSetAtom } from 'jotai'
-import { isAdminAtom } from '@/src/store/authAtom'
+import { isAdminAtom, isLoggedInAtom } from '@/src/store/authAtom'
+import { createClient } from '@/src/utils/supabase/client'
 
-/**
- * 인증 상태 초기화 컴포넌트
- *
- * 서버에서 확인한 권한 정보를 Jotai atom에 동기화합니다.
- * 하이드레이션 오류를 방지하기 위해 useEffect에서만 상태를 업데이트합니다.
- */
 interface AuthStateInitializerProps {
   isAdmin: boolean
+  isLoggedIn: boolean
 }
 
-export function AuthStateInitializer({ isAdmin }: AuthStateInitializerProps) {
+export function AuthStateInitializer({ isAdmin, isLoggedIn }: AuthStateInitializerProps) {
   const setIsAdmin = useSetAtom(isAdminAtom)
+  const setIsLoggedIn = useSetAtom(isLoggedInAtom)
 
   useEffect(() => {
     setIsAdmin(isAdmin)
-  }, [isAdmin, setIsAdmin])
+    setIsLoggedIn(isLoggedIn)
+  }, [isAdmin, isLoggedIn, setIsAdmin, setIsLoggedIn])
+
+  return null
+}
+
+export function AuthStateInitializerClient() {
+  const setIsAdmin = useSetAtom(isAdminAtom)
+  const setIsLoggedIn = useSetAtom(isLoggedInAtom)
+
+  useEffect(() => {
+    const supabase = createClient()
+
+    const syncAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setIsLoggedIn(false)
+        setIsAdmin(false)
+        return
+      }
+      setIsLoggedIn(true)
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      setIsAdmin(profile?.role === 'admin')
+    }
+
+    syncAuth()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      syncAuth()
+    })
+
+    return () => subscription.unsubscribe()
+  }, [setIsAdmin, setIsLoggedIn])
 
   return null
 }

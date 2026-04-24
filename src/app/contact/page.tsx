@@ -56,7 +56,7 @@ export default async function ContactPage({
 
   return (
     <main>
-      <AuthStateInitializer isAdmin={isAdmin} />
+      <AuthStateInitializer isAdmin={isAdmin} isLoggedIn={role !== 'guest'} />
 
       <PageHeader
         context="PORTFOLIO · CONTACT ─────────────"
@@ -108,7 +108,7 @@ export default async function ContactPage({
         />
       </section>
 
-      {role !== 'guest' && <FloatingUserButton isAdmin={isAdmin} />}
+      <FloatingUserButton />
     </main>
   )
 }

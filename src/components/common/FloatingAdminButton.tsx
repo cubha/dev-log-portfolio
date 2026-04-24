@@ -4,22 +4,18 @@ import { useState } from 'react'
 import { LogOut, X, LayoutDashboard, User, Edit, FileText } from 'lucide-react'
 import { logoutUser } from '@/src/utils/auth/logout'
 import { usePathname } from 'next/navigation'
+import { useAtomValue } from 'jotai'
+import { isAdminAtom, isLoggedInAtom } from '@/src/store/authAtom'
 import Link from 'next/link'
 
-/**
- * 플로팅 유저 메뉴 버튼 (클라이언트 컴포넌트)
- *
- * 로그인한 모든 유저에게 화면 우측 하단에 고정 표시됩니다.
- * 클릭하면 메뉴가 펼쳐집니다:
- *   - 관리자: 대시보드 바로가기 + 로그아웃
- *   - 일반 유저: 로그아웃만 표시
- *
- * @param isAdmin - 관리자 여부 (대시보드 링크 조건부 표시)
- */
-export function FloatingUserButton({ isAdmin = false }: { isAdmin?: boolean }) {
+export function FloatingUserButton() {
+  const isAdmin = useAtomValue(isAdminAtom)
+  const isLoggedIn = useAtomValue(isLoggedInAtom)
   const [isOpen, setIsOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const pathname = usePathname()
+
+  if (!isLoggedIn) return null
 
   const handleLogout = async () => {
     setIsLoggingOut(true)

@@ -1,18 +1,15 @@
 import { createClient } from '@/src/utils/supabase/server'
-import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { Database } from '@/src/types/supabase'
-import { FolderKanban } from 'lucide-react'
 import { ProjectList } from '@/src/components/projects/ProjectList'
+import { ProjectsEmptyState } from '@/src/components/projects/ProjectsEmptyState'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { PageHeader } from '@/src/components/common/PageHeader'
-import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
-import Link from 'next/link'
+import { AuthStateInitializerClient } from '@/src/components/providers/AuthStateInitializer'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export default async function ProjectsPage() {
   try {
-    const { role: userRole, isAdmin } = await getCurrentUserRole()
     const supabase = await createClient()
 
     const { data: projects, error } = await supabase
@@ -26,7 +23,7 @@ export default async function ProjectsPage() {
 
     return (
       <main>
-        <AuthStateInitializer isAdmin={isAdmin} />
+        <AuthStateInitializerClient />
 
         <PageHeader
           context="PORTFOLIO · PROJECTS ─────────────"
@@ -39,13 +36,13 @@ export default async function ProjectsPage() {
           {error ? (
             <ErrorState message={error.message} />
           ) : typedProjects.length === 0 ? (
-            <EmptyState isAdmin={isAdmin} />
+            <ProjectsEmptyState />
           ) : (
             <ProjectList projects={typedProjects} />
           )}
         </section>
 
-        {userRole !== 'guest' && <FloatingUserButton isAdmin={isAdmin} />}
+        <FloatingUserButton />
       </main>
     )
   } catch (error) {
@@ -69,26 +66,3 @@ function ErrorState({ message }: { message: string }) {
   )
 }
 
-function EmptyState({ isAdmin }: { isAdmin: boolean }) {
-  return (
-    <div style={{ maxWidth: 600, margin: '0 auto', textAlign: 'center' }}>
-      <FolderKanban style={{ width: 64, height: 64, margin: '0 auto 32px', color: 'var(--fg-subtle)' }} />
-      <p className="h-3" style={{ marginBottom: 16 }}>아직 등록된 프로젝트가 없습니다</p>
-      {isAdmin ? (
-        <>
-          <p className="text-muted" style={{ fontSize: 14, marginBottom: 32 }}>첫 번째 프로젝트를 등록해 보세요!</p>
-          <Link
-            href="/admin/projects?mode=new"
-            scroll={false}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg transition-all shadow-md hover:shadow-lg"
-          >
-            <FolderKanban className="w-5 h-5" />
-            <span className="font-medium">프로젝트 추가하기</span>
-          </Link>
-        </>
-      ) : (
-        <p className="text-muted" style={{ fontSize: 14 }}>프로젝트가 곧 업데이트될 예정입니다.</p>
-      )}
-    </div>
-  )
-}
