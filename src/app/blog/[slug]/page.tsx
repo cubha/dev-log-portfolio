@@ -91,7 +91,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
   return (
     <main>
       <ReadingProgressBar />
-      <AuthStateInitializer isAdmin={isAdmin} />
+      <AuthStateInitializer isAdmin={isAdmin} isLoggedIn={!!user} />
 
       {/* Mobile top bar (< xl) */}
       <div
@@ -219,7 +219,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
         )}
       </div>
 
-      {user && <FloatingUserButton isAdmin={isAdmin} />}
+      <FloatingUserButton />
     </main>
   )
 }

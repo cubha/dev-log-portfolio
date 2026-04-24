@@ -1,13 +1,9 @@
 import { atom } from 'jotai'
 import { Database } from '@/src/types/supabase'
 
-/**
- * 관리자 권한 상태 Atom
- *
- * 전역으로 관리되는 관리자 권한 상태입니다.
- * 초기값은 false이며, 서버에서 확인한 권한 정보로 업데이트됩니다.
- */
 export const isAdminAtom = atom<boolean>(false)
+
+export const isLoggedInAtom = atom<boolean>(false)
 
 /**
  * 편집 중인 프로젝트 Atom

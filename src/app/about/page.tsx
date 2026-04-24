@@ -1,6 +1,6 @@
 import { createClient } from '@/src/utils/supabase/server'
-import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
+import { AuthStateInitializerClient } from '@/src/components/providers/AuthStateInitializer'
 import { PageHeader } from '@/src/components/common/PageHeader'
 import { SkillsSection } from '@/src/components/about/SkillsSection'
 import { ExperienceTabsSection } from '@/src/components/about/ExperienceTabsSection'
@@ -25,8 +25,9 @@ const ESSAY = [
   },
 ]
 
+export const revalidate = 3600
+
 export default async function AboutPage() {
-  const { role: userRole, isAdmin } = await getCurrentUserRole()
   const supabase = await createClient()
 
   const [skillsData, experiencesData, educationsData, trainingsData, profileRes] = await Promise.all([
@@ -44,6 +45,7 @@ export default async function AboutPage() {
 
   return (
     <main>
+      <AuthStateInitializerClient />
       <PageHeader
         context="PORTFOLIO · ABOUT ─────────────"
         title={<>기술의 변화를{' '}<span className="metallic">실무의 효율</span>로 전환하는 데 집중하는 풀스택 개발자.</>}
@@ -90,7 +92,7 @@ export default async function AboutPage() {
         />
       </section>
 
-      {userRole !== 'guest' && <FloatingUserButton isAdmin={isAdmin} />}
+      <FloatingUserButton />
     </main>
   )
 }

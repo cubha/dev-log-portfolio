@@ -15,7 +15,7 @@ export default async function BlogPage() {
 
   return (
     <main>
-      <AuthStateInitializer isAdmin={isAdmin} />
+      <AuthStateInitializer isAdmin={isAdmin} isLoggedIn={!!user} />
 
       <PageHeader
         context="PORTFOLIO · WRITING ─────────────"
@@ -38,7 +38,7 @@ export default async function BlogPage() {
         )}
       </section>
 
-      {user && <FloatingUserButton isAdmin={isAdmin} />}
+      <FloatingUserButton />
     </main>
   )
 }
