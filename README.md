@@ -480,6 +480,15 @@ chmod +x verify.sh
 - [x] ~~어드민 페이지 `/admin/*` Silver V2 리디자인 (v2.1.0 완료)~~
 - [x] ~~**블로그 관리 진입점 개선**: `/admin/blog` 제거 → `/blog` 리스트에서 직접 인라인 관리 (v1.6.0에서 완료)~~
 
+**Silver V2 디자인 고도화 (진행 예정)**
+
+- [ ] **HeroSection 리디자인** — 레이아웃·텍스트·비주얼 전반 재검토, Buffer Progress 위젯 개선
+- [ ] **버튼 시스템 정비** — `.btn` / `.btn-primary` / `.btn-ghost` 크기·간격·hover 상태 일관성 점검
+- [ ] **카드 디자인 정비** — `.card` 메탈릭 테두리 강도, hover 애니메이션, 그림자 레벨 조정
+- [ ] **태그 디자인 정비** — `.tag` 크기·패딩·필터 active 상태 시각 개선
+- [ ] **폰트 위계 점검** — Pretendard + JetBrains Mono 혼용 구간 정리, 본문 가독성 개선
+- [ ] **Selected / Active 상태 디자인** — 필터 태그 active, 네비게이션 현재 메뉴, 체크박스·토글 선택 상태 통일
+
 ---
 
 ## 📌 진행 상태
