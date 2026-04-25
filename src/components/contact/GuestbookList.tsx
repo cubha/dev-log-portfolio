@@ -81,17 +81,16 @@ export async function GuestbookList({
   }))
 
   return (
-    <section className="mt-8">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-1 h-5 bg-foreground/30 rounded-full" />
-        <h2 className="text-xl font-semibold text-foreground">방명록 목록</h2>
+    <section>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 32 }}>
+        <div className="sv-eyebrow">최근 방명록 / RECENT ENTRIES</div>
         {totalCount > 0 && (
-          <span className="text-xs text-foreground/40">({totalCount})</span>
+          <div className="sv-mono text-subtle" style={{ fontSize: 11 }}>{totalCount} ENTRIES</div>
         )}
       </div>
       {entries.length === 0 && page === 1 ? (
-        <div className="bg-surface border border-foreground/[0.08] rounded-2xl p-8 text-center">
-          <p className="text-sm text-foreground/50">
+        <div style={{ padding: '40px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+          <p className="sv-mono text-subtle" style={{ fontSize: 12, letterSpacing: '0.08em', textAlign: 'center' }}>
             아직 방명록이 없어요. 첫 번째 메시지를 남겨주세요! 👋
           </p>
         </div>

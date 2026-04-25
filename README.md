@@ -461,11 +461,23 @@ chmod +x verify.sh
   - [x] Login: 중앙 정렬 380px, `.metallic` 제목
   - [x] 디자인 Ground Truth 수립 (`/init-design --deep`): DESIGN-TOKENS.md · UX-BRIEF.md 생성
   - [x] 시맨틱 토큰 추가 (`--color-success`, `--color-error` 계열) + 하드코딩 7건 CSS 변수 교체
+- [x] **Silver V2 고도화** (v2.1.0)
+  - [x] 어드민 13개 파일 Silver V2 CSS 변수 일괄 적용 (`dark:` 프리픽스 제거)
+  - [x] `useDeleteConfirm<T>` 커스텀 훅 추출 — BlogManager · skills · experience · education · training 공통 적용
+  - [x] `revalidateAboutPage` Server Action — ISR 캐시 무효화 (skills/experience/education/training mutations 후)
+  - [x] `/about` · `/projects` ISR 전환 (`revalidate 3600`)
+  - [x] `AuthStateInitializer` try-catch 에러 핸들링 추가
+  - [x] `.skeleton` shimmer 유틸 클래스 + `TopProgressBar` metallic 페이지 전환 진행바
+  - [x] `loading.tsx` 5개 Silver V2 콘텐츠 인식 스켈레톤 전면 교체
+  - [x] `ProjectDetailModal` Silver V2 전환 — 960px 사각형 패널, 주요업무/담당역할/개발환경 레이블 구조, 컬러 아이콘 기술 칩
+  - [x] `ContactInfo` · `GuestbookForm` · `GuestbookList` Silver V2 전환
+  - [x] `PageHeader` 공통 컴포넌트화 — 전 페이지 제목 구조 통일
+  - [x] 각 페이지 헤더 텍스트 정비 (Home V1 문구 복원, 페이지별 목적에 맞게 정리)
 
 ### 🚧 개발 예정
 
-- [ ] `/projects`, `/about` ISR 전환 (Suspense 경계 분리 후 적용 예정)
-- [ ] 어드민 페이지 `/admin/*` Silver V2 리디자인 (별도 세션)
+- [x] ~~`/projects`, `/about` ISR 전환 — `revalidate 3600` + `revalidateAboutPage` Server Action (v2.1.0 완료)~~
+- [x] ~~어드민 페이지 `/admin/*` Silver V2 리디자인 (v2.1.0 완료)~~
 - [x] ~~**블로그 관리 진입점 개선**: `/admin/blog` 제거 → `/blog` 리스트에서 직접 인라인 관리 (v1.6.0에서 완료)~~
 
 ---
@@ -518,6 +530,13 @@ chmod +x verify.sh
 - 관리자 전용 블로그 수정 진입 버튼 (블로그 상세 페이지 상단, `isAdmin` 조건부 노출)
 - 커스텀 MDX 컴포넌트 — GFM 테이블(table/thead/tbody/tr/th/td), GitHub Dark 코드블록 스타일
 
+### Phase 14: Silver V2 고도화 ✅ (2026-04-26)
+- 어드민 Silver V2 CSS 변수 일괄 적용, `useDeleteConfirm` 훅 추출
+- ISR 전환 (`revalidate 3600`) + `revalidateAboutPage` Server Action으로 캐시 무효화 보강
+- `.skeleton` shimmer + `TopProgressBar` + `loading.tsx` 5개 V2 스켈레톤 교체
+- `ProjectDetailModal` · `ContactInfo` · `GuestbookForm` · `GuestbookList` Silver V2 전환
+- `PageHeader` 공통 컴포넌트화, 각 페이지 헤더 텍스트 정비
+
 ### Phase 13: Silver V2 전면 리디자인 + 디자인 시스템 수립 ✅ (2026-04-23)
 - 전 공개 페이지 Silver V2 테마 교체 — Pretendard + JetBrains Mono, Cool Silver 액센트(`#64748B` / `#C8D1DC`)
 - 메탈릭 그라디언트 시스템: `.btn`, `.card`, `.tag`, `.metallic` 텍스트 그라디언트
@@ -547,6 +566,39 @@ chmod +x verify.sh
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v2.1.0 — 2026-04-26 (Silver V2 고도화 — 어드민 V2 · 로딩 UI · Modal · Contact)
+
+**어드민 Silver V2 적용:**
+- 어드민 13개 파일(`dashboard`, `layout`, `profile`, `projects`, `skills`, `AdminHeader` 등) CSS 변수 일괄 교체 — `dark:` 프리픽스 제거, Silver V2 토큰 통일
+- `useDeleteConfirm<T>` 커스텀 훅 추출 (BlogManager · skills · experience · education · training 중복 제거)
+
+**ISR + 캐시 무효화:**
+- `/about` · `/projects` ISR 전환 (`export const revalidate = 3600`)
+- `revalidateAboutPage` Server Action 신규 — skills/experience/education/training CRUD 완료 후 `/about` ISR 캐시 즉시 무효화
+- `AuthStateInitializer` try-catch 추가 (Supabase 오류 시 로그인 상태 안전 초기화)
+
+**로딩 UI Silver V2:**
+- `.skeleton` shimmer 유틸 클래스 (`@keyframes skeleton-shimmer`, `--bg-1/--bg-2` 기반)
+- `TopProgressBar` 신규 — 클릭 감지 + `usePathname` 기반 metallic 진행바, Suspense 래핑 (SSR 블로킹 방지)
+- `loading.tsx` 5개 (`/`, `/about`, `/blog`, `/contact`, `/projects`) Silver V2 콘텐츠 인식 스켈레톤 전면 교체
+- `ProjectListSkeleton` V2 토큰 + shimmer + PageHeader 영역 포함
+
+**Modal · Contact Silver V2:**
+- `ProjectDetailModal` 전면 재작성 — 960px 사각형 패널, sv-label 헤더, 주요업무/담당역할/개발환경 레이블 섹션, 컬러 아이콘 기술 칩, `whitespace-pre-line` 적용
+- `ContactInfo` — 3열 행 그리드(120px 1fr auto), sv-mono 라벨, border-top 구분선
+- `GuestbookForm` — sv-input 언더라인 입력, 이모지 border 선택 버튼, `.btn .btn-primary` 제출
+- `GuestbookList` · `GuestbookListClient` — sv-eyebrow 헤더, 4열 행 그리드 (이모지·닉네임·메시지·카운트)
+
+**텍스트 정비:**
+- Home Hero 소제목 V1 문구 복원 ("속도로 얻은 여유를, 완성도에 투자하는 개발자")
+- About · Blog · Contact · Projects 페이지 헤더 텍스트 목적에 맞게 정리
+
+**신규 파일:**
+- `src/actions/revalidate.ts` — `revalidateAboutPage` Server Action
+- `src/components/common/TopProgressBar.tsx` — 페이지 전환 진행바
+- `src/hooks/useDeleteConfirm.ts` — 2단계 삭제 확인 커스텀 훅
+- `src/components/common/PageHeader.tsx` — 공통 페이지 헤더 컴포넌트
 
 ### v2.0.0 — 2026-04-23 (Silver V2 전면 리디자인)
 

@@ -48,8 +48,8 @@ export default async function AboutPage() {
       <AuthStateInitializerClient />
       <PageHeader
         context="PORTFOLIO · ABOUT ─────────────"
-        title={<>기술의 변화를{' '}<span className="metallic">실무의 효율</span>로 전환하는 데 집중하는 풀스택 개발자.</>}
-        desc={profile?.intro_text ?? '금융권 SI 출신 · 서울시 중심 활동 · 원격지 유연 대응 가능'}
+        title="제 기술과 이력을 소개합니다."
+        desc={profile?.intro_text ?? undefined}
         aside={
           <div>
             <div className="sv-mono text-subtle" style={{ fontSize: 11, letterSpacing: '0.1em', marginBottom: 6 }}>CURRENTLY</div>
@@ -62,7 +62,7 @@ export default async function AboutPage() {
       />
 
       {/* ─── Essay ───────────────────────────────────────────────── */}
-      <section className="grid two-col-label-grid" style={{ padding: `clamp(60px, 6vw, 96px) ${px} 120px`, gap: 'clamp(40px, 5.5vw, 80px)', borderTop: '1px solid var(--border)' }}>
+      <section className="grid two-col-label-grid" style={{ padding: `clamp(40px, 4vw, 56px) ${px} 80px`, gap: 'clamp(40px, 5.5vw, 80px)', borderTop: '1px solid var(--border)' }}>
         <div className="sv-label">ABOUT</div>
         <div style={{ maxWidth: 820 }}>
           {ESSAY.map((p, i) => (
@@ -76,12 +76,12 @@ export default async function AboutPage() {
       </section>
 
       {/* ─── Technical Skills ────────────────────────────────────── */}
-      <section style={{ padding: `clamp(60px, 5.5vw, 80px) ${px} 120px`, borderTop: '1px solid var(--border)' }}>
+      <section style={{ padding: `clamp(40px, 4vw, 56px) ${px} 80px`, borderTop: '1px solid var(--border)' }}>
         <SkillsSection skills={skillsData} />
       </section>
 
       {/* ─── Career ──────────────────────────────────────────────── */}
-      <section style={{ padding: `clamp(60px, 5.5vw, 80px) ${px} clamp(80px, 9vw, 140px)`, borderTop: '1px solid var(--border)' }}>
+      <section style={{ padding: `clamp(40px, 4vw, 56px) ${px} clamp(80px, 9vw, 140px)`, borderTop: '1px solid var(--border)' }}>
         <ExperienceTabsSection
           experiences={experiencesData}
           educations={educationsData}

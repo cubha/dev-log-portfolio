@@ -1,9 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { THEME_CARD_CLASS } from '@/src/components/common/ThemeCard'
 
-// API 응답 타입 (route.ts 반환 형식에 맞춤)
 type SpotifyResponse =
   | { isPlaying: true; title: string; artist: string; albumImageUrl: string; songUrl: string }
   | { isPlaying: false }
@@ -14,116 +12,92 @@ type GitHubResponse = {
   lastActiveDate: string | null
 }
 
-function SpotifyStatus() {
-  const [data, setData] = useState<SpotifyResponse | null>(null)
-
-  useEffect(() => {
-    const fetchNowPlaying = async () => {
-      try {
-        const res = await fetch('/api/spotify/now-playing')
-        const json = (await res.json()) as SpotifyResponse
-        setData(json)
-      } catch {
-        setData({ isPlaying: false })
-      }
-    }
-
-    fetchNowPlaying()
-    const id = setInterval(fetchNowPlaying, 30_000)
-    return () => clearInterval(id)
-  }, [])
-
-  if (data === null) {
-    return (
-      <div className="flex items-center gap-2 text-foreground/60">
-        <span>🎵</span>
-        <span className="h-4 w-32 animate-pulse rounded bg-foreground/10" />
-      </div>
-    )
-  }
-
-  const text = data.isPlaying
-    ? `${data.artist} - ${data.title}`
-    : 'Spotify 오프라인'
-
-  return (
-    <div className="text-foreground/70 truncate" title={text}>
-      🎵 {text}
-    </div>
-  )
-}
-
-function GitHubStatus() {
-  const [data, setData] = useState<GitHubResponse | null>(null)
-
-  useEffect(() => {
-    fetch('/api/github/stats')
-      .then((res) => res.json())
-      .then((json: GitHubResponse) => setData(json))
-      .catch(() => {})
-  }, [])
-
-  // 로딩 스켈레톤 (API 호출 중): min-h 동기화로 CLS 방지
-  if (data === null) {
-    return (
-      <div className="flex flex-col gap-1 min-h-[5.5rem]">
-        <div className="h-4 w-40 animate-pulse rounded bg-foreground/10" />
-        <div className="min-h-[5.5rem] flex flex-col gap-1">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className="h-3 w-full max-w-[90%] animate-pulse rounded bg-foreground/10"
-            />
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  if (data.repos.length === 0) return null
-
-  const displayedRepos = data.repos.slice(0, 5)
-
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="text-foreground/80 text-sm font-medium">
-        💻 최근 30일 {data.totalCommits}회 커밋
-      </div>
-      <div className="min-h-[5.5rem] flex flex-col gap-1">
-        {displayedRepos.map((repo) => (
-          <div
-            key={repo.name}
-            className="flex items-center justify-between gap-2 pl-1"
-          >
-            <span className="text-foreground/65 text-xs truncate">
-              · {repo.name}
-            </span>
-            <span className="text-foreground/50 text-xs flex-shrink-0">
-              {repo.commits}회
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
+function formatNowKST(): string {
+  return new Date().toLocaleString('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  }).replace(/\. /g, '.').replace('.', '').replace(', ', ' ')
 }
 
 export function LiveStatusWidget() {
+  const [spotify, setSpotify] = useState<SpotifyResponse | null>(null)
+  const [github, setGithub] = useState<GitHubResponse | null>(null)
+
+  useEffect(() => {
+    const fetchSpotify = async () => {
+      try {
+        const res = await fetch('/api/spotify/now-playing')
+        setSpotify((await res.json()) as SpotifyResponse)
+      } catch {
+        setSpotify({ isPlaying: false })
+      }
+    }
+    fetchSpotify()
+    const id = setInterval(fetchSpotify, 30_000)
+    return () => clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/github/stats')
+      .then((r) => r.json())
+      .then((j: GitHubResponse) => setGithub(j))
+      .catch(() => {})
+  }, [])
+
+  const spotifyText = spotify === null
+    ? null
+    : spotify.isPlaying
+      ? `♪ ${spotify.artist} - ${spotify.title}`
+      : '♪ Spotify offline'
+
+  const githubText = github !== null
+    ? `최근 30일 ${github.totalCommits}회 커밋`
+    : null
+
+  const summaryLine = [spotifyText, githubText].filter(Boolean).join(' · ')
+
   return (
-    <div className={`${THEME_CARD_CLASS} p-4`}>
-      <div className="flex items-center justify-between gap-2 border-b border-foreground/5 pb-2">
-        <span className="text-sm font-medium text-foreground/80">
-          Live Status
+    <div>
+      {/* 온라인 상태 행 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <span style={{
+          width: 8, height: 8, borderRadius: '50%',
+          background: '#22C55E',
+          boxShadow: '0 0 8px rgba(34,197,94,0.6)',
+          flexShrink: 0,
+        }} />
+        <span className="sv-mono" style={{ fontSize: 13, color: 'var(--fg)' }}>
+          ONLINE &nbsp;·&nbsp; {formatNowKST()} KST
         </span>
-        <span
-          className="h-2 w-2 flex-shrink-0 rounded-full bg-green-500 animate-pulse"
-          aria-hidden
-        />
       </div>
-      <div className="mt-2 flex flex-col gap-1.5 text-sm min-h-[9rem]">
-        <SpotifyStatus />
-        <GitHubStatus />
-      </div>
+
+      {/* 요약 행: Spotify + 커밋 수 */}
+      {summaryLine ? (
+        <p className="text-muted" style={{ fontSize: 13, marginBottom: 16 }}>
+          {summaryLine}
+        </p>
+      ) : (
+        <div className="skeleton" style={{ height: 13, width: '70%', marginBottom: 16 }} />
+      )}
+
+      {/* 레포 목록 */}
+      {github === null ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[80, 70, 60, 65, 55].map((w, i) => (
+            <div key={i} className="skeleton" style={{ height: 13, width: `${w}%` }} />
+          ))}
+        </div>
+      ) : github.repos.length > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {github.repos.slice(0, 5).map((repo) => (
+            <div key={repo.name} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
+              <span className="sv-mono text-muted" style={{ fontSize: 13 }}>{repo.name}</span>
+              <span className="sv-mono text-subtle" style={{ fontSize: 13 }}>{repo.commits}회</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }

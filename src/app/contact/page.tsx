@@ -60,16 +60,15 @@ export default async function ContactPage({
 
       <PageHeader
         context="PORTFOLIO · CONTACT ─────────────"
-        title={<>새 프로젝트든, <span className="metallic">가벼운 인사</span>든 환영합니다.</>}
-        desc="보통 하루 안에 답장드립니다. 아래 방명록은 공개, 이메일은 비공개로 받고 있습니다."
+        title="찾아와 주셔서 반갑습니다."
+        desc="방명록에 글을 남기거나, 아래 연락처로 편하게 메시지를 보내주세요."
         titleStyle={{ maxWidth: 900 }}
-        marginBottom={120}
       />
 
       {/* Contact info + Guestbook form */}
       <section
         style={{
-          padding: `clamp(60px, 6vw, 96px) ${px} 80px`,
+          padding: `clamp(40px, 4vw, 56px) ${px} 80px`,
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 'clamp(40px, 5.5vw, 80px)',

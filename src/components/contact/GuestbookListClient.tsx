@@ -8,7 +8,6 @@ import { toast } from 'sonner'
 import { Heart, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { deleteGuestbookEntry, toggleEntryLike } from '@/src/actions/guestbook'
 import { GuestbookCommentSection } from './GuestbookCommentSection'
-import { THEME_CARD_CLASS } from '@/src/components/common/ThemeCard'
 import type { GuestbookEntry } from '@/src/types/contact'
 
 const containerVariants = {
@@ -69,89 +68,86 @@ function GuestbookItem({
     }
   }
 
-  const secretBadge =
-    entry.is_secret && entry.user_id === currentUserId ? (
-      <span className="text-xs text-foreground/50">🔒 내 비밀글</span>
-    ) : entry.is_secret && isAdmin ? (
-      <span className="text-xs text-amber-500/70">🔒 비밀글</span>
-    ) : null
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className={`${THEME_CARD_CLASS} flex gap-3 p-4`}
+      style={{ borderTop: '1px solid var(--border)' }}
     >
-      {entry.avatar_url ? (
-        <Image
-          src={entry.avatar_url}
-          alt=""
-          width={32}
-          height={32}
-          unoptimized
-          className="flex-shrink-0 rounded-full"
-        />
-      ) : (
-        <span className="flex-shrink-0 text-2xl leading-none mt-0.5">{entry.emoji}</span>
-      )}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2 mb-1">
-          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-            <span className="text-sm font-medium text-foreground">
-              {entry.nickname}
-            </span>
-            {secretBadge}
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-xs text-foreground/40">
-              {formatDate(entry.created_at)}
-            </span>
-            {isAdmin && (
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="p-1 text-foreground/40 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded transition-colors"
-                title="삭제"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+      {/* 4열 행 그리드 */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '52px minmax(140px, 180px) 1fr minmax(100px, 160px)',
+        gap: 20,
+        padding: '24px 0',
+        alignItems: 'start',
+      }}>
+        {/* 이모지 / 아바타 */}
+        <div>
+          {entry.avatar_url ? (
+            <Image src={entry.avatar_url} alt="" width={32} height={32} unoptimized style={{ borderRadius: '50%' }} />
+          ) : (
+            <span style={{ fontSize: 22 }}>{entry.emoji}</span>
+          )}
+        </div>
+
+        {/* 닉네임 + 날짜 */}
+        <div>
+          <div className="h-4" style={{ marginBottom: 4, color: 'var(--fg)' }}>
+            {entry.nickname}
+            {entry.is_secret && entry.user_id === currentUserId && (
+              <span className="sv-mono text-subtle" style={{ fontSize: 10, marginLeft: 8 }}>🔒</span>
+            )}
+            {entry.is_secret && isAdmin && entry.user_id !== currentUserId && (
+              <span className="sv-mono" style={{ fontSize: 10, color: '#F59E0B', marginLeft: 8 }}>🔒</span>
             )}
           </div>
+          <div className="sv-mono text-subtle" style={{ fontSize: 11 }}>{formatDate(entry.created_at)}</div>
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--fg-subtle)', marginTop: 8, padding: 0 }}
+              title="삭제"
+            >
+              <Trash2 style={{ width: 13, height: 13 }} />
+            </button>
+          )}
         </div>
-        <p className="text-sm text-foreground/70 whitespace-pre-line leading-relaxed">
-          {entry.message}
-        </p>
 
-        {/* 좋아요 + 댓글 섹션 */}
-        <div className="flex items-center gap-1 mt-2">
+        {/* 메시지 */}
+        <div style={{ fontSize: 14, color: 'var(--fg)', lineHeight: 1.6 }}>
+          {entry.message}
+        </div>
+
+        {/* 좋아요 + 댓글 */}
+        <div className="sv-mono text-muted" style={{ fontSize: 12, textAlign: 'right' }}>
           <button
             type="button"
             onClick={onLike}
-            className={`flex items-center gap-1 text-xs transition-colors px-1.5 py-0.5 rounded-md ${
-              likeState.likedByMe
-                ? 'text-rose-500'
-                : 'text-foreground/35 hover:text-rose-400'
-            }`}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+              color: likeState.likedByMe ? '#F43F5E' : 'var(--fg-muted)',
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+            }}
           >
-            <Heart
-              className="w-3.5 h-3.5"
-              fill={likeState.likedByMe ? 'currentColor' : 'none'}
-            />
-            {likeState.count > 0 && (
-              <span>{likeState.count}</span>
-            )}
+            <Heart style={{ width: 13, height: 13 }} fill={likeState.likedByMe ? 'currentColor' : 'none'} />
+            {likeState.count}
           </button>
+          <span style={{ margin: '0 6px', color: 'var(--border-strong)' }}>·</span>
+          <span>💬 {commentCount}</span>
         </div>
-
-        <GuestbookCommentSection
-          guestbookId={entry.id}
-          isAdmin={isAdmin}
-          currentUserId={currentUserId}
-          currentUserName={currentUserName}
-          commentCount={commentCount}
-        />
       </div>
+
+      {/* 댓글 섹션 */}
+      <GuestbookCommentSection
+        guestbookId={entry.id}
+        isAdmin={isAdmin}
+        currentUserId={currentUserId}
+        currentUserName={currentUserName}
+        commentCount={commentCount}
+      />
     </motion.div>
   )
 }
@@ -248,13 +244,8 @@ export function GuestbookListClient({
   const pageNumbers = getPageNumbers(currentPage, totalPages)
 
   return (
-    <div className={isPending ? 'opacity-60 transition-opacity' : ''}>
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="space-y-3"
-      >
+    <div style={{ opacity: isPending ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+      <motion.div variants={containerVariants} initial="hidden" animate="show">
         {entries.map((entry) => (
           <GuestbookItem
             key={entry.id}
@@ -268,54 +259,49 @@ export function GuestbookListClient({
           />
         ))}
       </motion.div>
+      <div style={{ borderTop: '1px solid var(--border)' }} />
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1.5 py-4 mt-2">
-          {/* 이전 */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '32px 0 0' }}>
           <button
             type="button"
             onClick={() => navigateToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="p-1.5 rounded-lg text-foreground/50 hover:text-foreground hover:bg-foreground/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--fg-muted)', padding: 6, opacity: currentPage === 1 ? 0.3 : 1 }}
             aria-label="이전 페이지"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft style={{ width: 16, height: 16 }} />
           </button>
 
-          {/* 페이지 번호 */}
           {pageNumbers.map((item, idx) =>
             item === 'ellipsis' ? (
-              <span
-                key={`ellipsis-${idx}`}
-                className="w-8 text-center text-xs text-foreground/30"
-              >
-                ...
-              </span>
+              <span key={`e-${idx}`} className="sv-mono text-subtle" style={{ fontSize: 11, padding: '0 4px' }}>···</span>
             ) : (
               <button
                 key={item}
                 type="button"
                 onClick={() => navigateToPage(item)}
-                className={`w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
-                  item === currentPage
-                    ? 'bg-foreground/10 text-foreground'
-                    : 'text-foreground/50 hover:text-foreground hover:bg-foreground/5'
-                }`}
+                className="sv-mono"
+                style={{
+                  width: 32, height: 32, background: 'none', cursor: 'pointer', fontSize: 12,
+                  border: item === currentPage ? '1px solid var(--border-strong)' : '1px solid transparent',
+                  color: item === currentPage ? 'var(--fg)' : 'var(--fg-muted)',
+                  transition: 'color 0.15s, border-color 0.15s',
+                }}
               >
                 {item}
               </button>
             )
           )}
 
-          {/* 다음 */}
           <button
             type="button"
             onClick={() => navigateToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="p-1.5 rounded-lg text-foreground/50 hover:text-foreground hover:bg-foreground/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--fg-muted)', padding: 6, opacity: currentPage === totalPages ? 0.3 : 1 }}
             aria-label="다음 페이지"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight style={{ width: 16, height: 16 }} />
           </button>
         </div>
       )}

@@ -25,7 +25,6 @@ export default async function BlogPage() {
             새 글 작성 <span className="arrow">→</span>
           </Link>
         ) : undefined}
-        marginBottom={60}
       />
 
       <section style={{ padding: `0 ${px} clamp(80px, 9vw, 140px)` }}>
