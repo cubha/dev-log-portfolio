@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { JotaiProvider } from "@/src/components/providers/JotaiProvider";
 import { ThemeProvider } from "@/src/components/providers/ThemeProvider";
@@ -45,7 +46,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <JotaiProvider>
-            <TopProgressBar />
+            <Suspense fallback={null}>
+              <TopProgressBar />
+            </Suspense>
             <PageViewTracker />
             <ScrollToTop />
             {/* sticky 헤더: /admin 경로에서는 컴포넌트 내부에서 null 반환 */}
