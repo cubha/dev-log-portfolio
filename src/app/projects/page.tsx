@@ -27,12 +27,12 @@ export default async function ProjectsPage() {
 
         <PageHeader
           context="PORTFOLIO · PROJECTS ─────────────"
-          title={<>제가 진행했던 프로젝트들의{' '}<span className="metallic">연대기</span>입니다.</>}
-          desc="금융권·제조업·공공 분야. 업무 / 개인 / 팀으로 분류."
+          title="그동안 진행한 프로젝트들입니다."
+          desc="실무와 개인 작업을 함께 담았습니다. 업무 / 개인 / 팀으로 구분했습니다."
           titleStyle={{ maxWidth: 820 }}
         />
 
-        <section style={{ padding: `clamp(60px, 6vw, 96px) ${px} clamp(80px, 9vw, 140px)`, borderTop: '1px solid var(--border)' }}>
+        <section style={{ padding: `clamp(40px, 4vw, 56px) ${px} clamp(80px, 9vw, 140px)`, borderTop: '1px solid var(--border)' }}>
           {error ? (
             <ErrorState message={error.message} />
           ) : typedProjects.length === 0 ? (

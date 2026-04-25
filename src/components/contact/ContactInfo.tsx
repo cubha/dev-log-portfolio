@@ -4,66 +4,23 @@ import { useOptimistic, useTransition, useState } from 'react'
 import { toast } from 'sonner'
 import { Pencil, X, Check } from 'lucide-react'
 import { updateContactLink } from '@/src/actions/contact'
-import { getContactIcon } from '@/src/utils/contact/iconMap'
 import type { ContactLink } from '@/src/types/contact'
 
-// ─── Props ────────────────────────────────────────────────────────────────────
-
 interface ContactInfoProps {
-  /** Supabase에서 sort_order 순으로 fetch된 연락처 데이터 */
   initialData: ContactLink[]
-  /** 관리자 여부 (인라인 수정 UI 노출 조건) */
   isAdmin: boolean
 }
 
-// ─── 인라인 수정 드래프트 타입 ────────────────────────────────────────────────
-
 type EditDraft = Record<string, { value: string; href: string }>
 
-// ─── Ghost Input 공통 스타일 ──────────────────────────────────────────────────
-
-/**
- * 텍스트처럼 보이는 인라인 입력 스타일
- * - 배경·패딩 없이 하단 border만 표시 → 기존 텍스트 자리 그대로 차지
- * - text-sm font-medium 를 정확히 맞춰 leading/font도 동일하게 유지
- */
-const GHOST_VALUE =
-  'w-full min-w-0 bg-transparent border-0 border-b border-foreground/20 ' +
-  'focus:border-brand-primary outline-none px-0 py-0 h-auto leading-5 ' +
-  'text-sm text-foreground font-medium transition-colors placeholder:text-foreground/30'
-
-/**
- * href(URL) 전용 Ghost Input — value 입력 바로 아래에 배치
- * 폰트를 text-xs로 줄여 view 모드와의 row 높이 차이를 최소화
- */
-const GHOST_HREF =
-  'w-full min-w-0 bg-transparent border-0 border-b border-foreground/10 ' +
-  'focus:border-brand-primary/60 outline-none px-0 py-0 h-auto leading-4 ' +
-  'text-xs text-foreground/40 transition-colors placeholder:text-foreground/20 mt-0.5'
-
-// ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
-
-/**
- * Contact Info 컴포넌트
- *
- * View  : DB에서 가져온 연락처를 카드 형태로 표시
- * Edit  : 헤더 우측 아이콘(✏ → ✕✓)으로 인라인 수정 진입
- *         Ghost Input으로 교체 → 레이아웃 변화 없음
- *         하단 버튼 없음 → 카드 높이 고정 유지
- */
 export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
-  // ── 낙관적 상태 ───────────────────────────────────────────
   const [optimisticItems, setOptimisticItems] = useOptimistic(
     initialData,
     (_: ContactLink[], next: ContactLink[]) => next
   )
-
-  // ── 에딧 상태 ─────────────────────────────────────────────
   const [isEditing, setIsEditing] = useState(false)
   const [editDraft, setEditDraft] = useState<EditDraft>({})
   const [isPending, startTransition] = useTransition()
-
-  // ── 핸들러 ────────────────────────────────────────────────
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -84,15 +41,8 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
     setEditDraft({})
   }
 
-  const handleDraftChange = (
-    id: string,
-    field: 'value' | 'href',
-    val: string
-  ) => {
-    setEditDraft((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], [field]: val },
-    }))
+  const handleDraftChange = (id: string, field: 'value' | 'href', val: string) => {
+    setEditDraft((prev) => ({ ...prev, [id]: { ...prev[id], [field]: val } }))
   }
 
   const handleSave = () => {
@@ -101,207 +51,146 @@ export function ContactInfo({ initialData, isAdmin }: ContactInfoProps) {
       value: editDraft[item.id]?.value ?? item.value,
       href: editDraft[item.id]?.href?.trim() || null,
     }))
-
     startTransition(async () => {
       setOptimisticItems(updatedItems)
       try {
-        const changedItems = initialData.filter((item) => {
-          const draft = editDraft[item.id]
-          if (!draft) return false
-          return (
-            draft.value !== item.value ||
-            (draft.href.trim() || null) !== item.href
-          )
+        const changed = initialData.filter((item) => {
+          const d = editDraft[item.id]
+          if (!d) return false
+          return d.value !== item.value || (d.href.trim() || null) !== item.href
         })
-
-        if (changedItems.length > 0) {
+        if (changed.length > 0) {
           const results = await Promise.all(
-            changedItems.map((item) =>
-              updateContactLink(item.id, {
-                value: editDraft[item.id].value,
-                href: editDraft[item.id].href || null,
-              })
-            )
+            changed.map((item) => updateContactLink(item.id, {
+              value: editDraft[item.id].value,
+              href: editDraft[item.id].href || null,
+            }))
           )
           const failed = results.find((r) => !r.success)
           if (failed && !failed.success) throw new Error(failed.error)
         }
-
         setIsEditing(false)
         setEditDraft({})
         toast.success('연락처 정보가 저장되었습니다.')
       } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : '저장에 실패했습니다.'
-        )
+        toast.error(error instanceof Error ? error.message : '저장에 실패했습니다.')
       }
     })
   }
 
-  // ─── 렌더링 ────────────────────────────────────────────────────────────────
-
   return (
-    <section>
-      {/* ── 섹션 헤더 ─────────────────────────────────────── */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-1 h-5 bg-foreground/30 rounded-full" />
-          <h2 className="text-xl font-semibold text-foreground">Contact Info</h2>
-        </div>
-
-        {/*
-          관리자 전용 컨트롤
-          - View  : ✏ 수정 버튼
-          - Edit  : ✕ 취소 + ✓ 저장 아이콘 (하단 버튼 없이 여기서 해결)
-        */}
-        {isAdmin && (
-          <div className="flex items-center gap-0.5">
-            {isEditing ? (
-              <>
-                <button
-                  onClick={handleCancel}
-                  disabled={isPending}
-                  title="취소"
-                  className="p-1.5 rounded-lg text-foreground/40 hover:text-foreground/70 hover:bg-foreground/10 transition-colors disabled:opacity-40"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={isPending}
-                  title={isPending ? '저장 중...' : '저장'}
-                  className="p-1.5 rounded-lg text-brand-secondary hover:bg-brand-secondary hover:text-white transition-all disabled:opacity-40"
-                >
-                  <Check className="w-4 h-4" />
-                </button>
-              </>
-            ) : (
+    <div>
+      {/* 관리자 편집 컨트롤 */}
+      {isAdmin && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+          {isEditing ? (
+            <div style={{ display: 'flex', gap: 4 }}>
               <button
-                onClick={handleEditStart}
-                title="연락처 수정"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-foreground/50 hover:text-brand-secondary hover:bg-brand-secondary/5 rounded-lg transition-colors"
+                onClick={handleCancel}
+                disabled={isPending}
+                title="취소"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', color: 'var(--fg-subtle)' }}
               >
-                <Pencil className="w-3.5 h-3.5" />
-                수정
+                <X style={{ width: 14, height: 14 }} />
               </button>
-            )}
-          </div>
-        )}
-      </div>
+              <button
+                onClick={handleSave}
+                disabled={isPending}
+                title="저장"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', color: 'var(--accent)' }}
+              >
+                <Check style={{ width: 14, height: 14 }} />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={handleEditStart}
+              title="연락처 수정"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', color: 'var(--fg-subtle)', display: 'flex', alignItems: 'center', gap: 4 }}
+            >
+              <Pencil style={{ width: 13, height: 13 }} />
+            </button>
+          )}
+        </div>
+      )}
 
-      {/* 카드 본문 */}
-      <div className="flex flex-col justify-center">
-        {optimisticItems.length === 0 && (
-          <p className="text-center text-sm text-foreground/40">
-            연락처 정보가 없습니다.
-          </p>
-        )}
-
-        <div className="space-y-3">
+      {/* 연락처 행 목록 */}
+      {optimisticItems.length === 0 ? (
+        <p className="sv-mono text-subtle" style={{ fontSize: 12 }}>연락처 정보가 없습니다.</p>
+      ) : (
+        <div>
           {optimisticItems.map((item) => {
-            const Icon = getContactIcon(item.icon_key)
-            // href 수정이 필요한 항목: 기존 링크가 있거나 github 아이콘
-            const needsHrefInput =
-              isEditing && (item.href !== null || item.icon_key === 'github')
+            const needsHrefInput = isEditing && (item.href !== null || item.icon_key === 'github')
 
-            /*
-              Row 내부 콘텐츠를 분리해 두면
-              <a> / <div> 래퍼 전환 시에도 내부 구조가 동일합니다.
-            */
-            const rowInner = (
-              <>
-                {/* 아이콘 (고정) */}
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-silver-metal flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-
-                {/* 텍스트 / Ghost Input 영역 */}
-                <div className="flex-1 min-w-0">
-                  {/* 라벨: 항상 고정 표시 */}
-                  <p className="text-xs text-foreground/50 leading-none mb-0.5">
-                    {item.label}
-                  </p>
-
-                  {isEditing ? (
-                    /*
-                      Ghost Input — 폰트·행간을 기존 텍스트와 동일하게 맞춰
-                      border-b 만으로 시각적 피드백을 줍니다.
-                    */
-                    <div className="space-y-0">
-                      <input
-                        type="text"
-                        value={editDraft[item.id]?.value ?? item.value}
-                        onChange={(e) =>
-                          handleDraftChange(item.id, 'value', e.target.value)
-                        }
-                        className={GHOST_VALUE}
-                        autoComplete="off"
-                      />
-                      {/*
-                        GitHub·링크 항목: URL 입력을 text-xs로 최소화해
-                        row 높이 증가를 최대한 억제합니다.
-                      */}
-                      {needsHrefInput && (
-                        <input
-                          type="url"
-                          value={editDraft[item.id]?.href ?? item.href ?? ''}
-                          onChange={(e) =>
-                            handleDraftChange(item.id, 'href', e.target.value)
-                          }
-                          placeholder="https://"
-                          className={GHOST_HREF}
-                          autoComplete="off"
-                        />
-                      )}
-                    </div>
-                  ) : (
-                    /* 뷰 모드: 기존 텍스트 그대로 */
-                    <p className="text-sm text-foreground font-medium truncate leading-5">
-                      {item.value}
-                    </p>
-                  )}
-                </div>
-
-                {/* Copy 버튼 (뷰 모드 & copyable 항목만) */}
-                {!isEditing && item.is_copyable && (
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault()
-                      handleCopy(item.value)
+            const valueContent = isEditing ? (
+              <div>
+                <input
+                  type="text"
+                  value={editDraft[item.id]?.value ?? item.value}
+                  onChange={(e) => handleDraftChange(item.id, 'value', e.target.value)}
+                  style={{
+                    width: '100%', background: 'transparent', border: 'none',
+                    borderBottom: '1px solid var(--border-strong)',
+                    outline: 'none', padding: '0 0 2px',
+                    fontSize: 15, color: 'var(--fg)', fontFamily: 'inherit',
+                  }}
+                  autoComplete="off"
+                />
+                {needsHrefInput && (
+                  <input
+                    type="url"
+                    value={editDraft[item.id]?.href ?? item.href ?? ''}
+                    onChange={(e) => handleDraftChange(item.id, 'href', e.target.value)}
+                    placeholder="https://"
+                    style={{
+                      width: '100%', background: 'transparent', border: 'none',
+                      borderBottom: '1px solid var(--border)',
+                      outline: 'none', padding: '2px 0',
+                      fontSize: 12, color: 'var(--fg-subtle)', fontFamily: 'inherit', marginTop: 4,
                     }}
-                    className="flex-shrink-0 text-xs text-foreground/40 hover:text-brand-secondary transition-colors px-2 py-1 rounded hover:bg-brand-secondary/5"
-                  >
-                    Copy
-                  </button>
+                    autoComplete="off"
+                  />
                 )}
-              </>
+              </div>
+            ) : (
+              <span style={{ fontSize: 15, color: 'var(--fg)' }}>{item.value}</span>
             )
 
-            /*
-              뷰 모드에서 href가 있으면 전체 row를 <a>로 감싸
-              에딧 모드에서는 <div>로 전환 (input을 클릭 가능하게 유지)
-            */
-            return item.href && !isEditing ? (
-              <a
-                key={item.id}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 py-2 px-2 -mx-2 hover:bg-foreground/5 rounded-lg transition-colors"
-              >
-                {rowInner}
-              </a>
-            ) : (
-              <div
-                key={item.id}
-                className="flex items-center gap-3 py-2 px-2 -mx-2 rounded-lg"
-              >
-                {rowInner}
+            const actionContent = !isEditing && (
+              item.is_copyable ? (
+                <button
+                  onClick={() => handleCopy(item.value)}
+                  className="sv-mono"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: 'var(--accent)', letterSpacing: '0.08em', padding: 0, whiteSpace: 'nowrap' }}
+                >
+                  Copy →
+                </button>
+              ) : item.href ? (
+                <span className="sv-mono" style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.08em' }}>Visit ↗</span>
+              ) : null
+            )
+
+            const rowContent = (
+              <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr auto', gap: 20, padding: '22px 0', borderTop: '1px solid var(--border)', alignItems: 'center' }}>
+                <div className="sv-mono text-subtle" style={{ fontSize: 11, letterSpacing: '0.12em' }}>
+                  {item.label.toUpperCase()}
+                </div>
+                <div style={{ minWidth: 0 }}>{valueContent}</div>
+                <div>{actionContent}</div>
               </div>
             )
+
+            return item.href && !isEditing ? (
+              <a key={item.id} href={item.href} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textDecoration: 'none' }}>
+                {rowContent}
+              </a>
+            ) : (
+              <div key={item.id}>{rowContent}</div>
+            )
           })}
+          <div style={{ borderTop: '1px solid var(--border)' }} />
         </div>
-      </div>
-    </section>
+      )}
+    </div>
   )
 }

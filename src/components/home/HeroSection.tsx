@@ -47,7 +47,7 @@ export function HeroSection() {
             className="text-muted"
             style={{ fontSize: 20, fontWeight: 400, marginBottom: 36, letterSpacing: '-0.01em', lineHeight: 1.5, maxWidth: 620 }}
           >
-            속도와 멈춘 사고력,<br />본질로의 투자라는 경험.
+            속도로 얻은 여유를,<br />완성도에 투자하는 개발자
           </p>
 
           <h1

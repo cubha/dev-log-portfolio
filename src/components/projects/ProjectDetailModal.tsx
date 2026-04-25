@@ -4,15 +4,14 @@ import { useAtom } from 'jotai'
 import { selectedProjectAtom } from '@/src/store/projectAtom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
-import { X, ExternalLink, Calendar, FolderKanban, Code, FileText, ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2, Code } from 'lucide-react'
 import { Database } from '@/src/types/supabase'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { getTechIcon } from '@/src/utils/techIcons'
-import { StatusBadge } from '@/src/components/common/StatusBadge'
+
 type Project = Database['public']['Tables']['projects']['Row']
 
-/** 프로젝트 제목 → slug 변환 */
 function toSlug(title: string): string {
   return title
     .trim()
@@ -23,20 +22,23 @@ function toSlug(title: string): string {
     .replace(/^-|-$/g, '') || 'project'
 }
 
-/**
- * 프로젝트 상세 모달 컴포넌트
- *
- * - 개요 뷰: 프로젝트 메타 정보 (기간, 기술스택 등)
- * - MDX 뷰: "상세 보기" 클릭 시 MDX 콘텐츠 인라인 렌더링 (페이지 이동 없음)
- * - ESC: MDX 뷰에서는 개요로 복귀, 개요에서는 모달 닫기
- */
+function formatPeriod(p: Project): string {
+  const fmt = (d: string | null) => {
+    if (!d) return ''
+    const [y, m] = d.split('-')
+    return `${y}.${m}`
+  }
+  const start = fmt(p.start_date)
+  const end = p.is_ongoing ? '진행중' : fmt(p.end_date)
+  return start && end ? `${start} – ${end}` : start || end || '—'
+}
+
 export function ProjectDetailModal() {
   const [selectedProject, setSelectedProject] = useAtom(selectedProjectAtom)
   const [showMdxView, setShowMdxView] = useState(false)
   const [mdxHtml, setMdxHtml] = useState<string | null>(null)
   const [mdxLoading, setMdxLoading] = useState(false)
 
-  // 프로젝트 변경 시 MDX 뷰 초기화
   useEffect(() => {
     setShowMdxView(false)
     setMdxHtml(null)
@@ -44,38 +46,28 @@ export function ProjectDetailModal() {
   }, [selectedProject?.id])
 
   useEffect(() => {
-    if (selectedProject) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => {
-      document.body.style.overflow = ''
-    }
+    document.body.style.overflow = selectedProject ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
   }, [selectedProject])
 
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
+    const handler = (e: KeyboardEvent) => {
       if (e.key !== 'Escape' || !selectedProject) return
-      if (showMdxView) {
-        setShowMdxView(false)
-      } else {
-        setSelectedProject(null)
-      }
+      if (showMdxView) setShowMdxView(false)
+      else setSelectedProject(null)
     }
-    window.addEventListener('keydown', handleEsc)
-    return () => window.removeEventListener('keydown', handleEsc)
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
   }, [selectedProject, setSelectedProject, showMdxView])
 
   const handleClose = () => setSelectedProject(null)
 
   const handleViewDetail = async () => {
     if (!selectedProject) return
-    const slug = toSlug(selectedProject.title)
     setShowMdxView(true)
     setMdxLoading(true)
     try {
-      const res = await fetch(`/api/mdx/${slug}`)
+      const res = await fetch(`/api/mdx/${toSlug(selectedProject.title)}`)
       const data = (await res.json()) as { html: string | null }
       setMdxHtml(data.html)
     } catch {
@@ -83,10 +75,6 @@ export function ProjectDetailModal() {
     } finally {
       setMdxLoading(false)
     }
-  }
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) handleClose()
   }
 
   if (typeof document === 'undefined') return null
@@ -99,336 +87,233 @@ export function ProjectDetailModal() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          onClick={handleBackdropClick}
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.65)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+            padding: '64px 16px 32px',
+            overflowY: 'auto',
+          }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-2xl max-h-[85vh] bg-background rounded-xl shadow-2xl flex flex-col overflow-hidden"
+            style={{
+              width: '100%', maxWidth: 960,
+              background: 'var(--bg)',
+              border: '1px solid var(--border-strong)',
+              display: 'flex', flexDirection: 'column',
+              maxHeight: 'calc(100vh - 96px)',
+            }}
           >
-            {/* 닫기 버튼 */}
-            <button
-              onClick={handleClose}
-              className="absolute top-3 right-3 z-20 p-2 bg-background/95 rounded-full shadow-md hover:bg-foreground/10 transition-colors group"
-              aria-label="모달 닫기"
-            >
-              <X className="w-5 h-5 text-foreground/60 group-hover:text-foreground" />
-            </button>
-
-            <AnimatePresence mode="wait">
+            {/* ── 헤더 바 ──────────────────────────────────────────── */}
+            <div style={{
+              padding: '18px 32px',
+              borderBottom: '1px solid var(--border)',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              flexShrink: 0,
+            }}>
               {showMdxView ? (
-                /* ── MDX 상세 뷰 ── */
-                <motion.div
-                  key="mdx-view"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex flex-col flex-1 min-h-0"
+                <button
+                  onClick={() => setShowMdxView(false)}
+                  className="sv-mono text-muted"
+                  style={{ fontSize: 11, letterSpacing: '0.14em', display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                 >
-                  {/* MDX 뷰 헤더 */}
-                  <div className="flex items-center gap-3 px-5 py-3.5 border-b border-foreground/10 flex-shrink-0">
-                    <button
-                      onClick={() => setShowMdxView(false)}
-                      className="flex items-center gap-1.5 text-sm text-foreground/60 hover:text-foreground transition-colors flex-shrink-0"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      <span>돌아가기</span>
-                    </button>
-                    <span className="text-foreground/20">|</span>
-                    <h2
-                      id="modal-title"
-                      className="text-sm font-semibold text-foreground truncate pr-10"
-                    >
-                      {selectedProject.title}
-                    </h2>
-                  </div>
+                  <ArrowLeft style={{ width: 13, height: 13 }} /> BACK TO OVERVIEW
+                </button>
+              ) : (
+                <div className="sv-mono text-subtle" style={{ fontSize: 11, letterSpacing: '0.14em' }}>
+                  PROJECT &nbsp;·&nbsp; {(selectedProject.category ?? 'PROJECT').toUpperCase()}
+                  &nbsp;·&nbsp; {selectedProject.title.toUpperCase().slice(0, 40)}
+                </div>
+              )}
+              <button
+                onClick={handleClose}
+                aria-label="닫기"
+                style={{ background: 'none', border: 'none', color: 'var(--fg-muted)', cursor: 'pointer', fontSize: 18, lineHeight: 1, padding: '0 0 0 16px' }}
+              >
+                ✕
+              </button>
+            </div>
 
-                  {/* MDX 콘텐츠 */}
-                  <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar px-5 py-6 md:px-6">
+            {/* ── 콘텐츠 ────────────────────────────────────────────── */}
+            <div style={{ flex: 1, overflowY: 'auto' }} className="custom-scrollbar">
+              <AnimatePresence mode="wait">
+                {showMdxView ? (
+                  /* MDX 뷰 */
+                  <motion.div
+                    key="mdx"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.18 }}
+                    style={{ padding: 'clamp(24px, 4vw, 48px) clamp(24px, 5vw, 64px)' }}
+                  >
                     {mdxLoading ? (
-                      <div className="flex items-center justify-center py-20">
-                        <Loader2 className="w-7 h-7 animate-spin text-brand-secondary" />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 0' }}>
+                        <Loader2 style={{ width: 24, height: 24, animation: 'spin 1s linear infinite', color: 'var(--accent)' }} />
                       </div>
                     ) : mdxHtml ? (
-                      <article
-                        className="mdx-modal-content"
-                        dangerouslySetInnerHTML={{ __html: mdxHtml }}
-                      />
+                      <article className="mdx-modal-content" dangerouslySetInnerHTML={{ __html: mdxHtml }} />
                     ) : (
-                      <div className="text-center py-20 text-foreground/40 text-sm">
+                      <p className="text-subtle sv-mono" style={{ fontSize: 12, letterSpacing: '0.08em', textAlign: 'center', padding: '80px 0' }}>
                         상세 내용을 불러올 수 없습니다.
-                      </div>
+                      </p>
                     )}
-                  </div>
-                </motion.div>
-              ) : (
-                /* ── 프로젝트 개요 뷰 ── */
-                <motion.div
-                  key="overview"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex-1 min-h-0 overflow-y-auto custom-scrollbar"
-                >
-                  {/* 썸네일 */}
-                  {selectedProject.thumbnail_url ? (
-                    <div className="relative w-full h-48 bg-foreground/10 flex-shrink-0">
-                      <Image
-                        src={selectedProject.thumbnail_url}
-                        alt={selectedProject.title}
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                      {selectedProject.is_featured && (
-                        <div className="absolute top-3 left-3">
-                          <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 text-xs font-bold rounded-full shadow-md">
-                            ⭐ 주요
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="w-full h-48 bg-foreground/8 flex items-center justify-center">
-                      <FolderKanban className="w-16 h-16 text-foreground/30" />
-                    </div>
-                  )}
-
-                  {/* 본문 */}
-                  <div className="p-5 md:p-6">
-                    {/* 헤더: 기간 & 회사 정보 */}
-                    <div className="flex flex-wrap items-start justify-between gap-3 mb-4 pb-4 border-b border-foreground/10">
-                      {/* 좌측: 진행 기간 & 총 개월 수 */}
-                      <div className="flex items-center gap-3">
-                        {(selectedProject.start_date || selectedProject.end_date) && (
-                          <>
-                            <Calendar className="w-5 h-5 text-brand-secondary" />
-                            <div>
-                              <div className="text-lg font-bold text-foreground">
-                                {selectedProject.start_date && formatDateShort(selectedProject.start_date)}
-                                {' - '}
-                                {selectedProject.is_ongoing
-                                  ? '진행중'
-                                  : selectedProject.end_date && formatDateShort(selectedProject.end_date)}
-                              </div>
-                              <div className="text-sm text-foreground/60">
-                                총 {calculateMonthDuration(selectedProject.start_date, selectedProject.end_date, selectedProject.is_ongoing)}개월
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      {/* 우측: 회사명 & 역할 */}
-                      {(selectedProject.company_name || selectedProject.project_role) && (
-                        <div className="text-right">
-                          <div className="text-lg font-bold text-foreground">
-                            {selectedProject.company_name || '-'}
-                          </div>
-                          {selectedProject.project_role && (
-                            <div className="text-sm text-brand-secondary font-semibold">
-                              {selectedProject.project_role}
-                            </div>
-                          )}
-                        </div>
-                      )}
+                  </motion.div>
+                ) : (
+                  /* 개요 뷰 */
+                  <motion.div
+                    key="overview"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.18 }}
+                    style={{ padding: 'clamp(24px, 4vw, 40px) clamp(24px, 5vw, 64px) clamp(32px, 4vw, 48px)' }}
+                  >
+                    {/* 배지 */}
+                    <div className="sv-mono" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.14em', marginBottom: 16 }}>
+                      {selectedProject.is_featured && '★ FEATURED · '}
+                      {selectedProject.category ? `${selectedProject.category.toUpperCase()} 프로젝트` : 'PROJECT'}
+                      {selectedProject.is_ongoing && ' · 진행중'}
                     </div>
 
-                    {/* 프로젝트 제목 */}
-                    <h2 id="modal-title" className="text-xl md:text-2xl font-bold text-foreground mb-4 leading-tight">
+                    {/* 제목 */}
+                    <h2
+                      id="modal-title"
+                      style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 700, letterSpacing: '-0.035em', lineHeight: 1.05, margin: '0 0 16px', color: 'var(--fg)' }}
+                    >
                       {selectedProject.title}
                     </h2>
 
-                    {/* 카테고리 배지 */}
-                    {selectedProject.category && (
-                      <div className="mb-4">
-                        <StatusBadge size="md">
-                          {selectedProject.category} 프로젝트
-                        </StatusBadge>
-                      </div>
-                    )}
+                    {/* 히어로 이미지 */}
+                    <div style={{
+                      height: 240, border: '1px solid var(--border)',
+                      background: 'repeating-linear-gradient(135deg, var(--bg-1) 0 12px, var(--bg-2) 12px 24px)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      marginBottom: 32, position: 'relative', overflow: 'hidden',
+                    }}>
+                      {selectedProject.thumbnail_url ? (
+                        <Image src={selectedProject.thumbnail_url} alt={selectedProject.title} fill style={{ objectFit: 'cover' }} priority />
+                      ) : (
+                        <span className="sv-mono text-subtle" style={{ fontSize: 11, letterSpacing: '0.12em' }}>[ NO THUMBNAIL ]</span>
+                      )}
+                    </div>
 
-                    {/* 프로젝트 정보 리스트 */}
-                    <div className="mb-6 space-y-3 bg-foreground/5 p-4 rounded-lg border border-foreground/10">
+                    {/* 메타 그리드: PERIOD / ROLE / STATUS */}
+                    <div style={{
+                      display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+                      borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)',
+                      marginBottom: 32,
+                    }}>
+                      {[
+                        ['PERIOD', formatPeriod(selectedProject)],
+                        ['ROLE', selectedProject.project_role || '—'],
+                        ['STATUS', selectedProject.is_ongoing ? '진행중' : '완료'],
+                      ].map(([k, v], i) => (
+                        <div key={i} style={{ padding: '16px 0', paddingLeft: i ? 24 : 0, borderRight: i < 2 ? '1px solid var(--border)' : 'none' }}>
+                          <div className="sv-label" style={{ marginBottom: 6 }}>{k}</div>
+                          <div className="sv-mono" style={{ fontSize: 13, color: 'var(--fg)' }}>{v}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* 상세 정보 섹션 */}
+                    <div style={{ background: 'var(--bg-1)', padding: '4px 0', marginBottom: 32 }}>
+
                       {/* 주요 업무 */}
                       {selectedProject.description && (
-                        <div className="flex gap-4">
-                          <div className="flex-shrink-0 w-28 font-bold text-foreground/70 text-sm">
-                            주요 업무
-                          </div>
-                          <div className="flex-1 text-foreground text-sm leading-relaxed whitespace-pre-line">
+                        <div style={{ display: 'flex', gap: 16, padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+                          <div style={{ flexShrink: 0, width: 80, fontWeight: 700, fontSize: 13, color: 'var(--fg-muted)' }}>주요 업무</div>
+                          <p style={{ flex: 1, fontSize: 13, color: 'var(--fg)', lineHeight: 1.75, whiteSpace: 'pre-line', margin: 0 }}>
                             {selectedProject.description}
-                          </div>
+                          </p>
                         </div>
                       )}
 
                       {/* 담당 역할 */}
                       {selectedProject.project_role && (
-                        <div className="flex gap-4">
-                          <div className="flex-shrink-0 w-28 font-bold text-foreground/70 text-sm">
-                            담당 역할
-                          </div>
-                          <div className="flex-1 text-foreground text-sm">
-                            {selectedProject.project_role}
-                          </div>
+                        <div style={{ display: 'flex', gap: 16, padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+                          <div style={{ flexShrink: 0, width: 80, fontWeight: 700, fontSize: 13, color: 'var(--fg-muted)' }}>담당 역할</div>
+                          <p style={{ flex: 1, fontSize: 13, color: 'var(--fg)', margin: 0 }}>{selectedProject.project_role}</p>
                         </div>
                       )}
 
-                      {/* 개발 환경 (기술 스택) */}
+                      {/* 개발 환경 */}
                       {selectedProject.tech_stack && selectedProject.tech_stack.length > 0 && (
-                        <div className="flex gap-4">
-                          <div className="flex-shrink-0 w-28 font-bold text-foreground/70 text-sm">
-                            개발 환경
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex flex-wrap gap-2">
-                              {selectedProject.tech_stack.map((tech, index) => {
-                                const iconResult = getTechIcon(tech)
-                                return (
-                                  <motion.span
-                                    key={index}
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: index * 0.03 }}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-background border border-foreground/10 text-foreground/80 text-xs font-semibold rounded-lg shadow-sm hover:shadow-md hover:border-brand-primary/40 transition-all"
-                                  >
-                                    {iconResult ? (
-                                      <iconResult.icon
-                                        className="w-4 h-4 flex-shrink-0"
-                                        style={{ color: iconResult.color }}
-                                      />
-                                    ) : (
-                                      <Code className="w-4 h-4 flex-shrink-0 text-foreground/40" />
-                                    )}
-                                    <span>{tech}</span>
-                                  </motion.span>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 진행 인원 */}
-                      {selectedProject.team_size !== null && selectedProject.team_size !== undefined && (
-                        <div className="flex gap-4">
-                          <div className="flex-shrink-0 w-28 font-bold text-foreground/70 text-sm">
-                            진행 인원
-                          </div>
-                          <div className="flex-1 text-foreground text-sm">
-                            {formatTeamSize(selectedProject.team_size)}
+                        <div style={{ display: 'flex', gap: 16, padding: '16px 20px' }}>
+                          <div style={{ flexShrink: 0, width: 80, fontWeight: 700, fontSize: 13, color: 'var(--fg-muted)' }}>개발 환경</div>
+                          <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                            {selectedProject.tech_stack.map((tech, i) => {
+                              const iconResult = getTechIcon(tech)
+                              return (
+                                <span
+                                  key={i}
+                                  style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                                    padding: '4px 10px',
+                                    border: '1px solid var(--border)',
+                                    fontSize: 12, color: 'var(--fg)',
+                                    background: 'var(--bg)',
+                                  }}
+                                >
+                                  {iconResult ? (
+                                    <iconResult.icon style={{ width: 14, height: 14, flexShrink: 0, color: iconResult.color }} />
+                                  ) : (
+                                    <Code style={{ width: 14, height: 14, flexShrink: 0, color: 'var(--fg-subtle)' }} />
+                                  )}
+                                  {tech}
+                                </span>
+                              )
+                            })}
                           </div>
                         </div>
                       )}
                     </div>
 
-                    {/* 상세 내용 섹션 */}
+                    {/* 상세 내용 (detailed_tasks) */}
                     {selectedProject.detailed_tasks && selectedProject.detailed_tasks.length > 0 && (
-                      <div className="mb-6">
-                        <h3 className="text-base font-bold text-foreground mb-3 flex items-center gap-2">
-                          <span className="w-1 h-6 bg-foreground/30 rounded-full"></span>
-                          상세 내용
-                        </h3>
-                        <div className="space-y-2.5 pl-2">
-                          {selectedProject.detailed_tasks.map((task, index) => (
-                            <motion.div
-                              key={index}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.05 }}
-                              className="flex gap-3 items-start group"
-                            >
-                              <span className="text-brand-secondary font-bold text-base mt-0.5 group-hover:text-foreground transition-colors">
-                                &gt;&gt;
-                              </span>
-                              <span className="text-foreground/90 text-base leading-relaxed flex-1">
-                                {task}
-                              </span>
-                            </motion.div>
-                          ))}
-                        </div>
+                      <div style={{ marginBottom: 32 }}>
+                        <div className="sv-label" style={{ marginBottom: 12 }}>상세 내용</div>
+                        {selectedProject.detailed_tasks.map((task, i) => (
+                          <div key={i} style={{ padding: '12px 0', borderTop: '1px solid var(--border)', display: 'flex', gap: 16 }}>
+                            <span className="sv-mono text-subtle" style={{ fontSize: 11, flexShrink: 0 }}>{String(i + 1).padStart(2, '0')}</span>
+                            <span style={{ fontSize: 13, color: 'var(--fg)', lineHeight: 1.65 }}>{task}</span>
+                          </div>
+                        ))}
+                        <div style={{ borderTop: '1px solid var(--border)' }} />
                       </div>
                     )}
 
-                    {/* 링크 버튼들 */}
-                    <div className="flex flex-wrap gap-3 pt-4 border-t border-foreground/10">
+                    {/* CTA 버튼 */}
+                    <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
                       {selectedProject.project_type !== 'work' && (
-                        <button
-                          onClick={handleViewDetail}
-                          className="flex items-center gap-2 px-4 py-2.5 bg-brand-secondary text-white dark:text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg"
-                        >
-                          <FileText className="w-4 h-4" />
-                          <span>상세 보기</span>
+                        <button onClick={handleViewDetail} className="btn btn-primary">
+                          상세 보기 <span className="arrow">→</span>
                         </button>
                       )}
-                      {selectedProject.project_type !== 'work' && selectedProject.live_demo_url && (
-                        <a
-                          href={selectedProject.live_demo_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 text-sm font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                          <span>LIVE DEMO</span>
+                      {selectedProject.live_demo_url && selectedProject.project_type !== 'work' && (
+                        <a href={selectedProject.live_demo_url} target="_blank" rel="noopener noreferrer" className="btn">
+                          라이브 사이트 <span className="arrow">↗</span>
                         </a>
                       )}
                     </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>,
     document.body
   )
-}
-
-function formatDateShort(dateString: string | null): string {
-  if (!dateString) return ''
-  try {
-    const date = new Date(dateString)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    return `${year}.${month}`
-  } catch {
-    return dateString
-  }
-}
-
-function calculateMonthDuration(
-  startDate: string | null,
-  endDate: string | null,
-  isOngoing: boolean | null
-): number {
-  if (!startDate) return 0
-  try {
-    const start = new Date(startDate)
-    const end = isOngoing || !endDate ? new Date() : new Date(endDate)
-    const yearDiff = end.getFullYear() - start.getFullYear()
-    const monthDiff = end.getMonth() - start.getMonth()
-    return Math.max(1, yearDiff * 12 + monthDiff + 1)
-  } catch {
-    return 0
-  }
-}
-
-function formatTeamSize(teamSize: number | null): string {
-  if (teamSize === null || teamSize === undefined) return '-'
-  switch (teamSize) {
-    case 0: return 'O (0~9명)'
-    case 10: return 'OO (10~99명)'
-    case 100: return 'OOO (100명 이상)'
-    default: return `총 ${teamSize}명`
-  }
 }

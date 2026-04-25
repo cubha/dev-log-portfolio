@@ -19,7 +19,7 @@ export function PageHeader({
   aside,
   titleStyle,
   descStyle,
-  marginBottom = 100,
+  marginBottom = 0,
 }: PageHeaderProps) {
   const hasAside = aside != null
 
