@@ -25,7 +25,7 @@ export function PageHeader({
 
   const titleEl = (
     <h1
-      className="h-1"
+      className="h-1 metallic"
       style={{
         marginTop: 0,
         marginRight: 0,

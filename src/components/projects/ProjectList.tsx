@@ -22,8 +22,25 @@ type Project = Database['public']['Tables']['projects']['Row']
 export function ProjectList({ projects }: { projects: Project[] }) {
   const isAdmin = useAtomValue(isAdminAtom)
   const setEditingProject = useSetAtom(editingProjectAtom)
-  const [activeFilter, setActiveFilter] = useAtom(projectFilterAtom)
+  const [activeFilters, setActiveFilters] = useAtom(projectFilterAtom)
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom)
+
+  const handleFilterClick = (filter: ProjectFilter) => {
+    if (filter === '전체') {
+      setActiveFilters(['전체'])
+      return
+    }
+    const current = activeFilters.filter(f => f !== '전체')
+    const isSelected = current.includes(filter)
+    if (isSelected) {
+      const next = current.filter(f => f !== filter)
+      setActiveFilters(next.length === 0 ? ['전체'] : next)
+    } else {
+      const next = [...current, filter] as ProjectFilter[]
+      const allIndividual = FILTER_OPTIONS.filter(f => f !== '전체')
+      setActiveFilters(allIndividual.every(f => next.includes(f)) ? ['전체'] : next)
+    }
+  }
 
   // 카테고리 필터 + 검색어 AND 조건
   const filteredProjects = useMemo(() => {
@@ -31,7 +48,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
 
     return projects.filter((project) => {
       const matchesFilter =
-        activeFilter === '전체' || project.category === activeFilter
+        activeFilters.includes('전체') || activeFilters.includes(project.category as ProjectFilter)
 
       if (!matchesFilter) return false
       if (!q) return true
@@ -44,7 +61,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
         (project.tech_stack?.some((t) => t.toLowerCase().includes(q)) ?? false)
       )
     })
-  }, [projects, activeFilter, searchQuery])
+  }, [projects, activeFilters, searchQuery])
 
   return (
     <>
@@ -69,8 +86,8 @@ export function ProjectList({ projects }: { projects: Project[] }) {
             <button
               key={filter}
               type="button"
-              onClick={() => setActiveFilter(filter)}
-              className={`tag ${activeFilter === filter ? 'active' : ''}`}
+              onClick={() => handleFilterClick(filter)}
+              className={`tag ${activeFilters.includes(filter) ? 'active' : ''}`}
               style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer' }}
             >
               {filter}
@@ -114,9 +131,9 @@ export function ProjectList({ projects }: { projects: Project[] }) {
       {/* Asymmetric editorial grid */}
       {filteredProjects.length === 0 ? (
         <EmptyFilterState
-          activeFilter={activeFilter}
+          activeFilters={activeFilters}
           searchQuery={searchQuery}
-          onReset={() => { setSearchQuery(''); setActiveFilter('전체') }}
+          onReset={() => { setSearchQuery(''); setActiveFilters(['전체']) }}
         />
       ) : (
         <>
@@ -138,15 +155,16 @@ export function ProjectList({ projects }: { projects: Project[] }) {
 }
 
 function EmptyFilterState({
-  activeFilter,
+  activeFilters,
   searchQuery,
   onReset,
 }: {
-  activeFilter: ProjectFilter
+  activeFilters: ProjectFilter[]
   searchQuery: string
   onReset: () => void
 }) {
   const hasSearch = searchQuery.trim().length > 0
+  const hasFilter = !activeFilters.includes('전체')
 
   return (
     <motion.div
@@ -160,9 +178,9 @@ function EmptyFilterState({
       <p className="text-foreground/40 text-base">
         {hasSearch
           ? `'${searchQuery}'에 해당하는 프로젝트가 없습니다.`
-          : `'${activeFilter}' 카테고리에 해당하는 프로젝트가 없습니다.`}
+          : `'${activeFilters.join(', ')}' 카테고리에 해당하는 프로젝트가 없습니다.`}
       </p>
-      {(hasSearch || activeFilter !== '전체') && (
+      {(hasSearch || hasFilter) && (
         <button
           type="button"
           onClick={onReset}

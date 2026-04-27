@@ -21,7 +21,7 @@ interface BlogListProps {
 
 export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [selectedTags, setSelectedTags] = useState<string[]>(['전체'])
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all')
   const [displayCount, setDisplayCount] = useState(POSTS_PER_PAGE)
 
@@ -31,10 +31,23 @@ export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
     return Array.from(tagSet).sort()
   }, [posts])
 
+  const handleTagClick = (tag: string) => {
+    if (tag === '전체') { setSelectedTags(['전체']); return }
+    const current = selectedTags.filter(t => t !== '전체')
+    const isSelected = current.includes(tag)
+    if (isSelected) {
+      const next = current.filter(t => t !== tag)
+      setSelectedTags(next.length === 0 ? ['전체'] : next)
+    } else {
+      const next = [...current, tag]
+      setSelectedTags(allTags.every(t => next.includes(t)) ? ['전체'] : next)
+    }
+  }
+
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
       const matchesStatus = selectedStatus === 'all' || post.status === selectedStatus
-      const matchesTag = !selectedTag || post.tags.includes(selectedTag)
+      const matchesTag = selectedTags.includes('전체') || post.tags.some(t => selectedTags.includes(t))
       const q = searchQuery.trim().toLowerCase()
       const matchesSearch =
         !q ||
@@ -43,10 +56,10 @@ export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
         post.tags.some((t) => t.toLowerCase().includes(q))
       return matchesStatus && matchesTag && matchesSearch
     })
-  }, [posts, selectedStatus, selectedTag, searchQuery])
+  }, [posts, selectedStatus, selectedTags, searchQuery])
 
-  const prevFilterKey = useRef(`${searchQuery}|${selectedTag}|${selectedStatus}`)
-  const currentFilterKey = `${searchQuery}|${selectedTag}|${selectedStatus}`
+  const prevFilterKey = useRef(`${searchQuery}|${selectedTags.join(',')}|${selectedStatus}`)
+  const currentFilterKey = `${searchQuery}|${selectedTags.join(',')}|${selectedStatus}`
   if (prevFilterKey.current !== currentFilterKey) {
     prevFilterKey.current = currentFilterKey
     if (displayCount !== POSTS_PER_PAGE) setDisplayCount(POSTS_PER_PAGE)
@@ -76,8 +89,8 @@ export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button
             type="button"
-            onClick={() => setSelectedTag(null)}
-            className={`tag ${selectedTag === null ? 'active' : ''}`}
+            onClick={() => handleTagClick('전체')}
+            className={`tag ${selectedTags.includes('전체') ? 'active' : ''}`}
             style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer' }}
           >
             전체
@@ -86,8 +99,8 @@ export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
             <button
               key={tag}
               type="button"
-              onClick={() => setSelectedTag(tag === selectedTag ? null : tag)}
-              className={`tag ${selectedTag === tag ? 'active' : ''}`}
+              onClick={() => handleTagClick(tag)}
+              className={`tag ${selectedTags.includes(tag) ? 'active' : ''}`}
               style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer' }}
             >
               {tag}
@@ -140,8 +153,8 @@ export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
         <div className="sv-mono text-subtle" style={{ fontSize: 12, letterSpacing: '0.08em', padding: '40px 0' }}>
           {searchQuery.trim()
             ? `'${searchQuery}'에 해당하는 글이 없습니다.`
-            : selectedTag
-            ? `'${selectedTag}' 태그에 해당하는 글이 없습니다.`
+            : !selectedTags.includes('전체')
+            ? `'${selectedTags.join(', ')}' 태그에 해당하는 글이 없습니다.`
             : '글이 없습니다.'}
         </div>
       ) : (
