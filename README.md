@@ -482,12 +482,16 @@ chmod +x verify.sh
 
 **Silver V2 디자인 고도화 (진행 예정)**
 
-- [ ] **HeroSection 리디자인** — 레이아웃·텍스트·비주얼 전반 재검토, Buffer Progress 위젯 개선
+- [x] **HeroSection 리디자인** — 레이아웃·텍스트·비주얼 전반 재검토, Buffer Progress 위젯 개선
 - [x] **버튼 시스템 정비** — `.btn` fill `--bg-1` 적용, `.btn:hover` CSS 오류 수정, 배경 깊이 부여
 - [x] **카드 디자인 정비** — `.card` fill `--bg-1` (default) / `--bg-2` (hover) 적용, 페이지 배경과 구분
 - [x] **태그 디자인 정비** — `.tag` fill `--bg-1`, hover `--bg-2`, active `--accent-dim` 배경 적용
 - [ ] **폰트 위계 점검** — Pretendard + JetBrains Mono 혼용 구간 정리, 본문 가독성 개선
 - [x] **Selected / Active 상태 디자인** — 필터 태그 inline override 제거, 헤더 nav accent-dim pill, ExperienceTabs accent-dim + 좌측 border
+- [ ] **Footer 정리** — Footer 레이아웃 및 콘텐츠 개선
+- [ ] **About 섹션 디자인 개선** — About 메뉴 히어로 영역 시각적 개선
+- [ ] **Contact height 통일** — Contact info / 방명록 영역 height 맞추기
+- [ ] **Writing/Blog 통일** — URL은 `/blog` 유지, 헤더 메뉴명은 "Writing"으로 통일
 
 ---
 
@@ -575,6 +579,20 @@ chmod +x verify.sh
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v2.2.0 — 2026-04-27 (HeroSection 리디자인 — 타이포그래피 강조 + Full-Width Progress Bar)
+
+**HeroSection 타이포그래피 개선:**
+- 2줄 구조 확정: Line 1(철학 문구 전체 metallic) + Line 2(개발자 `은승호` 입니다. 혼합 강조)
+- 강조/비강조 텍스트 폰트 사이즈 위계 정립 (Line 1: 68px metallic / Line 2: 은승호 144px metallic, 60px muted)
+- 줄간격·요소 간 spacing 세밀 조정
+
+**Efficiency × Quality 위젯 전면 재설계:**
+- 기존: h1 내부 line 2 옆 좁은 위젯 (스케일 충돌)
+- 변경: h1 하단 컨테이너 풀너비 분할 바 (Full-Width Split Bar)
+- 비율 수정: 92%/8% → **Efficiency 60% / Buffer 40%**
+- Framer Motion 애니메이션 바 + 좌우 레이블 (EFFICIENCY · 60% / BUFFER · PHILOSOPHY · 40%)
+- `pct` 상태 제거 (숫자 카운터 불필요)
 
 ### v2.1.0 — 2026-04-26 (Silver V2 고도화 — 어드민 V2 · 로딩 UI · Modal · Contact)
 

@@ -88,15 +88,26 @@ export function Header() {
                 href={item.href}
                 style={{
                   color: isActive ? 'var(--fg)' : 'var(--fg-muted)',
-                  backgroundColor: isActive ? 'var(--accent-dim)' : 'transparent',
-                  borderRadius: 4,
                   textDecoration: 'none',
-                  padding: '4px 8px',
-                  transition: 'color .15s, background-color .15s',
+                  position: 'relative',
+                  padding: '4px 0',
+                  transition: 'color .15s',
                 }}
                 className="nav-link"
               >
                 {item.label}
+                {isActive && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      right: 0,
+                      bottom: -2,
+                      height: 1,
+                      background: 'var(--accent)',
+                    }}
+                  />
+                )}
               </Link>
             )
           })}

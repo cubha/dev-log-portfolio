@@ -93,31 +93,6 @@ export default async function BlogDetailPage({ params }: PageProps) {
       <ReadingProgressBar />
       <AuthStateInitializer isAdmin={isAdmin} isLoggedIn={!!user} />
 
-      {/* Mobile top bar (< xl) */}
-      <div
-        className="xl:hidden"
-        style={{
-          padding: `32px ${px} 24px`,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottom: '1px solid var(--border)',
-        }}
-      >
-        <Link href="/blog" className="sv-mono" style={{ fontSize: 12, color: 'var(--fg-muted)', textDecoration: 'none', letterSpacing: '0.04em' }}>
-          ← ALL POSTS
-        </Link>
-        {isAdmin && (
-          <Link
-            href={`/blog/edit/${post.id}`}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--fg-muted)', textDecoration: 'none', padding: '4px 10px', border: '1px solid var(--border)', background: 'none' }}
-          >
-            <Pencil style={{ width: 12, height: 12 }} />
-            수정
-          </Link>
-        )}
-      </div>
-
       {/* 3-col grid on xl+, single col below */}
       <div
         className="xl:grid xl:grid-cols-[240px_minmax(0,1fr)_260px] xl:gap-14 blog-detail-grid"
@@ -169,14 +144,6 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
         {/* Main article */}
         <article style={{ maxWidth: 720, minWidth: 0 }}>
-          {/* Mobile meta */}
-          <div className="xl:hidden" style={{ marginBottom: 32, display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-            {publishedDate && (
-              <span className="sv-mono" style={{ fontSize: 11, color: 'var(--fg-subtle)', letterSpacing: '0.08em' }}>{publishedDate}</span>
-            )}
-            <span className="sv-mono" style={{ fontSize: 11, color: 'var(--fg-subtle)', letterSpacing: '0.08em' }}>{readingTime} MIN READ</span>
-          </div>
-
           <div className="sv-eyebrow" style={{ marginBottom: 24, color: 'var(--accent)' }}>WRITING</div>
           <h1 className="h-1 metallic" style={{ margin: '0 0 24px', lineHeight: 1.05 }}>
             {post.title}
@@ -184,15 +151,6 @@ export default async function BlogDetailPage({ params }: PageProps) {
           {post.description && (
             <div className="text-muted" style={{ fontSize: 19, lineHeight: 1.55, marginBottom: 48 }}>
               {post.description}
-            </div>
-          )}
-
-          {/* Mobile tags */}
-          {post.tags.length > 0 && (
-            <div className="xl:hidden" style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 40 }}>
-              {post.tags.map((tag) => (
-                <span key={tag} className="tag" style={{ fontSize: 10 }}>{tag}</span>
-              ))}
             </div>
           )}
 

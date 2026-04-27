@@ -102,18 +102,12 @@ function TimelineItems({ items }: { items: TimelineItem[] }) {
               flexWrap: 'wrap',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div className="h-4">{item.title}</div>
               {item.isCurrent && (
                 <span
-                  className="sv-mono"
-                  style={{
-                    fontSize: 10,
-                    letterSpacing: '0.12em',
-                    padding: '3px 8px',
-                    border: '1px solid var(--accent)',
-                    color: 'var(--accent)',
-                  }}
+                  className="tag-current"
+                  style={{ fontSize: 10, letterSpacing: '0.12em', padding: '3px 8px', color: 'var(--accent)' }}
                 >
                   CURRENT
                 </span>
