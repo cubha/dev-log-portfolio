@@ -483,11 +483,11 @@ chmod +x verify.sh
 **Silver V2 디자인 고도화 (진행 예정)**
 
 - [ ] **HeroSection 리디자인** — 레이아웃·텍스트·비주얼 전반 재검토, Buffer Progress 위젯 개선
-- [ ] **버튼 시스템 정비** — `.btn` / `.btn-primary` / `.btn-ghost` 크기·간격·hover 상태 일관성 점검
-- [ ] **카드 디자인 정비** — `.card` 메탈릭 테두리 강도, hover 애니메이션, 그림자 레벨 조정
-- [ ] **태그 디자인 정비** — `.tag` 크기·패딩·필터 active 상태 시각 개선
+- [x] **버튼 시스템 정비** — `.btn` fill `--bg-1` 적용, `.btn:hover` CSS 오류 수정, 배경 깊이 부여
+- [x] **카드 디자인 정비** — `.card` fill `--bg-1` (default) / `--bg-2` (hover) 적용, 페이지 배경과 구분
+- [x] **태그 디자인 정비** — `.tag` fill `--bg-1`, hover `--bg-2`, active `--accent-dim` 배경 적용
 - [ ] **폰트 위계 점검** — Pretendard + JetBrains Mono 혼용 구간 정리, 본문 가독성 개선
-- [ ] **Selected / Active 상태 디자인** — 필터 태그 active, 네비게이션 현재 메뉴, 체크박스·토글 선택 상태 통일
+- [x] **Selected / Active 상태 디자인** — 필터 태그 inline override 제거, 헤더 nav accent-dim pill, ExperienceTabs accent-dim + 좌측 border
 
 ---
 

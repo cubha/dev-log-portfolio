@@ -78,7 +78,7 @@ export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
             type="button"
             onClick={() => setSelectedTag(null)}
             className={`tag ${selectedTag === null ? 'active' : ''}`}
-            style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer', background: 'transparent' }}
+            style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer' }}
           >
             전체
           </button>
@@ -88,7 +88,7 @@ export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
               type="button"
               onClick={() => setSelectedTag(tag === selectedTag ? null : tag)}
               className={`tag ${selectedTag === tag ? 'active' : ''}`}
-              style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer', background: 'transparent' }}
+              style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer' }}
             >
               {tag}
             </button>
@@ -126,7 +126,7 @@ export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
                 type="button"
                 onClick={() => setSelectedStatus(s)}
                 className={`tag ${selectedStatus === s ? 'active' : ''}`}
-                style={{ padding: '4px 10px', fontSize: 11, cursor: 'pointer', background: 'transparent' }}
+                style={{ padding: '4px 10px', fontSize: 11, cursor: 'pointer' }}
               >
                 {s === 'all' ? '전체' : STATUS_LABEL[s] ?? s}
               </button>

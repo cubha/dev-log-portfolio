@@ -88,26 +88,15 @@ export function Header() {
                 href={item.href}
                 style={{
                   color: isActive ? 'var(--fg)' : 'var(--fg-muted)',
+                  backgroundColor: isActive ? 'var(--accent-dim)' : 'transparent',
+                  borderRadius: 4,
                   textDecoration: 'none',
-                  position: 'relative',
-                  padding: '4px 0',
-                  transition: 'color .15s',
+                  padding: '4px 8px',
+                  transition: 'color .15s, background-color .15s',
                 }}
                 className="nav-link"
               >
                 {item.label}
-                {isActive && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      left: 0,
-                      right: 0,
-                      bottom: -2,
-                      height: 1,
-                      background: 'var(--accent)',
-                    }}
-                  />
-                )}
               </Link>
             )
           })}
@@ -226,10 +215,12 @@ export function Header() {
                       fontSize: 15,
                       fontWeight: isActive ? 600 : 400,
                       color: isActive ? 'var(--fg)' : 'var(--fg-muted)',
+                      backgroundColor: isActive ? 'var(--accent-dim)' : 'transparent',
                       textDecoration: 'none',
-                      padding: '10px 0',
+                      padding: '10px 12px',
                       borderBottom: '1px solid var(--border)',
-                      transition: 'color .15s',
+                      borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
+                      transition: 'color .15s, background-color .15s',
                     }}
                   >
                     {item.label}

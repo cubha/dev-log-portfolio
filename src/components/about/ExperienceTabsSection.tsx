@@ -208,18 +208,19 @@ export function ExperienceTabsSection({
               onClick={() => setActiveTab(id)}
               style={{
                 textAlign: 'left',
-                background: 'none',
+                background: activeTab === id ? 'var(--accent-dim)' : 'none',
                 border: 'none',
-                padding: '8px 0 8px 14px',
+                padding: '8px 12px 8px 14px',
                 borderLeft: activeTab === id
-                  ? '1px solid var(--accent)'
-                  : '1px solid var(--border)',
+                  ? '2px solid var(--accent)'
+                  : '2px solid transparent',
+                borderRadius: '0 4px 4px 0',
                 color: activeTab === id ? 'var(--fg)' : 'var(--fg-muted)',
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 12,
                 letterSpacing: '0.06em',
                 cursor: 'pointer',
-                transition: 'color .15s, border-color .15s',
+                transition: 'color .15s, border-color .15s, background .15s',
               }}
             >
               {label.toUpperCase()}

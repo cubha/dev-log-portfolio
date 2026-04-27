@@ -235,7 +235,7 @@ body {
   cursor: pointer;
   position: relative;
   border: 1px solid transparent;
-  background-image: linear-gradient(var(--bg), var(--bg)), var(--metal-border);
+  background-image: linear-gradient(var(--bg-1), var(--bg-1)), var(--metal-border);
   background-origin: border-box;
   background-clip: padding-box, border-box;
   transition: color .2s, transform .18s, box-shadow .18s;
@@ -244,7 +244,7 @@ body {
 }
 .btn .arrow { transition: transform .18s; display: inline-block; }
 .btn:hover {
-  background-image: linear-gradient(var(--metal-fill), var(--metal-fill)), var(--metal-border);
+  background-image: var(--metal-fill), var(--metal-border);
   color: var(--fg);
 }
 .btn:hover .arrow {
@@ -300,21 +300,21 @@ body {
   letter-spacing: 0.03em;
   border-radius: 999px;
   color: var(--fg-muted);
-  background-color: rgba(0,0,0,0.02);
-  background-image: linear-gradient(var(--bg), var(--bg)), var(--metal-border-soft);
+  background-color: var(--bg-1);
+  background-image: linear-gradient(var(--bg-1), var(--bg-1)), var(--metal-border-soft);
   background-origin: border-box;
   background-clip: padding-box, border-box;
   border: 1px solid transparent;
   transition: color .18s, background-image .18s;
 }
-.dark .tag { background-color: rgba(255,255,255,0.03); }
 .tag:hover {
   color: var(--fg);
-  background-image: linear-gradient(var(--bg), var(--bg)), var(--metal-border-strong);
+  background-image: linear-gradient(var(--bg-2), var(--bg-2)), var(--metal-border-strong);
 }
 .tag.active {
   color: var(--fg);
-  background-image: linear-gradient(var(--metal-fill), var(--metal-fill)), var(--metal-border);
+  background-color: var(--bg-1);
+  background-image: linear-gradient(var(--accent-dim), var(--accent-dim)), var(--metal-border);
 }
 
 /* ─── Card ──────────────────────────────────────────────────────────────── */
@@ -322,8 +322,8 @@ body {
 .card {
   position: relative;
   border: 1px solid transparent;
-  background-color: var(--bg);
-  background-image: linear-gradient(var(--bg), var(--bg)), var(--metal-border-soft);
+  background-color: var(--bg-1);
+  background-image: linear-gradient(var(--bg-1), var(--bg-1)), var(--metal-border-soft);
   background-origin: border-box;
   background-clip: padding-box, border-box;
   transition: background-image .25s, box-shadow .2s, transform .18s;
@@ -338,7 +338,7 @@ body {
   pointer-events: none;
 }
 .card:hover {
-  background-image: linear-gradient(var(--bg), var(--bg)), var(--metal-border-strong);
+  background-image: linear-gradient(var(--bg-2), var(--bg-2)), var(--metal-border-strong);
 }
 .card:hover::before { opacity: 1; }
 .card:active { box-shadow: inset 0 1px 2px rgba(0,0,0,0.22); }

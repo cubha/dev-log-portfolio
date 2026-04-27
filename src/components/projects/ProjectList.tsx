@@ -71,7 +71,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
               type="button"
               onClick={() => setActiveFilter(filter)}
               className={`tag ${activeFilter === filter ? 'active' : ''}`}
-              style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer', background: 'transparent' }}
+              style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer' }}
             >
               {filter}
             </button>
