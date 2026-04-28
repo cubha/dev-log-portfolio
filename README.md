@@ -488,7 +488,7 @@ chmod +x verify.sh
 - [x] **태그 디자인 정비** — `.tag` fill `--bg-1`, hover `--bg-2`, active `--accent-dim` 배경 적용
 - [ ] **폰트 위계 점검** — Pretendard + JetBrains Mono 혼용 구간 정리, 본문 가독성 개선
 - [x] **Selected / Active 상태 디자인** — 필터 태그 inline override 제거, 헤더 nav accent-dim pill, ExperienceTabs accent-dim + 좌측 border
-- [ ] **Footer 정리** — Footer 레이아웃 및 콘텐츠 개선
+- [x] **Footer 정리** — 2줄 grid → 1줄 flex 압축, 브랜드 중복 제거, height 내용에 맞게 축소
 - [ ] **About 섹션 디자인 개선** — About 메뉴 히어로 영역 시각적 개선
 - [ ] **Contact height 통일** — Contact info / 방명록 영역 height 맞추기
 - [ ] **Writing/Blog 통일** — URL은 `/blog` 유지, 헤더 메뉴명은 "Writing"으로 통일
