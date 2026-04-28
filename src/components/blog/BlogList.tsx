@@ -1,14 +1,16 @@
 'use client'
 
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useAtom } from 'jotai'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { BlogPost } from '@/src/types/blog'
 import { STATUS_LABEL } from '@/src/types/blog'
 import Link from 'next/link'
-import { Search, X, Pencil, Trash2, Eye, EyeOff, Check, ChevronDown } from 'lucide-react'
+import { Search, X, Pencil, Trash2, Eye, EyeOff, Check, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { deleteBlogPost, togglePublish } from '@/src/actions/blog'
 import { toast } from 'sonner'
+import { blogStatusAtom } from '@/src/store/filterAtom'
 
 const POSTS_PER_PAGE = 10
 
@@ -22,8 +24,31 @@ interface BlogListProps {
 export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>(['전체'])
-  const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all')
+  const [selectedStatus] = useAtom(blogStatusAtom)
   const [displayCount, setDisplayCount] = useState(POSTS_PER_PAGE)
+  const tagScrollRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  const checkScrollable = () => {
+    const el = tagScrollRef.current
+    if (!el) return
+    setCanScrollLeft(el.scrollLeft > 0)
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 1)
+  }
+
+  useEffect(() => {
+    checkScrollable()
+    const el = tagScrollRef.current
+    el?.addEventListener('scroll', checkScrollable)
+    window.addEventListener('resize', checkScrollable)
+    return () => {
+      el?.removeEventListener('scroll', checkScrollable)
+      window.removeEventListener('resize', checkScrollable)
+    }
+  // posts 변경 시 tags 재렌더 후 scrollable 재계산
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [posts])
 
   const allTags = useMemo(() => {
     const tagSet = new Set<string>()
@@ -70,82 +95,76 @@ export const BlogList = ({ posts, isAdmin = false }: BlogListProps) => {
 
   const handleLoadMore = useCallback(() => setDisplayCount((p) => p + POSTS_PER_PAGE), [])
 
+  const scrollTags = (dir: 'left' | 'right') => {
+    tagScrollRef.current?.scrollBy({ left: dir === 'right' ? 180 : -180, behavior: 'smooth' })
+  }
+
   return (
     <>
-      {/* Search + tag filters */}
+      {/* Filter row */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 24,
+          gap: 12,
           borderTop: '1px solid var(--border)',
           borderBottom: '1px solid var(--border)',
-          padding: '18px 0',
+          padding: '14px 0',
           marginBottom: 40,
-          flexWrap: 'wrap',
         }}
       >
-        {/* Tag filters */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={() => handleTagClick('전체')}
-            className={`tag ${selectedTags.includes('전체') ? 'active' : ''}`}
-            style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer' }}
+        {/* ◀ arrow */}
+        <button
+          type="button"
+          onClick={() => scrollTags('left')}
+          disabled={!canScrollLeft}
+          style={{ background: 'none', border: 'none', cursor: canScrollLeft ? 'pointer' : 'default', color: 'var(--fg-muted)', padding: 2, flexShrink: 0, opacity: canScrollLeft ? 1 : 0.25, transition: 'opacity .15s', display: 'flex', alignItems: 'center' }}
+        >
+          <ChevronLeft style={{ width: 14, height: 14 }} />
+        </button>
+
+        {/* Tags — horizontal scroll */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            ref={tagScrollRef}
+            className="tag-scroll"
+            style={{ display: 'flex', gap: 8, overflowX: 'auto', flexWrap: 'nowrap', scrollbarWidth: 'none' }}
           >
-            전체
-          </button>
-          {allTags.map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              onClick={() => handleTagClick(tag)}
-              className={`tag ${selectedTags.includes(tag) ? 'active' : ''}`}
-              style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer' }}
-            >
-              {tag}
-            </button>
-          ))}
+            <button type="button" onClick={() => handleTagClick('전체')} className={`tag ${selectedTags.includes('전체') ? 'active' : ''}`} style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>전체</button>
+            {allTags.map((tag) => (
+              <button key={tag} type="button" onClick={() => handleTagClick(tag)} className={`tag ${selectedTags.includes(tag) ? 'active' : ''}`} style={{ padding: '6px 14px', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>{tag}</button>
+            ))}
+          </div>
         </div>
 
-        {/* Search */}
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--fg-muted)' }}>
-          <Search className="w-3.5 h-3.5" style={{ flexShrink: 0 }} />
+        {/* ▶ arrow */}
+        <button
+          type="button"
+          onClick={() => scrollTags('right')}
+          disabled={!canScrollRight}
+          style={{ background: 'none', border: 'none', cursor: canScrollRight ? 'pointer' : 'default', color: 'var(--fg-muted)', padding: 2, flexShrink: 0, opacity: canScrollRight ? 1 : 0.25, transition: 'opacity .15s', display: 'flex', alignItems: 'center' }}
+        >
+          <ChevronRight style={{ width: 14, height: 14 }} />
+        </button>
+
+        {/* Search — expanded */}
+        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--fg-muted)', marginLeft: 4 }}>
+          <Search style={{ width: 14, height: 14, flexShrink: 0 }} />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="제목, 설명, 태그 검색 …"
             className="sv-input"
-            style={{ width: 'clamp(160px, 16.7vw, 240px)', padding: '6px 2px', borderBottom: 'none', fontSize: 13 }}
+            style={{ width: 'clamp(200px, 22vw, 320px)', padding: '6px 2px', borderBottom: 'none', fontSize: 13 }}
           />
           {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              style={{ color: 'var(--fg-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-            >
-              <X className="w-3.5 h-3.5" />
+            <button type="button" onClick={() => setSearchQuery('')} style={{ color: 'var(--fg-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <X style={{ width: 14, height: 14 }} />
             </button>
           )}
         </div>
 
-        {/* Admin status filter */}
-        {isAdmin && (
-          <div style={{ display: 'flex', gap: 6 }}>
-            {(['all', 'published', 'draft', 'archived'] as const).map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => setSelectedStatus(s)}
-                className={`tag ${selectedStatus === s ? 'active' : ''}`}
-                style={{ padding: '4px 10px', fontSize: 11, cursor: 'pointer' }}
-              >
-                {s === 'all' ? '전체' : STATUS_LABEL[s] ?? s}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Post list */}
@@ -244,11 +263,11 @@ function BlogRow({ post, index, isAdmin = false }: { post: BlogPost; index: numb
             {date}
           </div>
         )}
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, flexWrap: 'wrap' }}>
           <div className="h-3" style={{ letterSpacing: '-0.02em' }}>{post.title}</div>
           {isAdmin && post.status !== 'published' && (
-            <span className="sv-mono" style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.1em' }}>
-              [{STATUS_LABEL[post.status] ?? post.status}]
+            <span className="tag-current" style={{ fontSize: 10, letterSpacing: '0.12em', padding: '3px 8px', color: 'var(--accent)' }}>
+              {STATUS_LABEL[post.status] ?? post.status}
             </span>
           )}
         </div>

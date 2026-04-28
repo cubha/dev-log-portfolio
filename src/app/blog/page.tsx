@@ -1,6 +1,7 @@
 import { getPublishedBlogPosts, getAllBlogPosts } from '@/src/utils/blog/getBlogPosts'
 import { getCurrentUserRole } from '@/src/utils/auth/serverAuth'
 import { BlogList } from '@/src/components/blog/BlogList'
+import { BlogStatusDropdown } from '@/src/components/blog/BlogStatusDropdown'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { PageHeader } from '@/src/components/common/PageHeader'
 import { AuthStateInitializer } from '@/src/components/providers/AuthStateInitializer'
@@ -21,9 +22,12 @@ export default async function BlogPage() {
         context="PORTFOLIO · WRITING ─────────────"
         title="개발 경험과 기술적 인사이트를 공유합니다."
         aside={isAdmin ? (
-          <Link href="/blog/new" scroll={false} className="btn btn-primary" style={{ whiteSpace: 'nowrap' }}>
-            새 글 작성 <span className="arrow">→</span>
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+            <BlogStatusDropdown />
+            <Link href="/blog/new" scroll={false} className="btn btn-primary" style={{ whiteSpace: 'nowrap' }}>
+              새 글 작성 <span className="arrow">→</span>
+            </Link>
+          </div>
         ) : undefined}
       />
 

@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!post) return { title: '글을 찾을 수 없습니다' }
   return {
     title: post.title,
-    description: post.description ?? `${post.title} — 기술 블로그`,
+    description: post.description ?? `${post.title} — Silver.dev Writing`,
   }
 }
 

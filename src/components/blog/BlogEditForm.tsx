@@ -119,7 +119,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
             <p className="text-sm text-foreground/50 mt-0.5">
               {mode === 'edit' && initialData
                 ? `"${initialData.title}" 수정 중`
-                : '새 블로그 포스트를 작성합니다'}
+                : '새 글을 작성합니다'}
             </p>
           </div>
         </div>

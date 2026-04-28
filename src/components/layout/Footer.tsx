@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export function Footer() {
@@ -42,35 +41,11 @@ export function Footer() {
         <span style={{ color: 'var(--fg-subtle)' }}>Seoul, KR</span>
       </div>
 
-      {/* Right: nav links + copyright */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-        {[
-          { href: '/about', label: 'About' },
-          { href: '/contact', label: 'Contact' },
-          { href: 'https://github.com/cubha', label: 'GitHub ↗', external: true },
-        ].map((link) =>
-          link.external ? (
-            <a
-              key={link.href}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'var(--fg-muted)', textDecoration: 'none' }}
-            >
-              {link.label}
-            </a>
-          ) : (
-            <Link
-              key={link.href}
-              href={link.href}
-              style={{ color: 'var(--fg-muted)', textDecoration: 'none' }}
-            >
-              {link.label}
-            </Link>
-          )
-        )}
-        <span style={{ color: 'var(--fg-subtle)' }}>·</span>
-        <span style={{ color: 'var(--fg-subtle)' }}>© 2026</span>
+      {/* Right: copyright */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--fg-subtle)' }}>
+        <span>© 2026</span>
+        <span>·</span>
+        <span>ALL RIGHTS RESERVED</span>
       </div>
     </footer>
   )
