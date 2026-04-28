@@ -36,31 +36,40 @@ export default async function AboutPage() {
         context="PORTFOLIO · ABOUT ─────────────"
         title="제 기술과 이력을 소개합니다."
         desc={profile?.intro_text ?? undefined}
-        aside={
-          <div>
-            <div className="sv-mono text-subtle" style={{ fontSize: 11, letterSpacing: '0.1em', marginBottom: 6 }}>CURRENTLY</div>
-            <div className="sv-mono" style={{ fontSize: 13, color: 'var(--fg)' }}>새 프로젝트 상담 가능</div>
-            <div className="sv-mono text-muted" style={{ fontSize: 12, marginTop: 4 }}>2026 Q2 ~</div>
-          </div>
-        }
-        titleStyle={{ maxWidth: 900, marginBottom: 28 }}
+titleStyle={{ maxWidth: 900, marginBottom: 28 }}
         descStyle={{ fontSize: 15 }}
       />
 
       {/* ─── Essay ───────────────────────────────────────────────── */}
       {(profile?.story_json ?? []).filter(s => s.isVisible !== false && s.content).length > 0 && (
-        <section className="grid two-col-label-grid" style={{ padding: `clamp(40px, 4vw, 56px) ${px} 80px`, gap: 'clamp(40px, 5.5vw, 80px)', borderTop: '1px solid var(--border)' }}>
-          <div className="sv-label">ABOUT</div>
-          <div style={{ maxWidth: 820 }}>
+        <section style={{ padding: `clamp(40px, 4vw, 56px) ${px} 80px`, borderTop: '1px solid var(--border)' }}>
+          {/* Section header: label only */}
+          <div style={{ marginBottom: 'clamp(36px, 5vw, 56px)' }}>
+            <span className="sv-label" style={{ marginBottom: 0 }}>ABOUT</span>
+          </div>
+          {/* 3-column story grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 0 }}>
             {(profile?.story_json ?? [])
               .filter(s => s.isVisible !== false && s.content)
-              .map((s) => (
-                <div key={s.id} style={{ borderTop: '1px solid var(--border)', padding: '32px 0 28px' }}>
-                  <div className="h-4" style={{ marginBottom: 12, color: 'var(--fg)' }}>{s.title}</div>
-                  <p className="text-muted" style={{ fontSize: 15, lineHeight: 1.75 }}>{s.content}</p>
+              .map((s, i, arr) => (
+                <div
+                  key={s.id}
+                  style={{
+                    paddingLeft: i > 0 ? 'clamp(24px, 3.5vw, 48px)' : 0,
+                    paddingRight: i < arr.length - 1 ? 'clamp(24px, 3.5vw, 48px)' : 0,
+                    borderLeft: i > 0 ? '1px solid var(--border)' : 'none',
+                  }}
+                >
+                  {/* Metallic tag title with left vertical accent */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                    {/* Vertical accent bar */}
+                    <div style={{ width: 3, height: 16, flexShrink: 0, background: 'var(--metal-border)', borderRadius: 2 }} />
+                    {/* Tag */}
+                    <div className="about-story-tag">{s.title}</div>
+                  </div>
+                  <p className="text-muted" style={{ fontSize: 14, lineHeight: 1.8 }}>{s.content}</p>
                 </div>
               ))}
-            <div style={{ borderTop: '1px solid var(--border)' }} />
           </div>
         </section>
       )}

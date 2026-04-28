@@ -489,9 +489,11 @@ chmod +x verify.sh
 - [ ] **폰트 위계 점검** — Pretendard + JetBrains Mono 혼용 구간 정리, 본문 가독성 개선
 - [x] **Selected / Active 상태 디자인** — 필터 태그 inline override 제거, 헤더 nav accent-dim pill, ExperienceTabs accent-dim + 좌측 border
 - [x] **Footer 정리** — 2줄 grid → 1줄 flex 압축, 브랜드 중복 제거, height 내용에 맞게 축소
-- [ ] **About 섹션 디자인 개선** — About 메뉴 히어로 영역 시각적 개선
-- [ ] **Contact height 통일** — Contact info / 방명록 영역 height 맞추기
+- [x] **About 섹션 디자인 개선** — ABOUT Essay 3컬럼 수평 그리드 전환, 메탈릭 border 태그 + 좌측 세로 액센트 바, CURRENTLY 영역 제거 (2026-04-29)
+- [x] **Contact height 통일** — align-items: stretch + flex-col + textarea flex:1로 좌우 하단 정렬, textarea card 스타일(bg-1 + metallic border) 적용
 - [ ] **Writing/Blog 통일** — URL은 `/blog` 유지, 헤더 메뉴명은 "Writing"으로 통일
+- [ ] **About 메뉴 Skill 디자인 개선** — Technical Skills 섹션 시각적 개선
+- [ ] **메인메뉴 각 메뉴 Preview 링크 텍스트 개선** — 홈 화면 각 섹션 Preview 이동 링크 텍스트/스타일 개선
 
 ---
 
@@ -579,6 +581,22 @@ chmod +x verify.sh
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v2.3.0 — 2026-04-29 (About ABOUT 섹션 레이아웃 · 태그 디자인 개선)
+
+**About Essay 섹션 레이아웃 전면 개편:**
+- `two-col-label-grid` (60% 우측 쏠림) → 풀너비 3컬럼 수평 그리드로 전환
+- ABOUT 레이블을 좌측 고립 컬럼에서 상단 단독 섹션 레이블로 이동
+- 수평 border 반복 → 수직 `border-left` 컬럼 구분으로 교체
+
+**스토리 항목 타이틀 태그 디자인:**
+- 기존 평문 타이틀 → `.about-story-tag` 메탈릭 border 태그 적용
+- `--metal-border-strong` gradient border + `--bg-2` 배경 + inset box-shadow 입체감
+- 태그 좌측 세로 액센트 바 (`3px × 16px`, `--metal-border` gradient)
+- 라이트/다크 모드 동일 수준 border 대비 확보
+
+**헤더 정리:**
+- 우측 상단 CURRENTLY (새 프로젝트 상담 가능) 영역 제거
 
 ### v2.2.0 — 2026-04-27 (HeroSection 리디자인 — 타이포그래피 강조 + Full-Width Progress Bar)
 

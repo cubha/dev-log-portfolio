@@ -73,6 +73,7 @@ export default async function ContactPage({
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 'clamp(40px, 5.5vw, 80px)',
           borderTop: '1px solid var(--border)',
+          alignItems: 'stretch',
         }}
       >
         {/* Left: Contact info + Live Status */}
@@ -86,7 +87,7 @@ export default async function ContactPage({
         </div>
 
         {/* Right: Guestbook form */}
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div className="sv-label" style={{ marginBottom: 28 }}>방명록 GUESTBOOK</div>
           <GuestbookForm
             user={user}

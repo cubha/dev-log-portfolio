@@ -12,7 +12,7 @@ import { TopProgressBar } from "@/src/components/common/TopProgressBar";
 
 export const metadata: Metadata = {
   title: "Silver.dev — Dev Log Portfolio",
-  description: "Next.js & Supabase 기반 개발 블로그 포트폴리오",
+  description: "Next.js & Supabase 기반 개발 포트폴리오 — 프로젝트, 기술 아티클, 이력을 담았습니다.",
 };
 
 export const viewport = {

@@ -66,7 +66,7 @@ export function GuestbookForm({ user, isAdmin = false, displayName, avatarUrl }:
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 32, flex: 1 }}>
 
       {/* 이모지 선택 */}
       <div>
@@ -149,17 +149,37 @@ export function GuestbookForm({ user, isAdmin = false, displayName, avatarUrl }:
       )}
 
       {/* 메시지 */}
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
         <div className="sv-label" style={{ marginBottom: 8 }}>메시지</div>
         <textarea
           id="guestbook-message"
           value={formData.message}
           onChange={(e) => setFormData((prev) => ({ ...prev, message: e.target.value }))}
           maxLength={200}
-          rows={5}
           placeholder="방명록을 남겨주세요 (최대 200자)"
-          className="sv-input"
-          style={{ resize: 'none', borderBottom: '1px solid var(--border-strong)', padding: '14px 0', fontFamily: 'inherit', width: '100%' }}
+          style={{
+            flex: 1,
+            minHeight: 120,
+            resize: 'none',
+            width: '100%',
+            padding: '14px',
+            fontFamily: 'inherit',
+            fontSize: 14,
+            color: 'var(--fg)',
+            outline: 'none',
+            border: '1px solid transparent',
+            backgroundImage: 'linear-gradient(var(--bg-1), var(--bg-1)), var(--metal-border-strong)',
+            backgroundOrigin: 'border-box',
+            backgroundClip: 'padding-box, border-box',
+            backgroundColor: 'var(--bg-1)',
+            transition: 'background-image .2s',
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.backgroundImage = 'linear-gradient(var(--bg-1), var(--bg-1)), var(--metal-border)'
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.backgroundImage = 'linear-gradient(var(--bg-1), var(--bg-1)), var(--metal-border-strong)'
+          }}
         />
       </div>
 
@@ -184,7 +204,7 @@ export function GuestbookForm({ user, isAdmin = false, displayName, avatarUrl }:
         type="submit"
         disabled={isLoading}
         className="btn btn-primary"
-        style={{ alignSelf: 'flex-start' }}
+        style={{ alignSelf: 'flex-start', marginTop: 'auto' }}
       >
         {isLoading ? '등록 중...' : '방명록 등록'} <span className="arrow">→</span>
       </button>
