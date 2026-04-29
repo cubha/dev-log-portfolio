@@ -345,6 +345,22 @@ body {
   box-shadow: 0 1px 2px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
+/* About 섹션 레이블+콘텐츠 그리드 — 모바일 단일 컬럼 */
+.about-section-grid {
+  grid-template-columns: 3fr 7fr;
+}
+@media (max-width: 600px) {
+  .about-section-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .about-section-grid > :first-child {
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: wrap;
+    gap: 16px !important;
+  }
+}
+
 /* About 섹션 스토리 타이틀 태그 */
 .about-story-tag {
   display: inline-flex;
