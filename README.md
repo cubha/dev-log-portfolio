@@ -108,9 +108,10 @@ dev-log-portfolio/
 │   │   │   ├── AIWorkflowSection.tsx
 │   │   │   └── ...
 │   │   ├── about/                    # About 페이지 컴포넌트
-│   │   │   ├── AboutContent.tsx
+│   │   │   ├── ProfilePhotoCard.tsx  # 프로필 사진 카드 (확대 모달 포함)
+│   │   │   ├── SkillCategoryCards.tsx # 카테고리 카드 그리드 + VIEW ALL 모달 (클라이언트)
+│   │   │   ├── SkillsSection.tsx     # 기술 스택 섹션 래퍼 (서버)
 │   │   │   ├── ExperienceTabsSection.tsx
-│   │   │   ├── SkillsSection.tsx
 │   │   │   └── ...
 │   │   ├── contact/
 │   │   │   ├── ContactInfo.tsx       # 연락처 정보 (DB 연동 + 인라인 에딧)
@@ -461,6 +462,10 @@ chmod +x verify.sh
   - [x] Login: 중앙 정렬 380px, `.metallic` 제목
   - [x] 디자인 Ground Truth 수립 (`/init-design --deep`): DESIGN-TOKENS.md · UX-BRIEF.md 생성
   - [x] 시맨틱 토큰 추가 (`--color-success`, `--color-error` 계열) + 하드코딩 7건 CSS 변수 교체
+- [x] **About 스킬 섹션 카테고리 카드 개편** (v2.4.0)
+  - [x] 5개 카테고리 카드 가로 배열 + SkillIcon 아이콘 세로 목록
+  - [x] VIEW ALL 클릭 시 backdrop-blur 모달 (전체 스킬 tag chip 표시)
+  - [x] `SkillCategoryCards` 클라이언트 컴포넌트 분리 (서버/클라이언트 역할 분리 유지)
 - [x] **Silver V2 고도화** (v2.1.0)
   - [x] 어드민 13개 파일 Silver V2 CSS 변수 일괄 적용 (`dark:` 프리픽스 제거)
   - [x] `useDeleteConfirm<T>` 커스텀 훅 추출 — BlogManager · skills · experience · education · training 공통 적용
@@ -492,8 +497,10 @@ chmod +x verify.sh
 - [x] **About 섹션 디자인 개선** — ABOUT Essay 3컬럼 수평 그리드 전환, 메탈릭 border 태그 + 좌측 세로 액센트 바, CURRENTLY 영역 제거 (2026-04-29)
 - [x] **Contact height 통일** — align-items: stretch + flex-col + textarea flex:1로 좌우 하단 정렬, textarea card 스타일(bg-1 + metallic border) 적용
 - [ ] **Writing/Blog 통일** — URL은 `/blog` 유지, 헤더 메뉴명은 "Writing"으로 통일
-- [ ] **About 메뉴 Skill 디자인 개선** — Technical Skills 섹션 시각적 개선
+- [x] ~~**About 메뉴 Skill 디자인 개선** — 카테고리 카드 그리드 + VIEW ALL 모달로 전면 개편 (v2.4.0 완료)~~
+- [ ] **프로젝트 리스트 표시방식 개선** — Projects 페이지 카드/목록 레이아웃 개편
 - [ ] **메인메뉴 각 메뉴 Preview 링크 텍스트 개선** — 홈 화면 각 섹션 Preview 이동 링크 텍스트/스타일 개선
+- [ ] **폰트 획일화 작업** — 페이지 전반 Pretendard / JetBrains Mono 역할 구분 및 일관성 정리
 
 ---
 
@@ -581,6 +588,20 @@ chmod +x verify.sh
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v2.4.0 — 2026-04-29 (About 스킬 섹션 카테고리 카드 그리드 개편)
+
+**스킬 섹션 전면 재설계:**
+- 기존 plain text 인라인 목록 → 5개 카테고리 카드(Frontend/Backend/Database/DevOps/Tools) 가로 배열로 교체
+- 카드 내부: SkillIcon + 이름 세로 5개 표시, 초과 시 `+N MORE` 인디케이터
+- 카드 하단 VIEW ALL 버튼 클릭 → backdrop-blur(8px) 모달에서 전체 스킬 metallic tag chip 표시
+- 빈 카테고리 빈 카드로 표시 (스케일 대응)
+- 카테고리 타이틀: `.metallic .sv-mono` bold 텍스트 (Silver V2 아이덴티티 통일)
+
+**아키텍처:**
+- `SkillsSection` 서버 컴포넌트 유지 (데이터 페치 담당)
+- `SkillCategoryCards` 신규 클라이언트 컴포넌트 분리 (`'use client'`, modal state, AnimatePresence)
+- `ProjectDetailModal`과 동일한 `createPortal` + `backdropFilter` 패턴 재사용
 
 ### v2.3.0 — 2026-04-29 (About ABOUT 섹션 레이아웃 · 태그 디자인 개선)
 
