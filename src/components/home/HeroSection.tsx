@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect } from 'react'
 import { animate, useMotionValue, useTransform, motion } from 'framer-motion'
 import { CursorGlow } from '@/src/components/common/CursorGlow'
@@ -68,14 +67,6 @@ export function HeroSection() {
             FULL-STACK DEVELOPER &nbsp;·&nbsp; NEXT.JS &nbsp;·&nbsp; TYPESCRIPT &nbsp;·&nbsp; SUPABASE
           </p>
 
-          <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
-            <Link href="/projects" className="btn btn-primary">
-              프로젝트 보기 <span className="arrow">→</span>
-            </Link>
-            <Link href="/about" className="btn btn-ghost">
-              소개 보기
-            </Link>
-          </div>
         </div>
       </div>
     </section>
