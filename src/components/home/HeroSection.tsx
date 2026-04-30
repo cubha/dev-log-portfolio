@@ -73,7 +73,7 @@ export function HeroSection() {
               프로젝트 보기 <span className="arrow">→</span>
             </Link>
             <Link href="/about" className="btn btn-ghost">
-              About 더 보기
+              소개 보기
             </Link>
           </div>
         </div>

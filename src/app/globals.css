@@ -554,6 +554,16 @@ input[type="datetime-local"] { color-scheme: light; }
   .two-col-label-grid-sm { grid-template-columns: clamp(80px, 11.1vw, 160px) 1fr; }
 }
 
+/* ─── Project grid ──────────────────────────────────────────────────────── */
+.project-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 600px) {
+  .project-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* ─── Misc admin utilities ──────────────────────────────────────────────── */
 
 .toggle-silver[aria-checked="true"] {
