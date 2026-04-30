@@ -498,8 +498,8 @@ chmod +x verify.sh
 - [x] **Contact height 통일** — align-items: stretch + flex-col + textarea flex:1로 좌우 하단 정렬, textarea card 스타일(bg-1 + metallic border) 적용
 - [ ] **Writing/Blog 통일** — URL은 `/blog` 유지, 헤더 메뉴명은 "Writing"으로 통일
 - [x] ~~**About 메뉴 Skill 디자인 개선** — 카테고리 카드 그리드 + VIEW ALL 모달로 전면 개편 (v2.4.0 완료)~~
-- [ ] **프로젝트 리스트 표시방식 개선** — Projects 페이지 카드/목록 레이아웃 개편
-- [ ] **메인메뉴 각 메뉴 Preview 링크 텍스트 개선** — 홈 화면 각 섹션 Preview 이동 링크 텍스트/스타일 개선
+- [x] ~~**프로젝트 리스트 표시방식 개선** — Projects 페이지 카드/목록 레이아웃 개편~~ (v2.5.0 완료)
+- [x] ~~**메인메뉴 각 메뉴 Preview 링크 텍스트 개선** — 홈 화면 각 섹션 Preview 이동 링크 텍스트/스타일 개선~~ (v2.5.0 완료)
 - [ ] **폰트 획일화 작업** — 페이지 전반 Pretendard / JetBrains Mono 역할 구분 및 일관성 정리
 
 ---
@@ -588,6 +588,27 @@ chmod +x verify.sh
 ---
 
 ## 🗒️ 릴리즈 노트
+
+### v2.5.0 — 2026-04-30 (프로젝트 카드 개편 + 홈 페이지 정리)
+
+**Projects 페이지 카드 개편:**
+- 프로젝트 그리드 3컬럼 추가 (1024px 이상 `repeat(3, 1fr)`)
+- 썸네일 높이 축소 (hero: 300→220px / 일반: 220→160px)
+- `is_featured` 첫 번째 프로젝트: `span 2 rows` Hero 카드, 상세 기능 목록(`detailed_tasks`) 전체 표시
+- 이후 `is_featured` 프로젝트: 카드 타이틀 옆 메탈릭 ★ 아이콘 배지
+- FEATURED 배지 메탈릭 디자인: `★ FEATURED` border + metallic 그라데이션 텍스트
+- featured 정렬: 클라이언트 sort (featured 우선, 그룹 내 DB 순서 유지)
+
+**메인 메뉴 Preview 텍스트 개선:**
+- 4개 카드(ABOUT/PROJECTS/WRITING/CONTACT) 타이틀·설명·aria-label 전면 개선
+- 접근성: Link에 `aria-label`, 화살표 div에 `aria-hidden="true"` 추가
+
+**홈 페이지 정리:**
+- HeroSection CTA 버튼 2개 제거 (MenuPreview 섹션이 동일 역할 중복)
+- TechStackSection 제거 (About 페이지 스킬 섹션과 중복, 하드코딩 데이터)
+
+**DB 데이터 재구성:**
+- Dev Log Portfolio / DevNote: `description` 한 줄 요약으로 교체, `detailed_tasks` 기능 목록 이관
 
 ### v2.4.0 — 2026-04-29 (About 스킬 섹션 카테고리 카드 그리드 개편)
 

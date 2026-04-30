@@ -6,7 +6,6 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { isAdminAtom } from '@/src/store/authAtom'
 import { selectedProjectAtom } from '@/src/store/projectAtom'
 import { ProjectCardActions } from './ProjectCardActions'
-import { Star } from 'lucide-react'
 
 type Project = Database['public']['Tables']['projects']['Row']
 export type CardType = 'hero' | 'featured' | 'normal'
@@ -71,7 +70,7 @@ export function ProjectCard({ project, index, cardType }: ProjectCardProps) {
 
   const isHero = cardType === 'hero'
   const isFeaturedBadge = cardType === 'featured'
-  const thumbH = isHero ? 300 : 220
+  const thumbH = isHero ? 220 : 160
 
   const handleCardClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement
@@ -126,16 +125,25 @@ export function ProjectCard({ project, index, cardType }: ProjectCardProps) {
             {project.title}
           </div>
           {isHero && (
-            <span className="sv-mono" style={{ fontSize: 10, letterSpacing: '0.1em', color: 'var(--fg-muted)', flexShrink: 0, marginTop: 4 }}>
-              ★ FEATURED
+            <span
+              className="sv-mono metallic"
+              style={{
+                fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
+                padding: '3px 10px', border: '1px solid var(--accent-line)',
+                borderRadius: 2, flexShrink: 0, marginTop: 3,
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+              }}
+            >
+              <span style={{ fontSize: 11 }}>★</span>FEATURED
             </span>
           )}
           {isFeaturedBadge && (
-            <Star
-              size={13}
-              strokeWidth={1.5}
-              style={{ flexShrink: 0, marginTop: 3, color: 'var(--fg-subtle)' }}
-            />
+            <span
+              className="metallic"
+              style={{ fontSize: 15, flexShrink: 0, marginTop: 2, lineHeight: 1 }}
+            >
+              ★
+            </span>
           )}
         </div>
 
@@ -144,8 +152,20 @@ export function ProjectCard({ project, index, cardType }: ProjectCardProps) {
           {project.description || '프로젝트 설명이 없습니다.'}
         </div>
 
+        {/* Hero only: detailed tasks */}
+        {isHero && project.detailed_tasks && project.detailed_tasks.length > 0 && (
+          <ul style={{ margin: '0 0 20px', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {project.detailed_tasks.map((task, i) => (
+              <li key={i} className="sv-mono text-subtle" style={{ fontSize: 12, letterSpacing: '0.02em', lineHeight: 1.5, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span style={{ color: 'var(--accent)', flexShrink: 0, marginTop: 1 }}>—</span>
+                {task}
+              </li>
+            ))}
+          </ul>
+        )}
+
         {/* Tech stack + arrow */}
-        <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <div style={{ marginTop: isHero ? 0 : 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {(project.tech_stack ?? []).slice(0, 3).map((t, j) => (
               <span key={j} className="tag" style={{ fontSize: 10.5, padding: '3px 9px' }}>{t}</span>
