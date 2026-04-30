@@ -6,12 +6,15 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { isAdminAtom } from '@/src/store/authAtom'
 import { selectedProjectAtom } from '@/src/store/projectAtom'
 import { ProjectCardActions } from './ProjectCardActions'
+import { Star } from 'lucide-react'
 
 type Project = Database['public']['Tables']['projects']['Row']
+export type CardType = 'hero' | 'featured' | 'normal'
 
 interface ProjectCardProps {
   project: Project
   index: number
+  cardType: CardType
 }
 
 function ProjectThumb({ project, height }: { project: Project; height: number }) {
@@ -62,12 +65,13 @@ function ProjectThumb({ project, height }: { project: Project; height: number })
   )
 }
 
-export function ProjectCard({ project, index }: ProjectCardProps) {
+export function ProjectCard({ project, index, cardType }: ProjectCardProps) {
   const isAdmin = useAtomValue(isAdminAtom)
   const setSelectedProject = useSetAtom(selectedProjectAtom)
 
-  const isFeatured = project.is_featured && index < 2
-  const thumbH = isFeatured ? 300 : 220
+  const isHero = cardType === 'hero'
+  const isFeaturedBadge = cardType === 'featured'
+  const thumbH = isHero ? 300 : 220
 
   const handleCardClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement
@@ -91,22 +95,19 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         display: 'flex',
         flexDirection: 'column',
         cursor: 'pointer',
-        gridColumn: isFeatured ? 'span 2' : 'span 1',
+        gridRow: isHero ? 'span 2' : 'span 1',
         overflow: 'hidden',
       }}
     >
-      {/* Admin actions */}
       {isAdmin && (
         <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 10 }}>
           <ProjectCardActions project={project} />
         </div>
       )}
 
-      {/* Thumbnail */}
       <ProjectThumb project={project} height={thumbH} />
 
-      {/* Content */}
-      <div style={{ padding: isFeatured ? '24px 26px 22px' : '18px 20px 18px', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <div style={{ padding: isHero ? '24px 26px 22px' : '18px 20px 18px', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
         {/* Meta row */}
         <div style={{ display: 'flex', gap: 10, marginBottom: 12, alignItems: 'center', flexWrap: 'wrap' }}>
           <span className="sv-mono text-subtle" style={{ fontSize: 10, letterSpacing: '0.12em' }}>
@@ -117,20 +118,29 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
               ONGOING
             </span>
           )}
-          {isFeatured && (
-            <span className="sv-mono" style={{ fontSize: 10, letterSpacing: '0.1em', color: 'var(--fg)' }}>
+        </div>
+
+        {/* Title + featured badge */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
+          <div className={isHero ? 'h-3' : 'h-4'} style={{ letterSpacing: '-0.015em', lineHeight: 1.3, flex: 1 }}>
+            {project.title}
+          </div>
+          {isHero && (
+            <span className="sv-mono" style={{ fontSize: 10, letterSpacing: '0.1em', color: 'var(--fg-muted)', flexShrink: 0, marginTop: 4 }}>
               ★ FEATURED
             </span>
           )}
-        </div>
-
-        {/* Title */}
-        <div className={isFeatured ? 'h-3' : 'h-4'} style={{ marginBottom: 8, letterSpacing: '-0.015em', lineHeight: 1.3 }}>
-          {project.title}
+          {isFeaturedBadge && (
+            <Star
+              size={13}
+              strokeWidth={1.5}
+              style={{ flexShrink: 0, marginTop: 3, color: 'var(--fg-subtle)' }}
+            />
+          )}
         </div>
 
         {/* Description */}
-        <div className="text-muted" style={{ fontSize: isFeatured ? 14 : 13, lineHeight: 1.55, marginBottom: 16, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+        <div className="text-muted" style={{ fontSize: isHero ? 14 : 13, lineHeight: 1.55, marginBottom: 16, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {project.description || '프로젝트 설명이 없습니다.'}
         </div>
 

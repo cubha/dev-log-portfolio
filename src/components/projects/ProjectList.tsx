@@ -46,7 +46,7 @@ export function ProjectList({ projects }: { projects: Project[] }) {
   const filteredProjects = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
 
-    return projects.filter((project) => {
+    const filtered = projects.filter((project) => {
       const matchesFilter =
         activeFilters.includes('전체') || activeFilters.includes(project.category as ProjectFilter)
 
@@ -60,6 +60,13 @@ export function ProjectList({ projects }: { projects: Project[] }) {
         (project.project_role?.toLowerCase().includes(q) ?? false) ||
         (project.tech_stack?.some((t) => t.toLowerCase().includes(q)) ?? false)
       )
+    })
+
+    // featured 프로젝트를 앞으로 정렬 (그룹 내 기존 순서 유지)
+    return [...filtered].sort((a, b) => {
+      const af = a.is_featured ? 1 : 0
+      const bf = b.is_featured ? 1 : 0
+      return bf - af
     })
   }, [projects, activeFilters, searchQuery])
 
@@ -137,10 +144,15 @@ export function ProjectList({ projects }: { projects: Project[] }) {
         />
       ) : (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: 24 }}>
-            {filteredProjects.map((project, index) => (
-              <ProjectCard key={project.id} project={project} index={index} />
-            ))}
+          <div className="project-grid">
+            {filteredProjects.map((project, index) => {
+              const cardType = project.is_featured
+                ? index === 0 ? 'hero' : 'featured'
+                : 'normal'
+              return (
+                <ProjectCard key={project.id} project={project} index={index} cardType={cardType} />
+              )
+            })}
           </div>
           <div
             className="sv-mono text-subtle"
