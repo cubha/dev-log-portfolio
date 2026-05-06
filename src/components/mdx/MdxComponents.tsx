@@ -78,8 +78,12 @@ export const createMdxComponents = (): MDXComponents => {
       </li>
     ),
     code: ({ children, className, ...props }) => {
-      const isBlock = typeof className === 'string' && className.includes('language-')
-      if (isBlock) return <code {...props} className={className}>{children}</code>
+      const isLangBlock = typeof className === 'string' && className.includes('language-')
+      // Shiki가 생성한 code 요소는 language-* 클래스 없이 span 자식을 가짐 — 인라인 코드와 구별
+      const hasElementChildren = React.Children.toArray(children).some(
+        (c) => typeof c === 'object' && c !== null
+      )
+      if (isLangBlock || hasElementChildren) return <code {...props} className={className}>{children}</code>
       return (
         <code
           {...props}
@@ -92,7 +96,7 @@ export const createMdxComponents = (): MDXComponents => {
     pre: ({ children, ...props }) => (
       <pre
         {...props}
-        style={{ marginBottom: 32, overflowX: 'auto', borderRadius: 8, background: 'var(--code-bg)', padding: '20px 24px', fontSize: 13, lineHeight: 1.65 }}
+        style={{ marginBottom: 32, overflowX: 'auto', borderRadius: 8, background: 'var(--code-bg)', color: '#E8EAED', padding: '20px 24px', fontSize: 13, lineHeight: 1.65 }}
       >
         {children}
       </pre>

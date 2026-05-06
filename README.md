@@ -589,6 +589,14 @@ chmod +x verify.sh
 
 ## 🗒️ 릴리즈 노트
 
+### v2.5.1 — 2026-05-06 (블로그 코드블럭 라이트 모드 가시성 버그 수정)
+
+**버그 수정:**
+- 라이트 모드에서 블로그 코드블럭 내 텍스트가 보이지 않는 문제 수정
+- `MdxComponents.tsx` `pre` 컴포넌트: Shiki 생성 `color` 속성이 커스텀 style로 덮어씌워지던 문제 → `color: '#E8EAED'` 명시 추가
+- `MdxComponents.tsx` `code` 컴포넌트: Shiki 처리 후 `language-*` 클래스 없는 `code` 요소가 인라인 코드 경로로 진입해 `color: var(--fg)`(다크 텍스트) 및 인라인 패딩/배경이 잘못 적용되던 문제 → `hasElementChildren` 체크로 블록 코드 정확히 구별
+- 수정 후 대비비 14.44 (WCAG AA 기준 4.5 대비 3배 이상) 확인
+
 ### v2.5.0 — 2026-04-30 (프로젝트 카드 개편 + 홈 페이지 정리)
 
 **Projects 페이지 카드 개편:**
