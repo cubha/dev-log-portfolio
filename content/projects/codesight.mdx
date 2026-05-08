@@ -1,0 +1,79 @@
+# 🔭 CodeSight — 코드베이스 아키텍처 시각화 VS Code Extension
+
+> **13개 프레임워크를 정적 분석해 Mermaid 다이어그램으로 아키텍처를 자동 시각화하는 VS Code Extension**
+> API 키 없이 정적 분석만으로 동작하며, BYOK(Bring Your Own Key)로 LLM 강화 분석을 선택적으로 추가할 수 있습니다.
+
+---
+
+## ✨ 핵심 구현 내용
+
+### 1. 🧱 IR(중간 표현) 타입 시스템 — Evidence-First 설계
+모든 분석 결과를 단일 IR(Intermediate Representation)로 표준화하는 타입 시스템을 설계했습니다.
+- **RouteNode / ComponentNode / TableNode**: 프레임워크 무관 공통 표현 타입
+- **confidence 필드**: `'verified'`(정적 입증) / `'inferred'`(휴리스틱) 로 신뢰도 구분
+- **provenance 필드**: 소스 파일 경로 + 라인 번호를 모든 노드에 필수 첨부
+- **inferenceChain**: `confidence: 'inferred'` 노드는 추론 근거 체인을 반드시 기록
+- **Less is More 원칙**: 불확실한 엣지는 방출하지 않음 — 노이즈보다 침묵이 낫다
+
+### 2. 🔌 13개 프레임워크 어댑터 아키텍처
+`IAdapter` 인터페이스 기반 레지스트리 패턴으로 프레임워크별 파서를 플러그인처럼 관리합니다.
+- **프론트엔드 (L2~L3)**: Next.js App/Pages Router, Nuxt, SvelteKit, Vue SPA, Remix, React Router, Angular
+- **백엔드 (L2)**: NestJS, Django, FastAPI, Flask, Spring Boot
+- **AST 파서**: TypeScript → ts-morph, Python/Java → tree-sitter (WASM 런타임, 네이티브 의존성 없음)
+- **스택 자동 감지**: `detectStack()` 함수로 `package.json` / `requirements.txt` / `pom.xml` 분석 후 어댑터 선택
+
+### 3. 📊 3-탭 Mermaid 다이어그램 뷰어
+분석 결과를 세 가지 축으로 시각화하는 VS Code WebView 뷰어를 구현했습니다.
+- **Tab 1 — Rendering Architecture**: URL 계층 기반 라우트 트리 + SSR/CSR/ISR/SSG 레이블
+- **Tab 2 — Screen–Component**: 라우트 → 컴포넌트 임포트 그래프 (client/shared/server 런타임 태그)
+- **Tab 3 — DB–Screen**: ORM 테이블 스키마 ERD + 각 페이지가 쿼리하는 테이블 연결 화살표
+- **로컬 Mermaid 번들**: CDN 없이 에어갭 환경에서도 동작, PNG/SVG/MD 내보내기 지원
+- **캐시 시스템**: `.codesight/cache.json` 으로 재실행 시 즉시 복원
+
+### 4. 🔗 FE↔BE 크로스 엣지 멀티 프로젝트 분석
+프론트엔드와 백엔드를 동시에 분석해 API 호출 관계를 시각화합니다.
+- FE 코드에서 `fetch()` / `axios.*` URL 정적 추출
+- URL 패턴 매칭으로 BE 라우트와 연결 (`/api/users/123` → `/api/users/:id`)
+- Mermaid 다이어그램에 점선 cross-edge로 FE↔BE 연결 표시
+- LLM 사용 시 동적 세그먼트 치환 + import 상수 해석으로 매칭율 30~50% → 70~85% 향상
+
+### 5. 🤖 선택적 LLM 강화 파이프라인 (BYOK)
+API 키 없이도 전체 기능이 동작하는 2-티어 아키텍처를 설계했습니다.
+- **Tier 1 (정적)**: 13개 어댑터 정적 파서 — API 키 불필요, 즉시 실행
+- **Tier 2 (LLM)**: Claude API 연동 — 동적 import 해석, 상수 URL 치환, 신뢰도 보강
+- Activity Bar 사이드패널에서 API Key 설정 + LLM 토글 ON/OFF
+- 캐시 버전 관리로 분석기 업데이트 시 자동 무효화 후 재분석 트리거
+
+---
+
+## 🚨 트러블슈팅
+
+### 1️⃣ VS Code WebView CSP(Content Security Policy) + Mermaid CDN 차단
+* **문제 상황:** VS Code WebView는 기본적으로 외부 CDN 스크립트 로드를 CSP로 차단. Mermaid를 CDN에서 불러오면 렌더링이 완전히 실패함
+* **원인 분석:** VS Code Extension의 보안 정책상 외부 URL 스크립트는 `content-src` 화이트리스트 없이 실행 불가
+* **해결 방안:** Mermaid 라이브러리를 Extension 번들에 포함(`media/viewer.html` 로컬 번들)하고, WebView `localResourceRoots`에 `media/` 경로를 등록해 CSP 없이 동작하도록 수정
+
+### 2️⃣ ESM 모노레포 + tree-sitter WASM 파일 VS Code Extension 번들링
+* **문제 상황:** `pnpm workspace` + `"type": "module"` ESM 전용 모노레포에서 `tree-sitter-python.wasm` / `tree-sitter-java.wasm` 파일이 Extension 패키징 시 누락되어 런타임 오류 발생
+* **원인 분석:** `vsce package` 기본 설정이 `.wasm` 바이너리를 `node_modules` 내 중첩 경로에서 수집하지 못함
+* **해결 방안:** WASM 파일을 `packages/extension/dist/wasm/`으로 명시적 복사하는 빌드 스크립트 추가. `package.json`의 `files` 필드에 `dist/wasm/**` 경로를 등록해 vsix에 포함
+
+### 3️⃣ 대규모 라우트(934개)에서 Mermaid `maximum text size exceeded` 크래시
+* **문제 상황:** 라우트 수가 100개를 초과하는 프로젝트에서 생성된 Mermaid 다이어그램이 렌더링 중 `maximum text size in diagram exceeded` 오류로 뷰어 전체가 블랭크 화면이 됨
+* **원인 분석:** Mermaid 기본 `maxTextSize` / `maxEdges` 제한이 대규모 다이어그램 수용 불가
+* **해결 방안:** `mermaid.initialize({ maxTextSize: 1000000, maxEdges: 2000 })`로 한도 상향 + `shouldChunk()` 함수에 `nodeCount > 100` 조건 추가해 자동 chunk 분할 트리거
+
+---
+
+## 🤖 AI 협업 개발 구조
+
+- **Claude Code (Controller + Implementer):** 요구사항 분석, IR 아키텍처 설계, 어댑터 구현, Phase 검증까지 전 과정 담당
+- **Gemini Deep Research (Researcher):** 프레임워크별 AST 파싱 패턴, tree-sitter 쿼리 문법, VS Code Extension API 스펙 리서치
+
+---
+
+## 💡 회고
+
+"Less is More" — 분석 결과의 정확도보다 노이즈를 줄이는 게 더 중요하다는 설계 원칙을 처음으로 프로덕션에 적용한 프로젝트입니다. 고신뢰도 엣지만 방출하고 불확실한 추론은 `inferenceChain`으로 명시적으로 드러내는 Evidence-First 접근법 덕분에, 사용자가 다이어그램을 신뢰하고 실제 아키텍처 리뷰에 활용할 수 있는 도구가 될 수 있었습니다.
+
+13개 프레임워크를 단일 IR로 흡수하는 과정에서 "공통 추상화"와 "프레임워크 특수성 보존" 사이의 균형이 가장 어려운 설계 문제였습니다. `IAdapter` 인터페이스 하나로 TypeScript/Python/Java 세 언어의 AST 파서를 통합 관리하는 구조를 만들어낸 것이 이 프로젝트의 핵심 성취입니다.
