@@ -4,5 +4,11 @@
     "deploymentEnabled": {
       "feature/*": false
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/health",
+      "schedule": "0 9 */3 * *"
+    }
+  ]
 }

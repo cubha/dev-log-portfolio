@@ -25,31 +25,36 @@ export interface UserRoleInfo {
  * const { user, role, isAdmin } = await getCurrentUserRole()
  * ```
  */
+const GUEST: UserRoleInfo = { user: null, role: 'guest', isAdmin: false }
+
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ])
+}
+
 export const getCurrentUserRole = cache(async (): Promise<UserRoleInfo> => {
-  const supabase = await createClient()
+  try {
+    const supabase = await createClient()
 
-  // 현재 로그인 유저 확인 (서버 사이드에서 안전하게 검증)
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    const { data: { user } } = await withTimeout(
+      supabase.auth.getUser(),
+      4000,
+      { data: { user: null }, error: null }
+    )
 
-  // 비로그인 상태
-  if (!user) {
-    return { user: null, role: 'guest', isAdmin: false }
-  }
+    if (!user) return GUEST
 
-  // profiles 테이블에서 역할 조회
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
+    const { data: profile } = await withTimeout(
+      supabase.from('profiles').select('role').eq('id', user.id).single(),
+      3000,
+      { data: null, error: null }
+    )
 
-  const role = profile?.role || 'user'
-
-  return {
-    user,
-    role,
-    isAdmin: role === 'admin',
+    const role = profile?.role || 'user'
+    return { user, role, isAdmin: role === 'admin' }
+  } catch {
+    return GUEST
   }
 })
