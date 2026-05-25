@@ -110,12 +110,16 @@ export async function getPublishedPostSummaries(): Promise<PostSummary[]> {
 export async function getRecentBlogPosts(limit: number): Promise<BlogPost[]> {
   try {
     const supabase = await createClient()
-    const { data, error } = await supabase
+    const query = supabase
       .from('blog_posts')
       .select('*')
       .eq('status', 'published')
       .order('published_at', { ascending: false })
       .limit(limit)
+    const timeout = new Promise<{ data: null; error: Error }>((resolve) =>
+      setTimeout(() => resolve({ data: null, error: new Error('timeout') }), 4000)
+    )
+    const { data, error } = await Promise.race([query, timeout])
     if (error) { console.error('최신 블로그 글 조회 오류:', error.message); return [] }
     return (data as BlogPost[]) ?? []
   } catch (err) { console.error('최신 블로그 글 조회 예외:', err); return [] }
