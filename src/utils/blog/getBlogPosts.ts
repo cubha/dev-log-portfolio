@@ -1,4 +1,5 @@
 import { createClient } from '@/src/utils/supabase/server'
+import { createPublicClient } from '@/src/utils/supabase/public'
 import type { BlogPost } from '@/src/types/blog'
 
 export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
@@ -109,18 +110,21 @@ export async function getPublishedPostSummaries(): Promise<PostSummary[]> {
 
 export async function getRecentBlogPosts(limit: number): Promise<BlogPost[]> {
   try {
-    const supabase = await createClient()
-    const query = supabase
-      .from('blog_posts')
-      .select('*')
-      .eq('status', 'published')
-      .order('published_at', { ascending: false })
-      .limit(limit)
-    const timeout = new Promise<{ data: null; error: Error }>((resolve) =>
-      setTimeout(() => resolve({ data: null, error: new Error('timeout') }), 4000)
-    )
-    const { data, error } = await Promise.race([query, timeout])
-    if (error) { console.error('최신 블로그 글 조회 오류:', error.message); return [] }
+    // 쿠키-프리 public 클라이언트 사용 → 홈 페이지가 ISR/CDN 캐시 가능해진다.
+    const supabase = createPublicClient()
+    // race 대상을 "값만 추출하는 Promise"로 정규화 (폴백 타입 안전).
+    const data = await Promise.race([
+      supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(limit)
+        .then(({ data }) => data),
+      new Promise<BlogPost[] | null>((resolve) =>
+        setTimeout(() => resolve(null), 4000)
+      ),
+    ])
     return (data as BlogPost[]) ?? []
   } catch (err) { console.error('최신 블로그 글 조회 예외:', err); return [] }
 }
