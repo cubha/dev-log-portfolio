@@ -1,13 +1,13 @@
-import { createClient } from '@/src/utils/supabase/server'
+import { createPublicClient } from '@/src/utils/supabase/public'
 import type { Skill } from '@/src/types/skill'
 
 /**
- * 서버 컴포넌트에서 전체 기술 스택을 가져옵니다.
- * category(오름차순) 정렬
+ * 전체 기술 스택을 가져옵니다 (category 오름차순).
+ * 공개 데이터(anon read)이므로 쿠키-프리 public 클라이언트 사용 → 호출 페이지의 ISR/CDN 캐시 유지.
  */
 export async function getAllSkills(): Promise<Skill[]> {
   try {
-    const supabase = await createClient()
+    const supabase = createPublicClient()
     const { data, error } = await supabase
       .from('skills')
       .select('*')

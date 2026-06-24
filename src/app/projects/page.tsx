@@ -1,4 +1,4 @@
-import { createClient } from '@/src/utils/supabase/server'
+import { createPublicClient } from '@/src/utils/supabase/public'
 import { Database } from '@/src/types/supabase'
 import { ProjectList } from '@/src/components/projects/ProjectList'
 import { ProjectsEmptyState } from '@/src/components/projects/ProjectsEmptyState'
@@ -10,7 +10,7 @@ export const revalidate = 3600
 
 export default async function ProjectsPage() {
   try {
-    const supabase = await createClient()
+    const supabase = createPublicClient()
 
     const { data: projects, error } = await supabase
       .from('projects')

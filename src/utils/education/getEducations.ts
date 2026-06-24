@@ -1,10 +1,10 @@
-import { createClient } from '@/src/utils/supabase/server'
+import { createPublicClient } from '@/src/utils/supabase/public'
 import type { Education } from '@/src/types/profile'
 
-/** 서버 컴포넌트에서 전체 학력을 가져옵니다 (최신순). */
+/** 전체 학력을 가져옵니다 (최신순). 공개 데이터라 public 클라이언트 사용 → ISR 캐시 유지. */
 export async function getAllEducations(): Promise<Education[]> {
   try {
-    const supabase = await createClient()
+    const supabase = createPublicClient()
     const { data, error } = await supabase
       .from('educations')
       .select('*')

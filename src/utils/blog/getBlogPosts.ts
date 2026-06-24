@@ -4,7 +4,8 @@ import type { BlogPost } from '@/src/types/blog'
 
 export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
   try {
-    const supabase = await createClient()
+    // 공개(published) 글은 anon read 가능 → 쿠키-프리 public 클라이언트로 blog 목록 ISR 캐시 유지.
+    const supabase = createPublicClient()
     const { data, error } = await supabase
       .from('blog_posts')
       .select('*')

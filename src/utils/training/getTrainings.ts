@@ -1,4 +1,4 @@
-import { createClient } from '@/src/utils/supabase/server'
+import { createPublicClient } from '@/src/utils/supabase/public'
 import type { Training } from '@/src/types/profile'
 
 /**
@@ -31,7 +31,7 @@ import type { Training } from '@/src/types/profile'
  */
 export async function getAllTrainings(): Promise<Training[]> {
   try {
-    const supabase = await createClient()
+    const supabase = createPublicClient()
     const { data, error } = await supabase
       .from('trainings')
       .select('*')
