@@ -1,4 +1,4 @@
-import { createClient } from '@/src/utils/supabase/server'
+import { createPublicClient } from '@/src/utils/supabase/public'
 import { FloatingUserButton } from '@/src/components/common/FloatingAdminButton'
 import { AuthStateInitializerClient } from '@/src/components/providers/AuthStateInitializer'
 import { PageHeader } from '@/src/components/common/PageHeader'
@@ -16,7 +16,7 @@ import type { AboutProfile } from '@/src/types/profile'
 export const revalidate = 3600
 
 export default async function AboutPage() {
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
   const [skillsData, experiencesData, educationsData, trainingsData, profileRes, locationRes] = await Promise.all([
     getAllSkills(),
