@@ -1,0 +1,74 @@
+# 📟 Claude Code Gauge — VS Code · Cursor 실시간 Claude 사용량 모니터
+
+> **에디터를 떠나지 않고 Claude Max 5h/7d 사용량·번레이트·토큰 비용을 실시간으로 확인하는 VS Code / Cursor Extension**
+> Rate Limit은 Anthropic 공식 API 헤더에서, 토큰 비용은 로컬 `~/.claude/**/*.jsonl` 파싱으로 — 프라이빗 API 없이 동작합니다. (구 *ClaudePulse*)
+
+---
+
+## ✨ 핵심 구현 내용
+
+### 1. 🔀 이중 데이터 소스 아키텍처 — 프라이빗 API 0개
+사용량을 두 개의 독립 소스로 분리해 수집하는 구조를 설계했습니다.
+- **Rate Limit (5h / 7d)**: Anthropic 공식 API의 응답 헤더에서 추출 — poll당 1-토큰 haiku 요청(≈5~10 입력 토큰)으로 쿼터 소모 최소화
+- **토큰·비용**: `~/.claude/projects/**/*.jsonl` 로컬 파일 파싱 — 네트워크 호출도, 비공식 API도 없음
+- **플랜 티어**: 로컬 credentials에서 `Max 5x` 등 구독 등급을 추가 API 호출 없이 표시
+- **스트리밍 중복 제거**: `requestId` + `message.id` 이중 dedup으로 스트리밍 응답 이중 카운트 방지
+
+### 2. 📊 StatusBar · Sidebar · Dashboard 3계층 UI + 예측
+같은 데이터를 밀도가 다른 세 표면으로 노출합니다.
+- **StatusBar**: `5H 🟦🟦⬜⬜⬜ 28%` / `7D 🟦⬜⬜⬜⬜ 14%` 2개 독립 아이템 — 사용률 임계값(80/90/100%)에 따라 색·배경·폰트가 OK/Warning/Danger/Blocked로 전환
+- **Sidebar**: 세션(5h)·주간(7d)·초과사용량 3섹션 + 상태 컬러 진행바, 병목 윈도우(5h/7d) amber 하이라이트
+- **Burn Rate / Safe Until**: `%/min` 소비 속도를 세션 경과 시간으로 1차 추정 후 poll 히스토리로 보정 → 5h 쿼터 소진 예상 시각 예측
+- **Dashboard Panel**: SESSION·WEEKLY·BURN RATE·SAFE UNTIL 4카드 + 30m/2h/24h 토글 추이 차트
+
+### 3. 💰 토큰·비용 분석 — 오프라인 가격 계산
+API 호출 없이 로컬 로그만으로 비용을 산출합니다.
+- **LiteLLM 가격 스냅샷 내장**: fable-5 / opus-4.5–4.8 / sonnet-4.5–4.6 / haiku-4.5 모델별 단가를 임베드해 오프라인 계산
+- **모델·캐시 효율**: 오늘의 주 모델 칩, 캐시 히트율(`⚡ 72%`)과 절감 비용, 모델별 비용 도넛 차트
+- **장기 추적**: 일별 스냅샷을 `globalStorageUri/ccg-history.json`에 영속화 → jsonl 로테이션을 넘겨 월 단위 추이/이번 달 예상 비용 제공
+
+### 4. 🎯 비용 귀속(Attribution) — "정직한 근사" 설계
+측정 한계를 숨기지 않고 1급(first-class) 버킷으로 드러내는 패턴을 일관 적용했습니다.
+- **Cost by Skill**: Claude Code가 스킬을 stamp하는 구간은 *스킬이 로드된 메인체인 턴*(≈33%)뿐 — 나머지 67%를 숨기지 않고 **"Outside skills"** 버킷으로 노출, 헤더에 `≈ Partial` 배지
+- **Cost by Commit (usage×git 회고)**: 커밋은 로그에 기록되지 않으므로 `timestamp + cwd + branch` 근사 조인 — `≈ Approximate` 배지 + 신뢰도 점 + **"Other / Uncommitted"** 버킷, SHA-키 영속화로 30일 로그 윈도우 초과 생존
+- **Git Branch ROI**: 모든 jsonl 항목의 `gitBranch` 필드로 브랜치별 Cost·Tokens·Sessions 집계, 비용순 정렬
+- **Subagent 분리**: `isSidechain`/`agentId`로 서브에이전트 소비를 메인 세션과 분리 집계
+
+### 5. 🌐 4개 국어 i18n + 실시간 동기화
+- 한국어 / English / 日本語 / 中文 — 사이드바 헤더 드롭다운에서 전환 시 라벨·섹션명·에러·번레이트 문자열까지 즉시 갱신
+- 사이드바에서 언어 변경 시 Dashboard Panel을 재오픈 없이 extension messaging 브로드캐스트로 실시간 동기화
+- 최초 설치 시 `navigator.language` 자동 감지 → `globalState`로 선택 영속화
+
+---
+
+## 🚨 트러블슈팅
+
+### 1️⃣ `spawnSync` git 호출이 Extension Host 이벤트 루프를 블로킹 → 카드 무한 로딩
+* **문제 상황:** "Cost by Commit" 카드가 *Collecting data…* 플레이스홀더에서 영영 벗어나지 못하고, 대시보드를 새로고침해도 복구되지 않음
+* **원인 분석:** 웹뷰 렌더 경로(무조건 replace)는 정상이었고, **응답 자체가 도착하지 않는 것**이 진짜 원인. `buildRetroSummary`가 git을 **동기**(`spawnSync`)로 호출해 extension-host 이벤트 루프를 막아 RPC 응답이 전달되지 못했고, 활성 세션이 `.jsonl`을 쓸 때마다 빌드가 재트리거되어 루프가 고착됨
+* **해결 방안:** GitLogReader를 **완전 비동기화**(`spawnSync` → `execFile` + `await`) + **5s 타임아웃**으로 git이 호스트를 막거나 무한 대기하지 못하게 함. 레코드가 실제 변경될 때만 **debounce·dedup 재빌드**하고 요약을 영속화해 세션 간 즉시 first-paint. 소비처가 0이던 `git log --name-only`를 제거해 대형 레포 `git log` 비용 약 5× 절감
+
+### 2️⃣ 스트리밍 응답 이중 카운트로 토큰·비용 과대 집계
+* **문제 상황:** 스트리밍으로 분할 전송되는 응답이 여러 청크로 기록되어 동일 응답이 중복 합산됨
+* **원인 분석:** jsonl 한 응답이 streaming chunk 단위로 복수 엔트리를 남겨, 단순 합산 시 토큰·비용이 부풀려짐
+* **해결 방안:** `requestId` + `message.id` **이중 dedup** 키로 동일 응답을 한 번만 계상하도록 집계 파이프라인 수정
+
+### 3️⃣ 스킬 비용 귀속이 전체 비용의 ~33%만 커버 → 카드가 전부를 담은 것처럼 오인
+* **문제 상황:** Cost by Skill이 `attributionSkill`이 찍힌 턴만 합산해, 표시 비용이 실제 총비용과 크게 어긋남
+* **원인 분석:** Claude Code는 *스킬이 활성 로드된 메인체인 턴*에만 스킬을 stamp(≈33%) — 평범한 요청과 스킬 로드 전후 작업(≈67%)이 조용히 사라짐
+* **해결 방안:** 미귀속 메인체인 작업(`!isSidechain && !attributionSkill`)을 **"Outside skills" 1급 버킷**으로 노출하고, 점유율을 총합 기준으로 재계산 + `≈ Partial` 배지로 귀속 범위를 명시. 서브에이전트(sidechain) 비용은 버킷에서 제외해 이중 계상 차단
+
+---
+
+## 🤖 AI 협업 개발 구조
+
+- **Claude Code (Controller + Implementer):** 요구사항 분석, 이중 데이터 소스 설계, jsonl 파서·집계 파이프라인 구현, 비용 귀속 정직성 패턴 설계, Phase 검증까지 전 과정 담당
+- **Gemini Deep Research (Researcher):** Anthropic Rate Limit 헤더 스펙, LiteLLM 모델 가격 데이터, VS Code Extension Webview/메시징 API 리서치
+
+---
+
+## 💡 회고
+
+이 프로젝트의 설계 중심은 **"정직한 근사(Honest Approximation)"** 였습니다. 사용량·비용 데이터는 본질적으로 불완전하지만 — 스킬은 33%만 stamp되고, 커밋은 로그에 없으며, 스트리밍은 중복을 만듭니다 — 그 한계를 숨기고 그럴듯한 숫자를 보여주는 대신, 측정되지 않는 부분을 **"Outside skills" · "Other / Uncommitted"** 같은 1급 버킷과 `≈ Partial` / `≈ Approximate` 배지로 명시적으로 드러냈습니다.
+
+가장 값진 교훈은 트러블슈팅 1번에서 나왔습니다. "무한 로딩"의 원인을 렌더 경로에서 찾다 실패하고, 결국 **동기 git 호출이 이벤트 루프를 막아 응답 자체가 출발하지 못한다**는 진짜 원인을 짚어낸 경험은, 증상이 보이는 계층과 결함이 있는 계층이 다를 수 있다는 디버깅 원칙을 다시 새기게 했습니다. 비공식 API 0개·로컬 우선이라는 제약을 끝까지 지키면서도 실사용 가치를 만든 것이 이 프로젝트의 핵심 성취입니다.
