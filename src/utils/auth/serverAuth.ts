@@ -27,7 +27,7 @@ export interface UserRoleInfo {
  */
 const GUEST: UserRoleInfo = { user: null, role: 'guest', isAdmin: false }
 
-function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+function withTimeout<T>(promise: PromiseLike<T>, ms: number, fallback: T): Promise<T> {
   return Promise.race([
     promise,
     new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
@@ -38,21 +38,27 @@ export const getCurrentUserRole = cache(async (): Promise<UserRoleInfo> => {
   try {
     const supabase = await createClient()
 
-    const { data: { user } } = await withTimeout(
-      supabase.auth.getUser(),
+    // 폴백 객체가 Supabase 응답 타입(UserResponse 등)과 불일치하지 않도록
+    // race 대상을 "값만 추출하는 Promise"로 정규화한다 (타입 안전).
+    const user = await withTimeout<User | null>(
+      supabase.auth.getUser().then(({ data }) => data.user),
       4000,
-      { data: { user: null }, error: null }
+      null
     )
 
     if (!user) return GUEST
 
-    const { data: profile } = await withTimeout(
-      supabase.from('profiles').select('role').eq('id', user.id).single(),
+    const role = (await withTimeout<string | null>(
+      supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => data?.role ?? null),
       3000,
-      { data: null, error: null }
-    )
+      null
+    )) ?? 'user'
 
-    const role = profile?.role || 'user'
     return { user, role, isAdmin: role === 'admin' }
   } catch {
     return GUEST
