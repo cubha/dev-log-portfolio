@@ -59,12 +59,10 @@ export async function updateSession(request: NextRequest) {
   if (!user) {
     // /login은 예외 (로그인 페이지 자체는 접근 허용)
     if (pathname === '/login') {
-      console.log(`🌍 [Auth Guard] Path: ${pathname} | Role: 없음 | Status: 승인 (로그인 페이지)`)
       return supabaseResponse
     }
 
     // /admin 경로에 비로그인 접근 → 로그인으로
-    console.log(`🚫 [Auth Guard] Path: ${pathname} | Role: 없음 | Status: 거부 → /login`)
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('error', 'no_session')
     loginUrl.searchParams.set('redirect', pathname)
@@ -76,7 +74,6 @@ export async function updateSession(request: NextRequest) {
   //      중복 로그인을 방지합니다.
   // --------------------------------------------------
   if (pathname === '/login') {
-    console.log(`🔄 [Auth Guard] Path: /login | Status: 이미 로그인됨 → /`)
     return NextResponse.redirect(new URL('/', request.url))
   }
 
@@ -99,11 +96,9 @@ export async function updateSession(request: NextRequest) {
   // --------------------------------------------------
   if (userRole === 'admin') {
     // 관리자: 모든 /admin/* 경로 접근 허용
-    console.log(`✅ [Auth Guard] Path: ${pathname} | Role: admin | Status: 승인`)
     return supabaseResponse
   } else {
     // 관리자 외: /admin/* 경로 접근 차단 → 메인으로 리다이렉트
-    console.log(`⛔ [Auth Guard] Path: ${pathname} | Role: ${userRole} | Status: 거부 → /`)
     return NextResponse.redirect(new URL('/', request.url))
   }
 }

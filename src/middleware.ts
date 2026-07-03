@@ -16,7 +16,6 @@ import { updateSession } from '@/src/utils/supabase/middleware'
  * 모든 보안 로직은 src/utils/supabase/middleware.ts에 위임합니다.
  */
 export async function middleware(request: NextRequest) {
-  console.log('✅ Middleware is running on:', request.nextUrl.pathname)
   return await updateSession(request)
 }
 
