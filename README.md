@@ -2,7 +2,7 @@
 
 > 개인 포트폴리오 및 경력 관리 시스템
 
-[![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel)](https://dev-log-portfolio-y2sl.vercel.app)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel)](https://dev-log-portfolio.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?logo=typescript)](https://www.typescriptlang.org)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green?logo=supabase)](https://supabase.com)
@@ -10,7 +10,7 @@
 Next.js 15와 Supabase를 활용한 풀스택 포트폴리오 웹 애플리케이션입니다.
 프로젝트, 기술 스택, 경력, 방명록, Live Status 등을 통합 관리합니다.
 
-🌐 **배포 URL**: [https://dev-log-portfolio-y2sl.vercel.app](https://dev-log-portfolio-y2sl.vercel.app)
+🌐 **배포 URL**: [https://dev-log-portfolio.vercel.app](https://dev-log-portfolio.vercel.app)
 
 ---
 
@@ -831,7 +831,7 @@ chmod +x verify.sh
 ### v1.0.0 — 2026-03-01 (초기 배포)
 
 **🎉 Vercel 배포 완료**
-- 배포 URL: https://dev-log-portfolio-y2sl.vercel.app
+- 배포 URL: https://dev-log-portfolio.vercel.app
 - GitHub `main` 브랜치 push → 자동 빌드 및 배포
 
 **주요 기능 포함:**

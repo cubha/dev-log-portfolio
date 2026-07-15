@@ -2,17 +2,41 @@ name: Supabase Keep Alive
 
 on:
   schedule:
-    - cron: '0 0 */3 * *'  # 매 3일마다 실행 (7일 pause 기준 안전 마진)
+    # 매일 03:17 UTC (12:17 KST). 정각(특히 00:00 UTC)은 GitHub 스케줄 드랍 피크라 회피.
+    # pause 판정은 주간 activity 볼륨 기준("매일 수 회 요청")이라 매일 실행이 필수.
+    - cron: '17 3 * * *'
   workflow_dispatch:        # 수동 실행 가능
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase
+      - name: Write ping (RPC) + read pings — 실패 시 워크플로 FAIL(이메일 경보)
         run: |
-          curl -s -o /dev/null -w "%{http_code}" \
-            "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}/rest/v1/blog_posts?select=id&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
-          echo " - Supabase ping 완료"
+          set -euo pipefail
+          base="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
+          key="${{ secrets.SUPABASE_ANON_KEY }}"
+
+          check() {
+            local label="$1"; shift
+            local code
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$@" || echo "000")
+            echo "$label: HTTP $code"
+            case "$code" in
+              2*) ;;
+              *) echo "::error::keep-alive 실패 ($label, HTTP $code) — Supabase pause 가능성. 대시보드 확인 필요."; exit 1 ;;
+            esac
+          }
+
+          # 1) write: heartbeat RPC (pause 방지의 핵심 — DB write activity)
+          check "write:keep_alive_ping" -X POST "$base/rest/v1/rpc/keep_alive_ping" \
+            -H "apikey: $key" -H "Authorization: Bearer $key" \
+            -H "Content-Type: application/json" -d '{"src":"github"}'
+
+          # 2~3) read: 주간 "user queries" 볼륨 보강
+          check "read:blog_posts" "$base/rest/v1/blog_posts?select=id&limit=1" \
+            -H "apikey: $key" -H "Authorization: Bearer $key"
+          check "read:projects" "$base/rest/v1/projects?select=id&limit=1" \
+            -H "apikey: $key" -H "Authorization: Bearer $key"
+
+          echo "Supabase keep-alive 완료"
