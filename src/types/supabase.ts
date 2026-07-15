@@ -497,6 +497,21 @@ export type Database = {
         }
         Relationships: []
       }
+      keep_alive: {
+        Row: {
+          pinged_at: string
+          source: string
+        }
+        Insert: {
+          pinged_at?: string
+          source: string
+        }
+        Update: {
+          pinged_at?: string
+          source?: string
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           id: number
@@ -586,7 +601,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      keep_alive_ping: { Args: { src?: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
