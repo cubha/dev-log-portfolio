@@ -3,7 +3,7 @@
 -- GH Actions(github)·Vercel Cron(vercel)이 매일 이 RPC로 write를 남긴다.
 -- source별 행이라 어느 경보망이 죽었는지 pinged_at으로 감사 가능.
 create table if not exists public.keep_alive (
-  source text primary key,
+  source text primary key check (source in ('github', 'vercel', 'manual')),
   pinged_at timestamptz not null default now()
 );
 
@@ -11,17 +11,35 @@ create table if not exists public.keep_alive (
 alter table public.keep_alive enable row level security;
 
 -- SECURITY DEFINER: anon이 테이블 정책 없이도 단일 행 upsert만 가능.
--- 파라미터는 left(...,20)으로 클램프 — 임의 값이 와도 피해가 타임스탬프 갱신을 넘지 못함.
+-- src는 허용된 source 값으로만 정규화(lower+trim) — 검증 없이 통과시키면
+-- 외부에서 임의 문자열로 실경보망(github/vercel) 행을 스푸핑해 장애를 은폐할 수 있고,
+-- anon 공개 키 특성상 무제한 문자열로 행이 계속 증식할 수 있다.
 create or replace function public.keep_alive_ping(src text default 'manual')
 returns timestamptz
-language sql
+language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  normalized text := lower(trim(coalesce(src, '')));
+  result timestamptz;
+begin
+  if normalized = '' then
+    normalized := 'manual';
+  end if;
+
+  if normalized not in ('github', 'vercel', 'manual') then
+    raise exception 'keep_alive_ping: invalid source %', src
+      using errcode = '22023';
+  end if;
+
   insert into public.keep_alive (source, pinged_at)
-  values (left(coalesce(nullif(trim(src), ''), 'manual'), 20), now())
+  values (normalized, now())
   on conflict (source) do update set pinged_at = now()
-  returning pinged_at;
+  returning pinged_at into result;
+
+  return result;
+end;
 $$;
 
 revoke all on function public.keep_alive_ping(text) from public;
