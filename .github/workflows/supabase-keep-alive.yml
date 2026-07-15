@@ -20,8 +20,8 @@ jobs:
           check() {
             local label="$1"; shift
             local code
-            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$@" || echo "000")
-            echo "$label: HTTP $code"
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$@") || true
+            echo "$label: HTTP ${code:-000}"
             case "$code" in
               2*) ;;
               *) echo "::error::keep-alive 실패 ($label, HTTP $code) — Supabase pause 가능성. 대시보드 확인 필요."; exit 1 ;;
