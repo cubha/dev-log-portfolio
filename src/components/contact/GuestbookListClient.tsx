@@ -75,8 +75,8 @@ function GuestbookItem({
       transition={{ duration: 0.2 }}
       style={{ borderTop: '1px solid var(--border)' }}
     >
-      {/* 4열 행 그리드 */}
-      <div style={{
+      {/* 4열 행 그리드 (모바일: globals.css .guestbook-item-grid 참조) */}
+      <div className="guestbook-item-grid" style={{
         display: 'grid',
         gridTemplateColumns: '52px minmax(140px, 180px) 1fr minmax(100px, 160px)',
         gap: 20,
@@ -84,7 +84,7 @@ function GuestbookItem({
         alignItems: 'start',
       }}>
         {/* 이모지 / 아바타 */}
-        <div>
+        <div className="gb-cell-avatar">
           {entry.avatar_url ? (
             <Image src={entry.avatar_url} alt="" width={32} height={32} unoptimized style={{ borderRadius: '50%' }} />
           ) : (
@@ -93,7 +93,7 @@ function GuestbookItem({
         </div>
 
         {/* 닉네임 + 날짜 */}
-        <div>
+        <div className="gb-cell-meta">
           <div className="h-4" style={{ marginBottom: 4, color: 'var(--fg)' }}>
             {entry.nickname}
             {entry.is_secret && entry.user_id === currentUserId && (
@@ -117,12 +117,12 @@ function GuestbookItem({
         </div>
 
         {/* 메시지 */}
-        <div style={{ fontSize: 14, color: 'var(--fg)', lineHeight: 1.6 }}>
+        <div className="gb-cell-message" style={{ fontSize: 14, color: 'var(--fg)', lineHeight: 1.6, minWidth: 0, overflowWrap: 'break-word' }}>
           {entry.message}
         </div>
 
         {/* 좋아요 + 댓글 */}
-        <div className="sv-mono text-muted" style={{ fontSize: 12, textAlign: 'right' }}>
+        <div className="gb-cell-stats sv-mono text-muted" style={{ fontSize: 12, textAlign: 'right' }}>
           <button
             type="button"
             onClick={onLike}

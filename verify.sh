@@ -35,6 +35,41 @@ info() { echo -e "  ${BLUE}→${NC}  $*"; }
 warn() { echo -e "  ${YELLOW}!${NC}  $*"; }
 header() { echo -e "\n${BOLD}${CYAN}▶ $*${NC}"; }
 
+# ─── 행(hang) 가드 러너 (F-NEW-33) ────────────────────────────
+# 장시간 명령은 $() 캡처 금지 + timeout 필수. 근거(실측): 명령이 **정상 종료(0ms)** 해도
+# 고아 자식이 stdout을 물면 셸이 계속 블록되고(6002ms·exit=0) timeout은 발동조차 하지 않는다
+# → 124도 로그도 안 남아 "멈췄는데 진단 자료가 없다"가 된다. 그래서 캡처 폐지가 1순위다.
+# `--foreground` 금지 — 그룹 킬이 꺼져 고아가 파이프를 물고 무한 대기(≥58s 관측).
+VERIFY_LOG_DIR="${TMPDIR:-/tmp}/verify-dev-log-portfolio-$$"
+mkdir -p "$VERIFY_LOG_DIR"
+VERIFY_TIMEOUT_TSC=${VERIFY_TIMEOUT_TSC:-120}
+VERIFY_TIMEOUT_LINT=${VERIFY_TIMEOUT_LINT:-120}
+
+run_guarded() {
+  local secs="$1" logname="$2"; shift 2
+  local log="$VERIFY_LOG_DIR/$logname" rc=0 wd=""
+  # 동결 시점 스냅샷 — timeout 그룹 킬이 증거를 지우기 전에 촬영. 서브셸 출력은 반드시 닫는다
+  # (상위가 verify.sh를 $()로 캡처할 때 워치독이 파이프를 물면 우리가 그 행을 만든다).
+  ( sleep $(( secs * 2 / 3 )); ps -ef --forest > "$VERIFY_LOG_DIR/freeze-$logname" 2>/dev/null ) >/dev/null 2>&1 &
+  wd=$!
+  timeout --kill-after=15 "$secs" "$@" > "$log" 2>&1 || rc=$?
+  kill "$wd" 2>/dev/null || true; wait "$wd" 2>/dev/null || true
+  if [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ]; then
+    fail "행(hang) 감지: '$*' 이 ${secs}초 내 미종료 (exit $rc)"
+    {
+      echo "=== 명령: $* (상한 ${secs}s, exit $rc)"
+      echo "=== 동결 시점 프로세스 트리 ==="
+      cat "$VERIFY_LOG_DIR/freeze-$logname" 2>/dev/null || echo "(스냅샷 없음)"
+      echo "=== 그룹 킬 생존자 (next/swc·tsserver·esbuild 등) ==="
+      ps -ef --forest 2>/dev/null | grep -E 'next|swc|tsserver|esbuild|eslint' | grep -v grep || echo "(없음)"
+      echo "=== 로그 마지막 50줄 ==="
+      tail -50 "$log" 2>/dev/null
+    } > "$VERIFY_LOG_DIR/forensic-$logname" 2>&1
+    warn "포렌식 덤프: $VERIFY_LOG_DIR/forensic-$logname"
+  fi
+  return "$rc"
+}
+
 FAIL_COUNT=0
 
 # ================================================================
@@ -54,6 +89,7 @@ fi
 
 if [ -z "$CHANGED" ]; then
   warn "변경된 파일 없음 — Cursor가 아직 수정하지 않았거나 git add 전입니다."
+  rm -rf "${VERIFY_LOG_DIR:?}"
   exit 0
 fi
 
@@ -118,15 +154,21 @@ fi  # end TS_ONLY check
 # ================================================================
 header "TypeScript 컴파일 검사"
 
-TS_OUTPUT=$(npx tsc --noEmit 2>&1 || true)
+# $() 캡처 폐지 (F-NEW-33) — 결과는 로그 파일로 받고 exit는 `|| VAR=$?`로 수신한다.
+# 맨몸 호출은 set -e에서 첫 실패 즉사 = "모든 실패를 세어 총계 보고" 설계가 깨진다.
+TS_EXIT=0
+run_guarded "$VERIFY_TIMEOUT_TSC" tsc.log npx tsc --noEmit || TS_EXIT=$?
+TS_LOG="$VERIFY_LOG_DIR/tsc.log"
 
-if [ -z "$TS_OUTPUT" ]; then
+if [ "$TS_EXIT" -eq 124 ] || [ "$TS_EXIT" -eq 137 ]; then
+  ((FAIL_COUNT += 1)) || true   # 행 자체가 실패 — 상세는 run_guarded가 이미 보고
+elif [ ! -s "$TS_LOG" ]; then
   pass "TypeScript 오류 없음"
 else
   fail "TypeScript 오류 발견"
   echo ""
-  echo "$TS_OUTPUT" | head -30 | while read -r line; do echo "    $line"; done
-  TS_ERR_COUNT=$(echo "$TS_OUTPUT" | grep -c 'error TS' || true)
+  head -30 "$TS_LOG" | while read -r line; do echo "    $line"; done
+  TS_ERR_COUNT=$(grep -c 'error TS' "$TS_LOG" || true)
   warn "총 ${TS_ERR_COUNT}개 오류"
   ((FAIL_COUNT += TS_ERR_COUNT)) || true
 fi
@@ -143,14 +185,19 @@ if [ "$TS_ONLY" = false ]; then
     info "TS/TSX 파일 없음 — 생략"
   else
     LINT_FILES=$(echo "$CHANGED_TS" | tr '\n' ' ')
-    LINT_OUTPUT=$(npx eslint $LINT_FILES --max-warnings=0 2>&1 || true)
+    LINT_EXIT=0
+    # shellcheck disable=SC2086 — $LINT_FILES는 의도적 단어분리(파일 목록)
+    run_guarded "$VERIFY_TIMEOUT_LINT" eslint.log npx eslint $LINT_FILES --max-warnings=0 || LINT_EXIT=$?
+    LINT_LOG="$VERIFY_LOG_DIR/eslint.log"
 
-    if echo "$LINT_OUTPUT" | grep -qE 'error|warning'; then
+    if [ "$LINT_EXIT" -eq 124 ] || [ "$LINT_EXIT" -eq 137 ]; then
+      ((FAIL_COUNT += 1)) || true
+    elif grep -qE 'error|warning' "$LINT_LOG"; then
       fail "ESLint 오류/경고 발견"
-      echo "$LINT_OUTPUT" | grep -E 'error|warning' | head -20 | while read -r line; do
+      grep -E 'error|warning' "$LINT_LOG" | head -20 | while read -r line; do
         echo "    $line"
       done
-      LINT_ERRS=$(echo "$LINT_OUTPUT" | grep -c 'error' || true)
+      LINT_ERRS=$(grep -c 'error' "$LINT_LOG" || true)
       ((FAIL_COUNT += LINT_ERRS)) || true
     else
       pass "ESLint 통과"
@@ -203,6 +250,7 @@ header "검증 결과"
 
 if [ "$FAIL_COUNT" -eq 0 ]; then
   echo -e "\n  ${GREEN}${BOLD}✅ 모든 검사 통과 — Cursor 변경이 spec과 일치합니다.${NC}\n"
+  rm -rf "${VERIFY_LOG_DIR:?}"   # 통과분 로그는 누적만 됨 (실패·행일 때만 보존)
   exit 0
 else
   echo -e "\n  ${RED}${BOLD}❌ ${FAIL_COUNT}개 문제 발견 — Cursor에 수정 프롬프트가 필요합니다.${NC}\n"
