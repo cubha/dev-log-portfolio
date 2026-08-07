@@ -8,6 +8,7 @@ const BARS = [
 export function BufferPhilosophySection() {
   return (
     <section
+      className="buffer-philosophy-grid"
       style={{
         paddingTop: 'clamp(60px, 5.5vw, 80px)',
         paddingRight: 'clamp(20px, 5.5vw, 80px)',
