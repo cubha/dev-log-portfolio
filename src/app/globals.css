@@ -399,6 +399,20 @@ body {
   }
 }
 
+/* Skill 카테고리 카드 — 좁은 화면에서 5칸 균등폭(flex:1 1 0)이 라벨(FRONTEND/DATABASE 등)보다
+   좁아져 텍스트가 카드 밖으로 흘러나오는 문제 방지. 고정폭 + 가로 스와이프로 전환 */
+@media (max-width: 640px) {
+  .skill-category-card {
+    flex: 0 0 128px !important;
+  }
+  .skill-category-scroll {
+    scroll-snap-type: x proximity;
+  }
+  .skill-category-card {
+    scroll-snap-align: start;
+  }
+}
+
 /* About 섹션 레이블+콘텐츠 그리드 — 모바일 단일 컬럼 */
 .about-section-grid {
   grid-template-columns: 3fr 7fr;

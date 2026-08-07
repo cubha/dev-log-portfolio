@@ -126,7 +126,7 @@ function CategoryCard({ category, skills }: { category: string; skills: Skill[] 
   return (
     <>
       <div
-        className="card"
+        className="card skill-category-card"
         style={{
           display: 'flex', flexDirection: 'column',
           flex: '1 1 0', minWidth: 0,
@@ -219,7 +219,7 @@ export function SkillCategoryCards({ skills }: SkillCategoryCardsProps) {
   }
 
   return (
-    <div style={{
+    <div className="skill-category-scroll" style={{
       display: 'flex', gap: 12,
       overflowX: 'auto',
       paddingBottom: 4,
