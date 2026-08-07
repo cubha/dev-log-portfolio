@@ -137,18 +137,26 @@ body {
 /* ─── Metallic gradient (Hero "은승호 입니다." + "The Assembly Line" only) ── */
 
 .metallic {
+  /* 기본 색상(fallback) — background-clip:text 미지원/실패 환경에서 텍스트가
+     완전히 사라지지 않도록 실제 색을 먼저 지정하고, 지원 환경에서만 투명 처리 */
+  color: #334155;
   background-image: linear-gradient(120deg,
     #1E293B 0%, #334155 22%, #64748B 42%,
     #7C8A99 52%, #475569 72%, #1E293B 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
 }
 .dark .metallic {
+  color: #CBD5E1;
   background-image: linear-gradient(120deg,
     #64748B 0%, #CBD5E1 22%, #FFFFFF 42%,
     #F1F5F9 52%, #94A3B8 72%, #475569 100%);
+}
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .metallic {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
 }
 
 /* ─── Typography utilities ──────────────────────────────────────────────── */
