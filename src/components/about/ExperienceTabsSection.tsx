@@ -210,7 +210,7 @@ export function ExperienceTabsSection({
                   : '2px solid transparent',
                 borderRadius: '0 4px 4px 0',
                 color: activeTab === id ? 'var(--fg)' : 'var(--fg-muted)',
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: "'Pretendard Variable', 'Pretendard', system-ui, sans-serif",
                 fontSize: 12,
                 letterSpacing: '0.06em',
                 cursor: 'pointer',
