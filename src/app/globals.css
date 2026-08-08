@@ -1,11 +1,42 @@
-/* Pretendard + JetBrains Mono — self-host (@font-face)
-   외부 @import 워터폴 제거: 동일 출처(/fonts)에서 직접 로드 + font-display:swap (FOIT 방지) */
+/* SUIT + JetBrains Mono — self-host (@font-face)
+   외부 @import 워터폴 제거: 동일 출처(/fonts)에서 직접 로드 + font-display:swap (FOIT 방지)
+   font-family 이름은 'Pretendard Variable'을 그대로 유지 — 실제 로드되는 파일은 SUIT(정적 5-weight)로
+   교체됐다. body/h-* 전역에 이미 이 이름이 폭넓게 참조되어 있어, 이름을 바꾸는 대신 @font-face의
+   src만 바꿔 참조처 전체(인라인 스타일 포함)에 자동 반영되도록 했다(라이선스: SIL OFL 1.1). */
 @font-face {
   font-family: 'Pretendard Variable';
-  font-weight: 45 920;
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
-  src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
+  src: url('/fonts/SUIT-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/SUIT-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/SUIT-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/SUIT-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/SUIT-ExtraBold.woff2') format('woff2');
 }
 @font-face {
   font-family: 'JetBrains Mono';
@@ -161,12 +192,14 @@ body {
 
 /* ─── Typography utilities ──────────────────────────────────────────────── */
 
+/* sv-mono/eyebrow/label: 클래스명은 과거 JetBrains Mono 시절 이름이 남은 것이며
+   실제 폰트는 SUIT(Pretendard Variable 이름으로 로드)로 교체됨 — 라벨/태그류 전용,
+   실제 코드 블록(.codeblock)은 정렬 때문에 JetBrains Mono를 그대로 유지한다 */
 .sv-mono {
-  font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
-  font-feature-settings: "ss01" on, "cv01" on;
+  font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
 }
 .sv-eyebrow {
-  font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -174,7 +207,7 @@ body {
   font-weight: 500;
 }
 .sv-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -183,7 +216,7 @@ body {
   margin-bottom: 10px;
 }
 .page-context {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -329,7 +362,7 @@ body {
   align-items: center;
   padding: 5px 12px;
   font-size: 11.5px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
   letter-spacing: 0.03em;
   border-radius: 999px;
   color: var(--fg-muted);
@@ -359,7 +392,7 @@ body {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Pretendard Variable', 'Pretendard', system-ui, sans-serif;
   background-color: var(--bg-2);
   background-image: linear-gradient(var(--bg-2), var(--bg-2)), var(--metal-border-strong);
   background-origin: border-box;

@@ -54,7 +54,7 @@ export function Header() {
             display: 'flex',
             alignItems: 'center',
             gap: 10,
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "'Pretendard Variable', 'Pretendard', system-ui, sans-serif",
             fontSize: 13,
             letterSpacing: '0.06em',
             fontWeight: 500,
@@ -242,7 +242,7 @@ export function Header() {
             <div
               style={{
                 marginTop: 'auto',
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: "'Pretendard Variable', 'Pretendard', system-ui, sans-serif",
                 fontSize: 10,
                 letterSpacing: '0.1em',
                 color: 'var(--fg-subtle)',

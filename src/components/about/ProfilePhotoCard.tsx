@@ -173,7 +173,7 @@ export function ProfilePhotoCard({ imageUrl }: ProfilePhotoCardProps) {
                 bottom: 32,
                 fontSize: 13,
                 color: 'rgba(255,255,255,0.4)',
-                fontFamily: 'JetBrains Mono, monospace',
+                fontFamily: "'Pretendard Variable', 'Pretendard', system-ui, sans-serif",
                 letterSpacing: '0.06em',
               }}
             >

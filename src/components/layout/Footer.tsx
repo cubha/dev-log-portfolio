@@ -19,7 +19,7 @@ export function Footer() {
         gap: 16,
         fontSize: 12,
         color: 'var(--fg-muted)',
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Pretendard Variable', 'Pretendard', system-ui, sans-serif",
         letterSpacing: '0.04em',
       }}
     >

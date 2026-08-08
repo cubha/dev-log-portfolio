@@ -48,7 +48,7 @@ export default function LoginPage() {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 20px', background: 'var(--bg)' }}>
       <div style={{ width: 380 }}>
         {/* Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 36, fontFamily: 'JetBrains Mono, monospace', fontSize: 13, letterSpacing: '0.06em', justifyContent: 'center', color: 'var(--fg)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 36, fontFamily: "'Pretendard Variable', 'Pretendard', system-ui, sans-serif", fontSize: 13, letterSpacing: '0.06em', justifyContent: 'center', color: 'var(--fg)' }}>
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 8px var(--accent-line)', flexShrink: 0 }} />
           SILVER.DEV
         </div>

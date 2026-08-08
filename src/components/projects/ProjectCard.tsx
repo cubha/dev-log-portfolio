@@ -41,7 +41,7 @@ function ProjectThumb({ project, height }: { project: Project; height: number })
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Pretendard Variable', 'Pretendard', system-ui, sans-serif",
         fontWeight: 800,
         fontSize: height < 200 ? 26 : 42,
         letterSpacing: '-0.02em',
