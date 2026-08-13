@@ -78,6 +78,9 @@
   --accent-line: rgba(100,116,139,0.35);
   /* Misc */
   --code-bg: #1A1A1A;
+  /* 코드블록 배경은 라이트/다크 모두 어두우므로 전경도 라이트에서 --fg를 쓰면 안 된다 */
+  --code-fg: #E8EAED;
+  --media-placeholder: #1E1E1E;
   --card-hover: rgba(15,23,42,0.02);
   /* Semantic */
   --color-success: #22C55E;
@@ -85,6 +88,8 @@
   --color-error: #ef4444;
   --color-error-border: rgba(239,68,68,0.4);
   --color-error-bg: rgba(239,68,68,0.06);
+  --color-warning: #F59E0B;
+  --color-like: #F43F5E;
   /* Metallic border gradients */
   --metal-border: linear-gradient(135deg, #475569 0%, #94A3B8 50%, #334155 100%);
   --metal-border-soft: linear-gradient(135deg, rgba(71,85,105,0.10) 0%, rgba(148,163,184,0.18) 50%, rgba(51,65,85,0.10) 100%);
@@ -124,6 +129,8 @@
   --accent-line: rgba(200,209,220,0.35);
   /* Misc */
   --code-bg: #0A0A0A;
+  --code-fg: #E8EAED;
+  --media-placeholder: #1E1E1E;
   --card-hover: rgba(255,255,255,0.025);
   /* Semantic */
   --color-success: #22C55E;
@@ -131,6 +138,8 @@
   --color-error: #ef4444;
   --color-error-border: rgba(239,68,68,0.4);
   --color-error-bg: rgba(239,68,68,0.06);
+  --color-warning: #F59E0B;
+  --color-like: #F43F5E;
   /* Metallic border gradients */
   --metal-border: linear-gradient(135deg, #94A3B8 0%, #E2E8F0 50%, #64748B 100%);
   --metal-border-soft: linear-gradient(135deg, rgba(148,163,184,0.15) 0%, rgba(226,232,240,0.25) 50%, rgba(100,116,139,0.15) 100%);

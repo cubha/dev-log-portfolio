@@ -36,7 +36,7 @@ function ProjectThumb({ project, height }: { project: Project; height: number })
       style={{
         height,
         width: '100%',
-        background: '#1E1E1E',
+        background: 'var(--media-placeholder)',
         color: 'var(--accent)',
         display: 'flex',
         alignItems: 'center',

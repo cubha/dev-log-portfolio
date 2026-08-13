@@ -96,7 +96,7 @@ export const createMdxComponents = (): MDXComponents => {
     pre: ({ children, ...props }) => (
       <pre
         {...props}
-        style={{ marginBottom: 32, overflowX: 'auto', borderRadius: 8, background: 'var(--code-bg)', color: '#E8EAED', padding: '20px 24px', fontSize: 13, lineHeight: 1.65 }}
+        style={{ marginBottom: 32, overflowX: 'auto', borderRadius: 8, background: 'var(--code-bg)', color: 'var(--code-fg)', padding: '20px 24px', fontSize: 13, lineHeight: 1.65 }}
       >
         {children}
       </pre>

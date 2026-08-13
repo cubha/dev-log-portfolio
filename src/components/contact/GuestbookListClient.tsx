@@ -100,7 +100,7 @@ function GuestbookItem({
               <span className="sv-mono text-subtle" style={{ fontSize: 10, marginLeft: 8 }}>🔒</span>
             )}
             {entry.is_secret && isAdmin && entry.user_id !== currentUserId && (
-              <span className="sv-mono" style={{ fontSize: 10, color: '#F59E0B', marginLeft: 8 }}>🔒</span>
+              <span className="sv-mono" style={{ fontSize: 10, color: 'var(--color-warning)', marginLeft: 8 }}>🔒</span>
             )}
           </div>
           <div className="sv-mono text-subtle" style={{ fontSize: 11 }}>{formatDate(entry.created_at)}</div>
@@ -128,7 +128,7 @@ function GuestbookItem({
             onClick={onLike}
             style={{
               background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-              color: likeState.likedByMe ? '#F43F5E' : 'var(--fg-muted)',
+              color: likeState.likedByMe ? 'var(--color-like)' : 'var(--fg-muted)',
               display: 'inline-flex', alignItems: 'center', gap: 4,
             }}
           >
