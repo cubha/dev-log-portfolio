@@ -283,8 +283,7 @@ export default function AdminProfilePage() {
         {activeTab === 'profile' && (
           <button
             onClick={() => setShowPreview(!showPreview)}
-            className="flex items-center gap-2 px-4 py-2 text-muted rounded-lg transition-colors"
-            style={{ border: '1px solid var(--border)' }}
+            className="btn"
           >
             <Eye className="w-5 h-5" />
             <span className="font-medium">{showPreview ? '미리보기 닫기' : '미리보기'}</span>
@@ -355,8 +354,7 @@ export default function AdminProfilePage() {
               {/* 편집 폼 */}
               <form
                 onSubmit={handleSubmit}
-                className="rounded-xl shadow-sm p-8"
-                style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+                className="card rounded-xl p-8"
               >
                 <div className="space-y-8">
 
@@ -369,7 +367,7 @@ export default function AdminProfilePage() {
 
                     {/* 메인 카피 */}
                     <div className="mb-6">
-                      <label htmlFor="main_copy" className="block text-sm font-medium text-muted mb-2">
+                      <label htmlFor="main_copy" className="sv-label">
                         메인 카피 (한 줄 요약) <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -386,7 +384,7 @@ export default function AdminProfilePage() {
 
                     {/* 서두 소개글 (항상 공개 — 토글 없음) */}
                     <div className="mb-4">
-                      <label htmlFor="intro_text" className="block text-sm font-medium text-muted mb-2">
+                      <label htmlFor="intro_text" className="sv-label">
                         서두 소개글 <span className="text-red-500">*</span>
                       </label>
                       <textarea
@@ -406,7 +404,7 @@ export default function AdminProfilePage() {
 
                     {/* 프로필 이미지 */}
                     <div>
-                      <label className="block text-sm font-medium text-muted mb-2">
+                      <label className="sv-label">
                         <ImageIcon className="w-4 h-4 inline mr-1" />
                         프로필 이미지
                       </label>
@@ -446,8 +444,7 @@ export default function AdminProfilePage() {
                         <div className="text-center">
                           <label
                             htmlFor="profile_image"
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer"
-                            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+                            className="btn cursor-pointer"
                           >
                             <Upload className="w-5 h-5 text-subtle" />
                             <span className="text-sm font-medium text-muted">
@@ -531,7 +528,7 @@ export default function AdminProfilePage() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Save className="w-5 h-5" />
                       {isSubmitting ? '저장 중...' : '저장하기'}
@@ -540,8 +537,7 @@ export default function AdminProfilePage() {
                       type="button"
                       onClick={() => router.back()}
                       disabled={isSubmitting}
-                      className="px-6 py-3 text-muted bg-surface rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ border: '1px solid var(--border)' }}
+                      className="btn disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       취소
                     </button>
@@ -572,8 +568,7 @@ export default function AdminProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="rounded-xl shadow-sm p-8"
-            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+            className="card rounded-xl p-8"
           >
             <SectionVisibilityBanner
               label="경력 섹션 공개 여부"
@@ -592,8 +587,7 @@ export default function AdminProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="rounded-xl shadow-sm p-8"
-            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+            className="card rounded-xl p-8"
           >
             <SectionVisibilityBanner
               label="학력 섹션 공개 여부"
@@ -612,8 +606,7 @@ export default function AdminProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="rounded-xl shadow-sm p-8"
-            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+            className="card rounded-xl p-8"
           >
             <SectionVisibilityBanner
               label="교육/자격증 섹션 공개 여부"
@@ -653,7 +646,7 @@ export default function AdminProfilePage() {
               }
             }}
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-5 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 text-sm"
+            className="btn btn-primary disabled:opacity-50 text-sm"
           >
             <Save className="w-4 h-4" />
             {isSubmitting ? '저장 중...' : '공개 설정 저장'}

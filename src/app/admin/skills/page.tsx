@@ -269,7 +269,7 @@ export default function AdminSkillsPage() {
 
         <button
           onClick={openAddModal}
-          className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all"
+          className="btn btn-primary text-sm"
         >
           <Plus className="w-4 h-4" />
           기술 추가
@@ -288,7 +288,7 @@ export default function AdminSkillsPage() {
       )}
 
       {/* 테이블 */}
-      <div className="rounded-xl overflow-hidden shadow-sm" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+      <div className="card rounded-xl overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-16 text-subtle gap-3">
             <div className="w-5 h-5 border-2 border-[var(--border)] border-t-[var(--fg)] rounded-full animate-spin" />
@@ -403,7 +403,10 @@ export default function AdminSkillsPage() {
           />
 
           {/* 모달 카드 */}
-          <div className="relative rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+          <div
+            className="card card-static relative rounded-2xl w-full max-w-md overflow-hidden animate-fade-in"
+            style={{ boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}
+          >
             {/* 헤더 */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)]">
               <h2 className="text-base font-bold" style={{ color: 'var(--fg)' }}>
@@ -421,7 +424,7 @@ export default function AdminSkillsPage() {
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
               {/* 기술 이름 + 자동완성 */}
               <div className="relative">
-                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                <label className="sv-label">
                   기술 이름 <span className="text-red-400 normal-case tracking-normal">*</span>
                 </label>
                 <input
@@ -439,7 +442,8 @@ export default function AdminSkillsPage() {
                 {showSuggestions && (
                   <div
                     ref={suggestionRef}
-                    className="absolute z-20 left-0 right-0 top-full mt-1 rounded-xl shadow-lg overflow-hidden" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+                    className="card card-static z-20 left-0 right-0 top-full mt-1 rounded-xl overflow-hidden"
+                    style={{ position: 'absolute', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)' }}
                   >
                     {nameSuggestions.map((tech) => (
                       <button
@@ -458,7 +462,7 @@ export default function AdminSkillsPage() {
 
               {/* 카테고리 */}
               <div>
-                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                <label className="sv-label">
                   카테고리
                 </label>
                 <select
@@ -474,7 +478,7 @@ export default function AdminSkillsPage() {
 
               {/* 아이콘 키 + 실시간 미리보기 */}
               <div>
-                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                <label className="sv-label">
                   아이콘 키&nbsp;
                   <span className="text-subtle normal-case font-normal tracking-normal">(선택)</span>
                 </label>
@@ -516,14 +520,14 @@ export default function AdminSkillsPage() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-surface rounded-lg transition-colors"
+                  className="btn flex-1"
                 >
                   취소
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-2.5 text-sm font-semibold bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting
                     ? '저장 중...'

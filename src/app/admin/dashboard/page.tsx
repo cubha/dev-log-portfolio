@@ -57,10 +57,7 @@ export default async function AdminDashboardPage() {
         <VisitorAnalyticsCard stats={stats} />
 
         {/* 빠른 액션 */}
-        <div
-          className="mt-6 rounded-xl p-6 shadow-sm"
-          style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
-        >
+        <div className="card mt-6 rounded-xl p-6">
           <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--fg)' }}>빠른 액션</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <QuickAction href="/admin/projects?mode=new" icon={<FolderKanban className="w-5 h-5 text-white dark:text-slate-950" />} title="프로젝트 관리" desc="프로젝트 추가 및 수정" />
@@ -356,10 +353,7 @@ function StatCard({
   const c = colorMap[color]
 
   return (
-    <div
-      className="rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
-      style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
-    >
+    <div className="card rounded-xl p-6">
       <div className="flex items-start justify-between mb-4">
         <div className={`p-3 bg-gradient-to-br ${c.gradFrom} ${c.gradTo} rounded-lg`}>
           <div className={c.text}>{icon}</div>

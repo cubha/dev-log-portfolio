@@ -344,11 +344,11 @@ export default function ProjectFormPage() {
       )}
 
       {/* 프로젝트 등록 폼 */}
-      <form onSubmit={handleSubmit} className="rounded-xl shadow-sm p-8" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+      <form onSubmit={handleSubmit} className="card rounded-xl p-8">
         <div className="space-y-6">
           {/* 구분 (category) */}
           <div>
-            <label className="block text-sm font-medium text-muted mb-2">
+            <label className="sv-label">
               프로젝트 구분 <span className="text-red-500">*</span>
             </label>
             <div className="flex flex-wrap gap-4">
@@ -382,7 +382,7 @@ export default function ProjectFormPage() {
 
           {/* 제목 */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-muted mb-2">
+            <label htmlFor="title" className="sv-label">
               프로젝트 제목 <span className="text-red-500">*</span>
             </label>
             <input
@@ -399,7 +399,7 @@ export default function ProjectFormPage() {
 
           {/* 설명 */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-muted mb-2">
+            <label htmlFor="description" className="sv-label">
               프로젝트 설명 (주요 업무)
             </label>
             <textarea
@@ -416,7 +416,7 @@ export default function ProjectFormPage() {
           {/* 회사명 & 담당 역할 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="company_name" className="block text-sm font-medium text-muted mb-2">
+              <label htmlFor="company_name" className="sv-label">
                 회사명 / 소속
               </label>
               <input
@@ -430,7 +430,7 @@ export default function ProjectFormPage() {
               />
             </div>
             <div>
-              <label htmlFor="project_role" className="block text-sm font-medium text-muted mb-2">
+              <label htmlFor="project_role" className="sv-label">
                 담당 역할
               </label>
               <input
@@ -447,7 +447,7 @@ export default function ProjectFormPage() {
 
           {/* 참여 인원 */}
           <div>
-            <label htmlFor="team_size" className="block text-sm font-medium text-muted mb-2">
+            <label htmlFor="team_size" className="sv-label">
               참여 인원
             </label>
             <input
@@ -474,7 +474,7 @@ export default function ProjectFormPage() {
           {/* 기간 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-muted mb-2">
+              <label className="sv-label">
                 <Calendar className="w-4 h-4 inline mr-1" />
                 시작 연월 <span className="text-red-500">*</span>
               </label>
@@ -494,7 +494,7 @@ export default function ProjectFormPage() {
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-muted">
+                <label className="sv-label" style={{ marginBottom: 0 }}>
                   <Calendar className="w-4 h-4 inline mr-1" />
                   종료 연월 {!formData.is_ongoing && <span className="text-red-500">*</span>}
                 </label>
@@ -553,7 +553,7 @@ export default function ProjectFormPage() {
 
           {/* 상세 업무 내용 (Dynamic List) */}
           <div>
-            <label className="block text-sm font-medium text-muted mb-2">
+            <label className="sv-label">
               <Code className="w-4 h-4 inline mr-1" />
               상세 업무 내용
             </label>
@@ -598,7 +598,7 @@ export default function ProjectFormPage() {
 
           {/* 프로젝트 유형 (LIVE DEMO 버튼 노출 조건) */}
           <div>
-            <label className="block text-sm font-medium text-muted mb-2">
+            <label className="sv-label">
               프로젝트 유형 (LIVE DEMO 버튼 노출 조건)
             </label>
             <div className="flex flex-wrap gap-4">
@@ -632,7 +632,7 @@ export default function ProjectFormPage() {
           {/* 라이브 데모 URL (project_type이 work가 아닌 경우에만 노출) */}
           {formData.project_type !== 'work' && (
             <div>
-              <label htmlFor="live_demo_url" className="block text-sm font-medium text-muted mb-2">
+              <label htmlFor="live_demo_url" className="sv-label">
                 <LinkIcon className="w-4 h-4 inline mr-1" />
                 라이브 데모 URL (project_type이 work가 아닌 경우에만 노출)
               </label>
@@ -651,7 +651,7 @@ export default function ProjectFormPage() {
           {/* 링크 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="github_url" className="block text-sm font-medium text-muted mb-2">
+              <label htmlFor="github_url" className="sv-label">
                 <LinkIcon className="w-4 h-4 inline mr-1" />
                 GitHub URL
               </label>
@@ -666,7 +666,7 @@ export default function ProjectFormPage() {
               />
             </div>
             <div>
-              <label htmlFor="link_url" className="block text-sm font-medium text-muted mb-2">
+              <label htmlFor="link_url" className="sv-label">
                 <LinkIcon className="w-4 h-4 inline mr-1" />
                 배포 URL
               </label>
@@ -684,7 +684,7 @@ export default function ProjectFormPage() {
 
           {/* 썸네일 이미지 업로드 */}
           <div>
-            <label className="block text-sm font-medium text-muted mb-2">
+            <label className="sv-label">
               <ImageIcon className="w-4 h-4 inline mr-1" />
               썸네일 이미지
             </label>
@@ -726,7 +726,7 @@ export default function ProjectFormPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <label
                   htmlFor="thumbnail_file"
-                  className="flex items-center gap-2 px-4 py-3 border border-[var(--border)] rounded-lg hover:border-[var(--accent)] hover:bg-surface transition-all cursor-pointer"
+                  className="btn cursor-pointer"
                 >
                   <Upload className="w-5 h-5 text-subtle" />
                   <span className="text-sm font-medium text-muted">
@@ -770,7 +770,7 @@ export default function ProjectFormPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FolderKanban className="w-5 h-5" />
               {isSubmitting
@@ -785,8 +785,7 @@ export default function ProjectFormPage() {
               type="button"
               onClick={handleCancel}
               disabled={isSubmitting}
-              className="px-6 py-3 text-muted rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ background: 'hsl(var(--surface))', border: '1px solid var(--border)' }}
+              className="btn disabled:opacity-50 disabled:cursor-not-allowed"
             >
               취소
             </button>
