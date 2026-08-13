@@ -169,7 +169,7 @@ export const BlogManager = () => {
           </div>
           <button
             onClick={closeForm}
-            className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted hover:text-[var(--fg)] hover:bg-[var(--surface)] rounded-lg transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted hover:text-[var(--fg)] rounded-lg transition-all"
           >
             <X className="w-4 h-4" />
             취소
@@ -276,14 +276,14 @@ export const BlogManager = () => {
             <button
               type="button"
               onClick={closeForm}
-              className="px-5 py-2.5 text-sm font-medium text-muted bg-[var(--surface)] rounded-lg hover:bg-[var(--surface)] transition-colors"
+              className="px-5 py-2.5 text-sm font-medium text-muted bg-surface rounded-lg transition-colors"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 text-sm font-semibold bg-silver-metal animate-shine text-white rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-2.5 text-sm font-semibold bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting
                 ? '저장 중...'
@@ -312,7 +312,7 @@ export const BlogManager = () => {
 
         <button
           onClick={openAddForm}
-          className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all"
         >
           <Plus className="w-4 h-4" />
           포스트 작성
@@ -347,7 +347,7 @@ export const BlogManager = () => {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[700px]">
               <thead>
-                <tr className="border-b border-[var(--border)] bg-[var(--surface)]">
+                <tr className="border-b border-[var(--border)] bg-surface">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-subtle uppercase tracking-wider">
                     제목
                   </th>
@@ -368,7 +368,7 @@ export const BlogManager = () => {
 
               <tbody className="divide-y divide-[var(--border)]">
                 {posts.map((post) => (
-                  <tr key={post.id} className="hover:bg-[var(--surface)] transition-colors group">
+                  <tr key={post.id} className=" transition-colors group">
                     {/* 제목 */}
                     <td className="px-4 py-3">
                       <div>
@@ -390,7 +390,7 @@ export const BlogManager = () => {
                         {post.tags.slice(0, 3).map((tag) => (
                           <span
                             key={tag}
-                            className="px-1.5 py-0.5 text-xs bg-[var(--surface)] text-subtle rounded"
+                            className="px-1.5 py-0.5 text-xs bg-surface text-subtle rounded"
                           >
                             {tag}
                           </span>
@@ -427,7 +427,7 @@ export const BlogManager = () => {
                         {/* 수정 */}
                         <button
                           onClick={() => openEditForm(post)}
-                          className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] hover:bg-[var(--surface)] transition-all opacity-0 group-hover:opacity-100"
+                          className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] transition-all opacity-0 group-hover:opacity-100"
                           title="수정"
                         >
                           <Pencil className="w-4 h-4" />
@@ -445,7 +445,7 @@ export const BlogManager = () => {
                             </button>
                             <button
                               onClick={cancelDelete}
-                              className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors"
+                              className="p-1.5 rounded-lg text-subtle transition-colors"
                             >
                               <X className="w-3.5 h-3.5" />
                             </button>

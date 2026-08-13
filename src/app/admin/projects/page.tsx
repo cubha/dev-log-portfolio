@@ -361,8 +361,8 @@ export default function ProjectFormPage() {
                   key={type.value}
                   className={`flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer transition-colors ${
                     formData.category === type.value
-                      ? 'border-[var(--accent)] bg-[var(--surface)]'
-                      : 'border-[var(--border)] hover:bg-[var(--surface)]'
+                      ? 'border-[var(--accent)] bg-surface'
+                      : 'border-[var(--border)] hover:bg-surface'
                   }`}
                 >
                   <input
@@ -510,7 +510,7 @@ export default function ProjectFormPage() {
                       }))
                     }}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[var(--border)] focus:ring-offset-1 ${
-                      formData.is_ongoing ? 'bg-silver-metal' : 'bg-[var(--surface)]'
+                      formData.is_ongoing ? 'bg-silver-metal' : 'bg-surface'
                     }`}
                     role="switch"
                     aria-checked={formData.is_ongoing}
@@ -585,7 +585,7 @@ export default function ProjectFormPage() {
               <button
                 type="button"
                 onClick={handleAddTask}
-                className="w-full px-4 py-3 border-2 border-dashed border-[var(--border)] rounded-lg text-subtle hover:border-[var(--accent)] hover:text-[var(--fg)] hover:bg-[var(--surface)] transition-all flex items-center justify-center gap-2"
+                className="w-full px-4 py-3 border-2 border-dashed border-[var(--border)] rounded-lg text-subtle hover:border-[var(--accent)] hover:text-[var(--fg)] hover:bg-surface transition-all flex items-center justify-center gap-2"
               >
                 <Upload className="w-5 h-5" />
                 <span className="font-medium">상세 업무 추가</span>
@@ -611,8 +611,8 @@ export default function ProjectFormPage() {
                   key={type.value}
                   className={`flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer transition-colors ${
                     formData.project_type === type.value
-                      ? 'border-[var(--accent)] bg-[var(--surface)]'
-                      : 'border-[var(--border)] hover:bg-[var(--surface)]'
+                      ? 'border-[var(--accent)] bg-surface'
+                      : 'border-[var(--border)] hover:bg-surface'
                   }`}
                 >
                   <input
@@ -715,8 +715,8 @@ export default function ProjectFormPage() {
             <div
               className={`rounded-lg border-2 border-dashed p-4 transition-all ${
                 isDragging
-                  ? 'border-[var(--accent)] bg-[var(--surface)]'
-                  : 'border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--surface)]'
+                  ? 'border-[var(--accent)] bg-surface'
+                  : 'border-[var(--border)] hover:border-[var(--accent)] hover:bg-surface'
               }`}
               onDragEnter={handleDragEnter}
               onDragOver={handleDragOver}
@@ -726,7 +726,7 @@ export default function ProjectFormPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <label
                   htmlFor="thumbnail_file"
-                  className="flex items-center gap-2 px-4 py-3 border border-[var(--border)] rounded-lg hover:border-[var(--accent)] hover:bg-[var(--surface)] transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-3 border border-[var(--border)] rounded-lg hover:border-[var(--accent)] hover:bg-surface transition-all cursor-pointer"
                 >
                   <Upload className="w-5 h-5 text-subtle" />
                   <span className="text-sm font-medium text-muted">
@@ -751,7 +751,7 @@ export default function ProjectFormPage() {
           </div>
 
           {/* 주요 프로젝트 체크박스 */}
-          <div className="flex items-center gap-3 p-4 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <div className="flex items-center gap-3 p-4 rounded-lg" style={{ background: 'hsl(var(--surface))', border: '1px solid var(--border)' }}>
             <input
               type="checkbox"
               id="is_featured"
@@ -770,7 +770,7 @@ export default function ProjectFormPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FolderKanban className="w-5 h-5" />
               {isSubmitting
@@ -786,7 +786,7 @@ export default function ProjectFormPage() {
               onClick={handleCancel}
               disabled={isSubmitting}
               className="px-6 py-3 text-muted rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+              style={{ background: 'hsl(var(--surface))', border: '1px solid var(--border)' }}
             >
               취소
             </button>

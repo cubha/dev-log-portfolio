@@ -50,7 +50,7 @@ export function AdminHeader() {
               <ThemeToggle />
               <Link
                 href="/"
-                className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted hover:text-[var(--fg)] hover:bg-[var(--surface)] rounded-lg transition-all"
+                className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted hover:text-[var(--fg)] hover:bg-surface rounded-lg transition-all"
               >
                 <Home className="w-4 h-4" />
                 <span className="hidden sm:inline font-medium">메인으로</span>
@@ -87,8 +87,8 @@ export function AdminSidebar() {
               className={[
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group',
                 isActive
-                  ? 'bg-[var(--surface)] text-[var(--fg)] border border-[var(--border)]'
-                  : 'text-muted hover:bg-[var(--surface)] hover:text-[var(--fg)]',
+                  ? 'bg-surface text-[var(--fg)] border border-[var(--border)]'
+                  : 'text-muted hover:bg-surface hover:text-[var(--fg)]',
               ].join(' ')}
             >
               <Icon

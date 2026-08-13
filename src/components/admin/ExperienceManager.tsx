@@ -199,7 +199,7 @@ export function ExperienceManager() {
               <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                 <button
                   onClick={() => openEdit(exp)}
-                  className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] hover:bg-[var(--surface)] transition-all"
+                  className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] transition-all"
                   title="수정"
                 >
                   <Pencil className="w-4 h-4" />
@@ -214,7 +214,7 @@ export function ExperienceManager() {
                     </button>
                     <button
                       onClick={cancelDelete}
-                      className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors"
+                      className="p-1.5 rounded-lg text-subtle transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -247,7 +247,7 @@ export function ExperienceManager() {
               <h2 className="text-base font-bold" style={{ color: 'var(--fg)' }}>
                 {editing ? '경력 수정' : '경력 추가'}
               </h2>
-              <button onClick={close} className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors">
+              <button onClick={close} className="p-1.5 rounded-lg text-subtle transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -315,7 +315,7 @@ export function ExperienceManager() {
               <label className="flex items-center gap-3 cursor-pointer select-none">
                 <div
                   onClick={() => set('is_current', !form.is_current)}
-                  className={`relative w-10 h-5 rounded-full transition-all duration-300 cursor-pointer ${form.is_current ? 'bg-silver-metal' : 'bg-[var(--surface)]'}`}
+                  className={`relative w-10 h-5 rounded-full transition-all duration-300 cursor-pointer ${form.is_current ? 'bg-silver-metal' : 'bg-surface'}`}
                 >
                   <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300 ${form.is_current ? 'left-5' : 'left-0.5'}`} />
                 </div>
@@ -349,7 +349,7 @@ export function ExperienceManager() {
                 <button
                   type="button"
                   onClick={close}
-                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-[var(--surface)] rounded-lg hover:bg-[var(--surface)] transition-colors"
+                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-surface rounded-lg transition-colors"
                 >
                   취소
                 </button>

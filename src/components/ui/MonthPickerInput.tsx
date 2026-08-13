@@ -186,7 +186,7 @@ export function MonthPickerInput({
               className={`
                 h-9 rounded-lg text-xs font-medium transition-all
                 ${isSelected
-                  ? 'bg-silver-metal text-white dark:text-slate-200 shadow-sm scale-[1.04]'
+                  ? 'bg-silver-metal text-white dark:text-slate-950 shadow-sm scale-[1.04]'
                   : 'text-foreground/70 hover:bg-foreground/8 hover:text-foreground'
                 }
               `}

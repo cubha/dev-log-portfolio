@@ -35,23 +35,27 @@
 
 - **형태**: sticky, 높이 64px, 수평 `clamp(20px, 4vw, 40px)` 패딩
 - **배경**: `color-mix(in srgb, var(--bg) 78%, transparent)` + `backdrop-filter: blur(14px)` (frosted glass)
-- **좌**: ● SILVER.DEV (JetBrains Mono, 13px, accent 닷)
+- **좌**: ● SILVER.DEV (SUIT, 13px, accent 닷)
 - **우(데스크톱)**: About · Projects · Writing · Contact + 다크 토글 버튼
 - **우(모바일)**: 다크 토글 + 햄버거 → 우측 드로어 260px
 - **어드민 숨김**: `/admin/*` 경로에서 null 반환
 
 ### 푸터 (`src/components/layout/Footer.tsx`)
 
-- **형태**: 2컬럼 그리드 + 하단 전폭 copyright 행
-- **좌**: ● SILVER.DEV (초록 닷 — 라이브 상태) + 연락처
-- **우**: About · Contact · GitHub↗
-- **하단**: © 2026 SILVER.DEV / BUILT WITH NEXT.JS 15 · SUPABASE · TYPESCRIPT
+- **형태**: `display: flex` · `justify-content: space-between` · `flex-wrap` 2블록 (그리드 아님)
+- **패딩**: `20px clamp(20px, 4.4vw, 64px)`
+- **좌**: ● SILVER.DEV (초록 닷 — 라이브 상태) + Seoul, KR
+- **우**: © 2026 · ALL RIGHTS RESERVED
 - **어드민 숨김**: `/admin/*` 경로에서 null 반환
+
+> 링크 행(About·Contact·GitHub↗)과 기술스택 행(BUILT WITH …)은 **현재 구현에 없다.** 과거 브리프에
+> 적혀 있었으나 실제로 만들어진 적이 없거나 제거됐다(2026-08-13 소스 실측).
 
 ### 공통 레이아웃 (`src/app/layout.tsx`)
 
 - Provider 스택: `JotaiProvider` → `ThemeProvider` → `AuthStateInitializer`
-- 폰트: Pretendard (CDN) + JetBrains Mono (Google Fonts)
+- 폰트: **SUIT** + JetBrains Mono, 둘 다 **self-host** (`public/fonts/*.woff2`, `globals.css`의 `@font-face`)
+  - ⚠️ SUIT의 `font-family` 이름은 `Pretendard Variable`로 **유지**돼 있다(의도적). 자세한 내용은 `DESIGN-TOKENS.md` 「폰트 패밀리」 참조
 - `CursorGlow` 컴포넌트: 커서 추적 radial gradient 글로우
 
 ---

@@ -192,7 +192,7 @@ export function GuestbookForm({ user, isAdmin = false, displayName, avatarUrl }:
             role="switch"
             aria-checked={formData.is_secret}
             onClick={() => setFormData((prev) => ({ ...prev, is_secret: !prev.is_secret }))}
-            className={`relative w-10 h-5 rounded-full transition-all duration-300 cursor-pointer ${formData.is_secret ? 'bg-silver-metal' : 'bg-[var(--surface)]'}`}
+            className={`relative w-10 h-5 rounded-full transition-all duration-300 cursor-pointer ${formData.is_secret ? 'bg-silver-metal' : 'bg-surface'}`}
           >
             <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300 ${formData.is_secret ? 'left-5' : 'left-0.5'}`} />
           </button>

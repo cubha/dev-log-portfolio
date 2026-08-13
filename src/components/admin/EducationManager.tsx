@@ -133,7 +133,7 @@ export function EducationManager() {
   // 상태에 따른 배지 색상
   const statusColor: Record<string, string> = {
     '졸업':   'bg-green-50 text-green-700',
-    '재학중': 'bg-[var(--surface)] text-[var(--accent)]',
+    '재학중': 'bg-surface text-[var(--accent)]',
     '휴학':   'bg-yellow-50 text-yellow-700',
     '중퇴':   'bg-red-50 text-red-600',
     '수료':   'bg-purple-50 text-purple-700',
@@ -187,7 +187,7 @@ export function EducationManager() {
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold" style={{ color: 'var(--fg)' }}>{edu.school_name}</span>
-                    <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${statusColor[edu.status] ?? 'bg-[var(--surface)] text-muted'}`}>
+                    <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${statusColor[edu.status] ?? 'bg-surface text-muted'}`}>
                       {edu.status}
                     </span>
                   </div>
@@ -200,7 +200,7 @@ export function EducationManager() {
               <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                 <button
                   onClick={() => openEdit(edu)}
-                  className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] hover:bg-[var(--surface)] transition-all"
+                  className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] transition-all"
                   title="수정"
                 >
                   <Pencil className="w-4 h-4" />
@@ -215,7 +215,7 @@ export function EducationManager() {
                     </button>
                     <button
                       onClick={cancelDelete}
-                      className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors"
+                      className="p-1.5 rounded-lg text-subtle transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -248,7 +248,7 @@ export function EducationManager() {
               <h2 className="text-base font-bold" style={{ color: 'var(--fg)' }}>
                 {editing ? '학력 수정' : '학력 추가'}
               </h2>
-              <button onClick={close} className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors">
+              <button onClick={close} className="p-1.5 rounded-lg text-subtle transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -339,7 +339,7 @@ export function EducationManager() {
                 <button
                   type="button"
                   onClick={close}
-                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-[var(--surface)] rounded-lg hover:bg-[var(--surface)] transition-colors"
+                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-surface rounded-lg transition-colors"
                 >
                   취소
                 </button>

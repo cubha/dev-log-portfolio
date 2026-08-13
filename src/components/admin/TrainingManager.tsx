@@ -237,7 +237,7 @@ export function TrainingManager() {
               <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                 <button
                   onClick={() => openEdit(item)}
-                  className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] hover:bg-[var(--surface)] transition-all"
+                  className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] transition-all"
                   title="수정"
                 >
                   <Pencil className="w-4 h-4" />
@@ -252,7 +252,7 @@ export function TrainingManager() {
                     </button>
                     <button
                       onClick={cancelDelete}
-                      className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors"
+                      className="p-1.5 rounded-lg text-subtle transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -285,7 +285,7 @@ export function TrainingManager() {
               <h2 className="text-base font-bold" style={{ color: 'var(--fg)' }}>
                 {editing ? '항목 수정' : '항목 추가'}
               </h2>
-              <button onClick={close} className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors">
+              <button onClick={close} className="p-1.5 rounded-lg text-subtle transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -313,8 +313,8 @@ export function TrainingManager() {
                       }}
                       className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-all ${
                         form.type === opt.value
-                          ? 'bg-silver-metal text-white border-transparent shadow-sm'
-                          : 'text-muted hover:bg-[var(--surface)]'
+                          ? 'bg-silver-metal text-white dark:text-slate-950 border-transparent shadow-sm'
+                          : 'text-muted'
                       }`}
                     >
                       {opt.label}
@@ -419,7 +419,7 @@ export function TrainingManager() {
                 <button
                   type="button"
                   onClick={close}
-                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-[var(--surface)] rounded-lg hover:bg-[var(--surface)] transition-colors"
+                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-surface rounded-lg transition-colors"
                 >
                   취소
                 </button>

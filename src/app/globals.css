@@ -145,6 +145,11 @@
   --foreground: 215 5% 87%;
   --surface: 215 5% 20%;
   --elevated: 215 5% 24%;
+  /* 다크 실버 스톱은 위 --metal-border(다크)의 #94A3B8 / #E2E8F0을 그대로 채널값으로 옮긴 것.
+     라이트(40%→75%→40%)와 동일하게 start=end, mid가 하이라이트인 구조를 유지한다. */
+  --metal-start: 215 20% 65%;
+  --metal-mid: 214 32% 91%;
+  --metal-end: 215 20% 65%;
   --brand-secondary: 200 60% 45%;
 }
 

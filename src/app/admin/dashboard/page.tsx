@@ -88,7 +88,7 @@ function VisitorAnalyticsCard({ stats }: { stats: PageViewStats }) {
   return (
     <div
       className="rounded-2xl overflow-hidden shadow-sm"
-      style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
+      style={{ border: '1px solid var(--border)', background: 'hsl(var(--surface))' }}
     >
 
       {/* ① 상단 accent gradient 라인 */}
@@ -322,7 +322,7 @@ function TopPagesList({ pages }: { pages: PageRank[] }) {
               </span>
             </div>
             {/* 프로그레스 바 */}
-            <div className="h-[2px] bg-[var(--surface)] rounded-full overflow-hidden">
+            <div className="h-[2px] bg-surface rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full"
                 style={{ width: `${pct}%`, background: 'linear-gradient(to right, color-mix(in srgb, var(--accent) 50%, transparent), color-mix(in srgb, var(--accent) 20%, transparent))' }}
@@ -388,7 +388,7 @@ function QuickAction({
     <Link
       href={href}
       className="group flex items-center justify-between p-4 rounded-lg transition-all hover:shadow-md"
-      style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+      style={{ background: 'hsl(var(--surface))', border: '1px solid var(--border)' }}
     >
       <div className="flex items-center gap-3">
         <div className="p-2 bg-silver-metal rounded-lg">{icon}</div>

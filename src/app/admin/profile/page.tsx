@@ -48,7 +48,7 @@ function SilverSwitch({
         className={`relative w-11 h-6 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--border)] ${
           checked
             ? 'bg-silver-metal shadow-inner'
-            : 'bg-[var(--surface)]'
+            : 'bg-surface'
         }`}
       >
         <motion.div
@@ -76,7 +76,7 @@ function SectionVisibilityBanner({
   return (
     <div
       className="flex items-center justify-between px-4 py-3 rounded-xl border mb-6 transition-colors"
-      style={{ background: checked ? 'var(--surface)' : 'var(--surface)', border: '1px solid var(--border)' }}
+      style={{ background: 'hsl(var(--surface))', border: '1px solid var(--border)' }}
     >
       <div className="flex items-center gap-2">
         <div className={`w-2 h-2 rounded-full transition-colors ${checked ? 'bg-green-400' : 'bg-[var(--border)]'}`} />
@@ -84,7 +84,7 @@ function SectionVisibilityBanner({
         <span className={`text-xs px-2 py-0.5 rounded-full font-medium transition-colors ${
           checked
             ? 'bg-green-100 text-green-700'
-            : 'bg-[var(--surface)] text-subtle'
+            : 'bg-surface text-subtle'
         }`}>
           {checked ? 'About 공개' : '숨김'}
         </span>
@@ -283,7 +283,7 @@ export default function AdminProfilePage() {
         {activeTab === 'profile' && (
           <button
             onClick={() => setShowPreview(!showPreview)}
-            className="flex items-center gap-2 px-4 py-2 text-muted rounded-lg hover:bg-[var(--surface)] transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-muted rounded-lg transition-colors"
             style={{ border: '1px solid var(--border)' }}
           >
             <Eye className="w-5 h-5" />
@@ -295,7 +295,7 @@ export default function AdminProfilePage() {
       {/* ── 탭 네비게이션 (Silver Metal) ────────────────────────────────── */}
       <div
         className="flex gap-1 p-1 rounded-xl w-fit mb-8 shadow-inner"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        style={{ background: 'hsl(var(--surface))', border: '1px solid var(--border)' }}
       >
         {TABS.map(({ id, label, Icon }) => (
           <button
@@ -303,7 +303,7 @@ export default function AdminProfilePage() {
             onClick={() => setActiveTab(id)}
             className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
               activeTab === id
-                ? 'bg-silver-metal text-white shadow-md'
+                ? 'bg-silver-metal text-white dark:text-slate-950 shadow-md'
                 : 'text-muted hover:text-[var(--fg)] hover:bg-[var(--bg)]'
             }`}
           >
@@ -434,8 +434,8 @@ export default function AdminProfilePage() {
                       <div
                         className={`rounded-lg border-2 border-dashed p-6 transition-all ${
                           isDragging
-                            ? 'border-[var(--accent)] bg-[var(--surface)]'
-                            : 'border-[var(--border)] hover:bg-[var(--surface)]'
+                            ? 'border-[var(--accent)] bg-surface'
+                            : 'border-[var(--border)]'
                         }`}
                         style={{ background: isDragging ? undefined : 'var(--bg)' }}
                         onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true) }}
@@ -446,7 +446,7 @@ export default function AdminProfilePage() {
                         <div className="text-center">
                           <label
                             htmlFor="profile_image"
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-[var(--surface)] transition-all cursor-pointer"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all cursor-pointer"
                             style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
                           >
                             <Upload className="w-5 h-5 text-subtle" />
@@ -484,7 +484,7 @@ export default function AdminProfilePage() {
                                 ? ''
                                 : 'opacity-60'
                             }`}
-                          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+                          style={{ background: 'hsl(var(--surface))', border: '1px solid var(--border)' }}
                           >
                             {/* 카드 헤더: 제목 + 토글 */}
                             <div className="flex items-center justify-between mb-3">
@@ -531,7 +531,7 @@ export default function AdminProfilePage() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center gap-2 px-6 py-3 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Save className="w-5 h-5" />
                       {isSubmitting ? '저장 중...' : '저장하기'}
@@ -540,7 +540,7 @@ export default function AdminProfilePage() {
                       type="button"
                       onClick={() => router.back()}
                       disabled={isSubmitting}
-                      className="px-6 py-3 text-muted bg-[var(--surface)] rounded-lg hover:bg-[var(--surface)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-6 py-3 text-muted bg-surface rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{ border: '1px solid var(--border)' }}
                     >
                       취소
@@ -653,7 +653,7 @@ export default function AdminProfilePage() {
               }
             }}
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-5 py-2.5 bg-silver-metal animate-shine text-white font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 text-sm"
+            className="flex items-center gap-2 px-5 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 font-semibold rounded-lg hover:shadow-md transition-all disabled:opacity-50 text-sm"
           >
             <Save className="w-4 h-4" />
             {isSubmitting ? '저장 중...' : '공개 설정 저장'}
