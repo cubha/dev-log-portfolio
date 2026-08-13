@@ -259,7 +259,7 @@ export default function AdminSkillsPage() {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-silver-metal rounded-xl shadow-sm">
-            <Layers className="w-5 h-5 text-white " />
+            <Layers className="w-5 h-5 text-white dark:text-slate-950 " />
           </div>
           <div>
             <h1 className="text-2xl font-bold" style={{ color: 'var(--fg)' }}>기술 스택 관리</h1>

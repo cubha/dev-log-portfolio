@@ -176,7 +176,7 @@ export function ExperienceManager() {
             >
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 w-9 h-9 rounded-lg bg-silver-metal flex items-center justify-center flex-shrink-0">
-                  <Briefcase className="w-4 h-4 text-white " />
+                  <Briefcase className="w-4 h-4 text-white dark:text-slate-950 " />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">

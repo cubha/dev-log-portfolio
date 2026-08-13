@@ -63,9 +63,9 @@ export default async function AdminDashboardPage() {
         >
           <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--fg)' }}>빠른 액션</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <QuickAction href="/admin/projects?mode=new" icon={<FolderKanban className="w-5 h-5 text-white" />} title="프로젝트 관리" desc="프로젝트 추가 및 수정" />
-            <QuickAction href="/admin/skills" icon={<Code2 className="w-5 h-5 text-white" />} title="기술 스택 관리" desc="기술 스택 추가 및 수정" />
-            <QuickAction href="/admin/profile" icon={<User className="w-5 h-5 text-white" />} title="프로필 관리" desc="About 프로필 편집" />
+            <QuickAction href="/admin/projects?mode=new" icon={<FolderKanban className="w-5 h-5 text-white dark:text-slate-950" />} title="프로젝트 관리" desc="프로젝트 추가 및 수정" />
+            <QuickAction href="/admin/skills" icon={<Code2 className="w-5 h-5 text-white dark:text-slate-950" />} title="기술 스택 관리" desc="기술 스택 추가 및 수정" />
+            <QuickAction href="/admin/profile" icon={<User className="w-5 h-5 text-white dark:text-slate-950" />} title="프로필 관리" desc="About 프로필 편집" />
           </div>
         </div>
       </div>

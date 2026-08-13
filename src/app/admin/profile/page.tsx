@@ -54,7 +54,7 @@ function SilverSwitch({
         <motion.div
           layout
           transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-          className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md ${
+          className={`absolute top-1 w-4 h-4 bg-white dark:bg-slate-950 rounded-full shadow-md ${
             checked ? 'left-6' : 'left-1'
           }`}
         />
