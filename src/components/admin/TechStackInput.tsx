@@ -269,7 +269,7 @@ export function TechStackInput({ value, onChange }: TechStackInputProps) {
 
   return (
     <div ref={containerRef} className="relative">
-      <label className="block text-sm font-medium text-muted mb-2">
+      <label className="sv-label">
         기술 스택
       </label>
 
@@ -304,7 +304,10 @@ export function TechStackInput({ value, onChange }: TechStackInputProps) {
 
       {/* 자동완성 제안 */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+        <div
+          className="card card-static z-10 w-full mt-1 rounded-lg max-h-48 overflow-y-auto"
+          style={{ position: 'absolute', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)' }}
+        >
           {suggestions.map((tech) => (
             <button
               key={tech}

@@ -35,7 +35,7 @@ export function AdminHeader() {
             {/* 타이틀 */}
             <div className="flex items-center gap-3">
               <div className="p-2 bg-silver-metal rounded-lg">
-                <Wrench className="w-5 h-5 text-white" />
+                <Wrench className="w-5 h-5 text-white dark:text-slate-950" />
               </div>
               <div>
                 <h1 className="text-base font-bold leading-tight" style={{ color: 'var(--fg)' }}>

@@ -156,7 +156,7 @@ export const BlogManager = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-silver-metal rounded-xl shadow-sm">
-              <FileText className="w-5 h-5 text-white " />
+              <FileText className="w-5 h-5 text-white dark:text-slate-950 " />
             </div>
             <div>
               <h1 className="text-2xl font-bold" style={{ color: 'var(--fg)' }}>
@@ -180,7 +180,7 @@ export const BlogManager = () => {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* 제목 */}
           <div>
-            <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+            <label className="sv-label">
               제목 <span className="text-red-400 normal-case tracking-normal font-normal">*</span>
             </label>
             <input
@@ -195,7 +195,7 @@ export const BlogManager = () => {
 
           {/* 슬러그 */}
           <div>
-            <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+            <label className="sv-label">
               슬러그 <span className="text-red-400 normal-case tracking-normal font-normal">*</span>
             </label>
             <input
@@ -209,7 +209,7 @@ export const BlogManager = () => {
 
           {/* 설명 */}
           <div>
-            <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+            <label className="sv-label">
               설명
             </label>
             <textarea
@@ -224,7 +224,7 @@ export const BlogManager = () => {
           {/* 태그 + 상태 (가로 배치) */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+              <label className="sv-label">
                 태그
               </label>
               <input
@@ -237,7 +237,7 @@ export const BlogManager = () => {
               <p className="text-xs text-subtle mt-1">쉼표(,)로 구분</p>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+              <label className="sv-label">
                 상태
               </label>
               <select
@@ -254,7 +254,7 @@ export const BlogManager = () => {
 
           {/* 에디터 */}
           <div>
-            <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+            <label className="sv-label">
               내용
             </label>
             <BlogEditor
@@ -276,14 +276,14 @@ export const BlogManager = () => {
             <button
               type="button"
               onClick={closeForm}
-              className="px-5 py-2.5 text-sm font-medium text-muted bg-surface rounded-lg transition-colors"
+              className="btn"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 text-sm font-semibold bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting
                 ? '저장 중...'
@@ -302,7 +302,7 @@ export const BlogManager = () => {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-silver-metal rounded-xl shadow-sm">
-            <FileText className="w-5 h-5 text-white " />
+            <FileText className="w-5 h-5 text-white dark:text-slate-950 " />
           </div>
           <div>
             <h1 className="text-2xl font-bold" style={{ color: 'var(--fg)' }}>블로그 관리</h1>
@@ -312,7 +312,7 @@ export const BlogManager = () => {
 
         <button
           onClick={openAddForm}
-          className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all"
+          className="btn btn-primary text-sm"
         >
           <Plus className="w-4 h-4" />
           포스트 작성
@@ -331,7 +331,7 @@ export const BlogManager = () => {
       )}
 
       {/* 테이블 */}
-      <div className="rounded-xl overflow-hidden shadow-sm" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+      <div className="card rounded-xl overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-16 text-subtle gap-3">
             <div className="w-5 h-5 border-2 border-[var(--border)] border-t-[var(--fg)] rounded-full animate-spin" />

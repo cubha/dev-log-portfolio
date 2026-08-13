@@ -52,7 +52,7 @@ export default function Error({
           </div>
           <button
             onClick={reset}
-            className="w-full px-6 py-3 bg-brand-primary text-white rounded-lg hover:opacity-90 transition-all font-medium"
+            className="w-full px-6 py-3 bg-brand-primary text-white dark:text-slate-950 rounded-lg hover:opacity-90 transition-all font-medium"
           >
             다시 시도
           </button>

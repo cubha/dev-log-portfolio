@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Plus, Pencil, Trash2, X, Check, AlertCircle, GraduationCap } from 'lucide-react'
 import { useDeleteConfirm } from '@/src/hooks/useDeleteConfirm'
-import { SilverButton } from '@/src/components/common/SilverButton'
 import { MonthPickerInput } from '@/src/components/ui/MonthPickerInput'
 import {
   fetchEducations,
@@ -147,10 +146,10 @@ export function EducationManager() {
           <h2 className="text-xl font-bold" style={{ color: 'var(--fg)' }}>학력 관리</h2>
           <p className="text-sm text-subtle mt-0.5">학력 사항을 추가하고 관리합니다.</p>
         </div>
-        <SilverButton type="button" size="md" onClick={openAdd} className="flex items-center gap-2">
+        <button type="button" onClick={openAdd} className="btn btn-primary text-sm">
           <Plus className="w-4 h-4" />
           학력 추가
-        </SilverButton>
+        </button>
       </div>
 
       {/* 에러 */}
@@ -182,7 +181,7 @@ export function EducationManager() {
             >
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 w-9 h-9 rounded-lg bg-silver-metal flex items-center justify-center flex-shrink-0">
-                  <GraduationCap className="w-4 h-4 text-white " />
+                  <GraduationCap className="w-4 h-4 text-white dark:text-slate-950 " />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -240,8 +239,8 @@ export function EducationManager() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={close} />
           <div
-            className="relative rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
-            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+            className="card card-static relative rounded-2xl w-full max-w-lg overflow-hidden"
+            style={{ boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}
           >
             {/* 헤더 */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)]">
@@ -257,7 +256,7 @@ export function EducationManager() {
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
               {/* 학교명 */}
               <div>
-                <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                <label className="sv-label">
                   학교명 <span className="text-red-400 normal-case tracking-normal">*</span>
                 </label>
                 <input
@@ -273,7 +272,7 @@ export function EducationManager() {
               {/* 전공 + 상태 */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                  <label className="sv-label">
                     전공 <span className="text-red-400 normal-case tracking-normal">*</span>
                   </label>
                   <input
@@ -285,7 +284,7 @@ export function EducationManager() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                  <label className="sv-label">
                     상태
                   </label>
                   <select
@@ -303,7 +302,7 @@ export function EducationManager() {
               {/* 기간 */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                  <label className="sv-label">
                     입학일 <span className="text-red-400 normal-case tracking-normal">*</span>
                   </label>
                   <MonthPickerInput
@@ -314,7 +313,7 @@ export function EducationManager() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide">
+                  <label className="sv-label">
                     졸업/수료일 <span className="text-subtle normal-case font-normal">(선택)</span>
                   </label>
                   <MonthPickerInput
@@ -339,18 +338,17 @@ export function EducationManager() {
                 <button
                   type="button"
                   onClick={close}
-                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-surface rounded-lg transition-colors"
+                  className="btn flex-1"
                 >
                   취소
                 </button>
-                <SilverButton
+                <button
                   type="submit"
-                  size="md"
                   disabled={isSaving}
-                  className="flex-1"
+                  className="btn btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSaving ? '저장 중...' : editing ? '수정 완료' : '추가하기'}
-                </SilverButton>
+                </button>
               </div>
             </form>
           </div>

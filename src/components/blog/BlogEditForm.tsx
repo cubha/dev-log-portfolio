@@ -141,7 +141,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
               form?.requestSubmit()
             }}
             disabled={isSubmitting}
-            className="px-5 py-2 text-sm font-semibold bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? '저장 중...' : mode === 'edit' ? '수정 완료' : '등록하기'}
           </button>
@@ -163,7 +163,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
       <form id="blog-edit-form" onSubmit={handleSubmit} className="space-y-5">
         {/* 제목 */}
         <div>
-          <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+          <label className="sv-label">
             제목 <span className="text-red-400 normal-case tracking-normal font-normal">*</span>
           </label>
           <input
@@ -179,7 +179,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
 
         {/* 슬러그 */}
         <div>
-          <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+          <label className="sv-label">
             슬러그 <span className="text-red-400 normal-case tracking-normal font-normal">*</span>
           </label>
           <input
@@ -194,7 +194,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
 
         {/* 설명 */}
         <div>
-          <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+          <label className="sv-label">
             설명
           </label>
           <textarea
@@ -209,7 +209,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
         {/* 태그 + 상태 (가로 배치) */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+            <label className="sv-label">
               태그
             </label>
             <input
@@ -222,7 +222,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
             <p className="text-xs text-foreground/40 mt-1">쉼표(,)로 구분</p>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-foreground/60 mb-1.5 uppercase tracking-wide">
+            <label className="sv-label">
               상태
             </label>
             <select
@@ -240,7 +240,7 @@ export const BlogEditForm = ({ mode, initialData }: BlogEditFormProps) => {
         {/* 내용: 편집 / 미리보기 탭 */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-semibold text-foreground/60 uppercase tracking-wide">
+            <label className="sv-label" style={{ marginBottom: 0 }}>
               내용
             </label>
             <div className="flex items-center bg-foreground/5 rounded-lg p-0.5">

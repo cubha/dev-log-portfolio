@@ -124,7 +124,16 @@
 3. **커스텀 유틸 클래스 우선**: `.btn`, `.tag`, `.card`, `.sv-label`, `.h-*` 등 기존 클래스 우선 사용
 4. **신규 인라인 스타일 최소화**: 이미 CSS 클래스로 정의된 패턴은 className으로 사용
 5. **메탈릭 텍스트 제한**: `.metallic` 클래스는 Hero 이름 + "The Assembly Line" 단 2곳만
-6. **어드민 분리**: `/admin/*`는 별도 세션. Silver V2 패턴 강제 적용 금지
+6. **어드민도 Silver V2 대상이다** (2026-08-13 예외 폐지)
+   - 이전 규약은 "`/admin/*`는 별도 세션. Silver V2 패턴 강제 적용 금지"였다. 이 예외가
+     **드리프트의 서식지**였다 — 실측 결과 어드민의 표준 클래스 채택률이 **0%**다
+     (`.btn` 0 · `.tag` 0 · `.sv-label` 0 · `.sv-input` 0 · `.card` 0, 공개 페이지는 각각 6·6·13·4·7).
+     대신 채움형 실버 버튼 8개·자체 알약 21개·손으로 쓴 라벨 17개가 따로 자라 있다.
+   - **채움형 실버(`.bg-silver-metal`)는 금지가 아니라 제한 사용이다.** 공개 페이지에서의
+     용법은 Logo 아이콘 배지·타임라인 닷·빈 상태 CTA·FloatingAdminButton 뿐이다.
+     **주 버튼은 `.btn` / `.btn-primary`(테두리형)** 이며, 어드민은 이 비율이 뒤집혀 있다.
+   - 신규 어드민 UI는 §5-3(커스텀 유틸 클래스 우선)을 그대로 따른다. 기존 화면의 이행은
+     별도 과제로 남아 있다(아래 §7).
 7. **서버/클라이언트 Supabase 혼용 금지**: `server.ts` / `client.ts` 구분 유지
 8. **CLAUDE.md 기술 스택 고정값 준수**: Next.js 15, Supabase, TypeScript Strict, Tailwind 3.4
 
@@ -133,6 +142,27 @@
 ## 6. 디자인 토큰 요약
 
 → [DESIGN-TOKENS.md](./DESIGN-TOKENS.md) 참조
+
+---
+
+## 7. 미이행 — 어드민 Silver V2 이행 (2026-08-13 기준)
+
+§5-6의 예외가 폐지되면서 **기존 어드민 화면 전체가 이행 대상**이 됐다. 현황(실측):
+
+| 표준 | 어드민 | 공개 | 어드민이 대신 쓰는 것 |
+|---|---|---|---|
+| `.btn` / `.btn-primary` | 0 | 6 / 4 | `bg-silver-metal animate-shine` 채움형 8곳 |
+| `.tag` / `.tag.active` | 0 | 6 | `rounded-full` 자체 구현 21곳 |
+| `.sv-label` | 0 | 13 | `block text-sm font-medium text-muted mb-2` 17회 반복 |
+| `.sv-input` | 0 | 4 | 인라인 `style` + Tailwind 조합 |
+| `.card` | 0 | 7 | 인라인 `style={{ background, border }}` |
+
+**주의**: `src/components/blog/BlogEditForm.tsx`도 어드민 계열 스타일을 쓰고 있어
+`/admin/*` 경로 밖이지만 같은 이행 대상이다.
+
+**게이트 공백**: 이 드리프트는 verify.sh가 못 잡는다. 토큰은 정상적으로 쓰고 있고(하드코딩 0),
+*어떤 컴포넌트 클래스를 골랐는지*는 grep으로 판정할 수 없기 때문이다. 렌더 결과를 보는
+`/design-lint` 또는 사람의 눈이 유일한 검출 수단이다 — 실제로 이번 건도 사용자의 육안 검토로 발견됐다.
 
 ---
 
