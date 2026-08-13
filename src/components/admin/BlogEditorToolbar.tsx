@@ -34,8 +34,8 @@ const ToolbarButton = ({ onClick, isActive, title, children }: ToolbarButtonProp
     title={title}
     className={`p-1.5 rounded transition-colors ${
       isActive
-        ? 'bg-[var(--surface)] text-[var(--accent)]'
-        : 'text-muted hover:bg-[var(--surface)] hover:text-[var(--fg)]'
+        ? 'bg-surface text-[var(--accent)]'
+        : 'text-muted hover:bg-surface hover:text-[var(--fg)]'
     }`}
   >
     {children}
@@ -61,7 +61,7 @@ export const BlogEditorToolbar = ({ editor }: BlogEditorToolbarProps) => {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 p-2" style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
+    <div className="flex flex-wrap items-center gap-0.5 p-2" style={{ borderBottom: '1px solid var(--border)', background: 'hsl(var(--surface))' }}>
       {/* 제목 */}
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}

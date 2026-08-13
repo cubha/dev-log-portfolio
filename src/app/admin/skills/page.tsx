@@ -269,7 +269,7 @@ export default function AdminSkillsPage() {
 
         <button
           onClick={openAddModal}
-          className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-whitetext-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 bg-silver-metal animate-shine text-white dark:text-slate-950 text-sm font-semibold rounded-lg shadow-sm hover:shadow-md transition-all"
         >
           <Plus className="w-4 h-4" />
           기술 추가
@@ -304,7 +304,7 @@ export default function AdminSkillsPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px]">
               <thead>
-                <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
+                <tr style={{ borderBottom: '1px solid var(--border)', background: 'hsl(var(--surface))' }}>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-subtle uppercase tracking-wider w-14">
                     아이콘
                   </th>
@@ -318,10 +318,10 @@ export default function AdminSkillsPage() {
 
               <tbody className="divide-y divide-[var(--border)]" style={{ color: 'var(--fg)' }}>
                 {sortedSkills.map((skill) => (
-                  <tr key={skill.id} className="hover:bg-[var(--surface)] transition-colors group">
+                  <tr key={skill.id} className=" transition-colors group">
                     {/* 아이콘 */}
                     <td className="px-4 py-3">
-                      <div className="w-9 h-9 rounded-lg bg-[var(--surface)] flex items-center justify-center">
+                      <div className="w-9 h-9 rounded-lg bg-surface flex items-center justify-center">
                         <SkillIcon name={skill.name} iconName={skill.icon_name} size={20} />
                       </div>
                     </td>
@@ -344,7 +344,7 @@ export default function AdminSkillsPage() {
                         {/* 수정 */}
                         <button
                           onClick={() => openEditModal(skill)}
-                          className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] hover:bg-[var(--surface)] transition-all opacity-0 group-hover:opacity-100"
+                          className="p-1.5 rounded-lg text-subtle hover:text-[var(--accent)] transition-all opacity-0 group-hover:opacity-100"
                           title="수정"
                         >
                           <Pencil className="w-4 h-4" />
@@ -362,7 +362,7 @@ export default function AdminSkillsPage() {
                             </button>
                             <button
                               onClick={cancelDelete}
-                              className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors"
+                              className="p-1.5 rounded-lg text-subtle transition-colors"
                             >
                               <X className="w-3.5 h-3.5" />
                             </button>
@@ -411,7 +411,7 @@ export default function AdminSkillsPage() {
               </h2>
               <button
                 onClick={closeModal}
-                className="p-1.5 rounded-lg text-subtle hover:bg-[var(--surface)] transition-colors"
+                className="p-1.5 rounded-lg text-subtle transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -446,7 +446,7 @@ export default function AdminSkillsPage() {
                         key={tech}
                         type="button"
                         onMouseDown={(e) => { e.preventDefault(); selectSuggestion(tech) }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-muted hover:bg-[var(--surface)] hover:text-[var(--fg)] transition-colors text-left"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-muted hover:text-[var(--fg)] transition-colors text-left"
                       >
                         <SkillIcon name={tech} iconName={null} size={16} />
                         <span>{tech}</span>
@@ -488,7 +488,7 @@ export default function AdminSkillsPage() {
                   />
                   {/* 아이콘 실시간 미리보기 */}
                   <div
-                    className="w-10 h-10 flex-shrink-0 rounded-lg bg-[var(--surface)] flex items-center justify-center border border-[var(--border)]"
+                    className="w-10 h-10 flex-shrink-0 rounded-lg bg-surface flex items-center justify-center border border-[var(--border)]"
                     title="아이콘 미리보기"
                   >
                     <SkillIcon
@@ -516,14 +516,14 @@ export default function AdminSkillsPage() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-[var(--surface)] rounded-lg hover:bg-[var(--surface)] transition-colors"
+                  className="flex-1 py-2.5 text-sm font-medium text-muted bg-surface rounded-lg transition-colors"
                 >
                   취소
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-2.5 text-sm font-semibold bg-silver-metal animate-shine text-whiterounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-2.5 text-sm font-semibold bg-silver-metal animate-shine text-white dark:text-slate-950 rounded-lg hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting
                     ? '저장 중...'

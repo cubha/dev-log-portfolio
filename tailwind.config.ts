@@ -22,10 +22,6 @@ const config: Config = {
           primary: "hsl(var(--metal-start))",
           secondary: "hsl(var(--brand-secondary))",
         },
-        accent: {
-          DEFAULT: "hsl(var(--brand-secondary))",
-          foreground: "hsl(var(--background))",
-        },
       },
     },
   },

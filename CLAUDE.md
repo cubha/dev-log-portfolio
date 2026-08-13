@@ -116,6 +116,18 @@ src/store/               → Jotai atom 전용
 
 ---
 
+## 🎨 디자인 토큰 바인딩
+
+- **Ground Truth**: `docs/design/DESIGN-TOKENS.md` (규약) / **토큰 실체**: `src/app/globals.css` `:root`·`.dark`
+- **소비 형태**: 웹 단일(Next.js). CSS 변수 + `tailwind.config.ts` 브리지 유틸. TS export 없음
+- ⚠️ **네임스페이스 2계층 — 소비 방법이 다르다**
+  - hex/rgba 계열(`--bg` `--fg` `--border` `--accent` `--code-bg` …) → `var(--x)` 직접
+  - **채널삼중값 계열**(`--surface` `--background` `--foreground` `--elevated` `--metal-start/mid/end` `--brand-secondary`) → **반드시 `hsl(var(--x))` 또는 Tailwind 유틸(`bg-surface`)**
+  - **`bg-[var(--surface)]` · `style={{ background: 'var(--surface)' }}` 금지** — `background: 50 13% 96%`가 되어 선언이 조용히 폐기된다(에러 없음)
+- **예외 표기**: 정당한 하드코딩(외부 브랜드 규격색 등)은 같은 줄에 `design-lint-ignore` 주석. `src/utils/techIcons.ts`는 파일 단위 면제(simple-icons 브랜드색 맵)
+- **게이트**: `bash verify.sh` Spec 규칙 **2-5**(채널삼중값 raw 소비) · **2-6**(하드코딩 hex) · **2-7**(Tailwind arbitrary). 현재 severity는 전부 `warn` — 백로그 청소 완료 후 `fail` 승격 예정
+- 스페이싱·Radius·Motion은 **CSS 변수로 존재하지 않는다**(문서 안의 산문). 강제 가능한 토큰은 Color 계열뿐이다
+
 ## 🚫 프로젝트 추가 금지 사항
 
 - `any` 타입 사용

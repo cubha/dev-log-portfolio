@@ -108,6 +108,19 @@ header "Spec 패턴 검사"
 
 SPEC_FAILS=0
 
+# ── 디자인 토큰 계약 준비 (루프 1회 전 수집) ───────────────────
+# globals.css의 :root에는 두 네임스페이스가 공존한다:
+#   ① hex 계열(--bg --fg --border --accent …)      → var(--x) 직접 소비. 알파 모디파이어 불가
+#   ② 채널삼중값 계열(--surface: 50 13% 96% 등)     → 반드시 hsl(var(--x)) 또는 Tailwind 유틸(bg-surface)
+# ②를 var(--x)로 직접 쓰면 `background: 50 13% 96%` 가 되어 **선언이 조용히 폐기**된다(에러 없음).
+# 토큰명을 손으로 관리하지 않도록 :root에서 형식으로 자동 수집한다(.dark는 중복이므로 제외).
+HSL_TOKENS=""
+if [ -f src/app/globals.css ]; then
+  HSL_TOKENS=$(sed -n '/^:root/,/^}/p' src/app/globals.css \
+    | sed -nE 's/^[[:space:]]*--([a-z-]+):[[:space:]]*[0-9.]+[[:space:]]+[0-9.]+%[[:space:]]+[0-9.]+%[[:space:]]*;.*/\1/p' \
+    | sort -u | paste -sd'|')
+fi
+
 while IFS= read -r file; do
   # .ts/.tsx 파일만 Spec 패턴 검사 (md, json, config 등 제외)
   [[ "$file" =~ \.(ts|tsx)$ ]] || continue
@@ -121,7 +134,8 @@ while IFS= read -r file; do
   fi
 
   # 2-2. Next.js 15 — await 없는 cookies() / params / searchParams
-  if grep -n 'cookies()' "$file" 2>/dev/null | grep -v 'await' | grep -v '^[[:space:]]*//' | grep -q .; then
+  # ⚠️ grep -n 은 `124:  // ...` 처럼 줄번호를 앞에 붙인다 — 주석 제외 필터는 반드시 `^[0-9]*:` 를 포함해야 한다
+  if grep -n 'cookies()' "$file" 2>/dev/null | grep -v 'await' | grep -v '^[0-9]*:[[:space:]]*//' | grep -q .; then
     fail "await 없는 cookies() 발견: $file"
     ((SPEC_FAILS++)) || true
   fi
@@ -138,6 +152,30 @@ while IFS= read -r file; do
       warn "불필요한 'use client' 가능성: $file (이벤트/훅 없음)"
     fi
   fi
+
+  # 2-5. 디자인 토큰 — 채널삼중값 토큰을 hsl() 래핑 없이 직접 소비 (무효 CSS)
+  # ⚠️ 판정 단위는 '줄'이다. 한 줄에 래핑된 사용과 안 된 사용이 섞이면 놓친다(기존 규칙들과 동일한 입도).
+  if [ -n "$HSL_TOKENS" ] && grep -nE "var\(--($HSL_TOKENS)\)" "$file" 2>/dev/null \
+      | grep -v 'hsl(var(' | grep -v 'design-lint-ignore' | grep -q .; then
+    warn "[디자인 토큰] 채널삼중값 토큰을 hsl() 없이 사용 — 유틸(bg-surface) 또는 hsl(var(--x))로 교체: $file"
+    grep -nE "var\(--($HSL_TOKENS)\)" "$file" | grep -v 'hsl(var(' | head -3 | while read -r line; do echo "       $line"; done
+  fi
+
+  # 2-6. 디자인 토큰 — 하드코딩 hex (브랜드 로고색 등 정당 사례는 design-lint-ignore로 면제)
+  case "$file" in
+    */utils/techIcons.ts) ;;   # 외부 브랜드 규격색 맵 — 디자인 토큰 대상 아님
+    *)
+      if grep -nE '#[0-9a-fA-F]{3,8}\b' "$file" 2>/dev/null \
+          | grep -v 'design-lint-ignore' | grep -v '^[0-9]*:[[:space:]]*//' | grep -q .; then
+        warn "[디자인 토큰] 하드코딩 색 — var(--*)/토큰으로 교체 (정당하면 design-lint-ignore 주석): $file"
+      fi
+      # 2-7. Tailwind arbitrary 값이 토큰/유틸 클래스를 우회
+      if grep -nE '\[(#[0-9a-fA-F]{3,8}|[0-9]+(px|rem))\]' "$file" 2>/dev/null \
+          | grep -v 'design-lint-ignore' | grep -q .; then
+        warn "[디자인 토큰] Tailwind arbitrary 값이 토큰을 우회: $file"
+      fi
+      ;;
+  esac
 
 done <<< "$CHANGED"
 
