@@ -63,8 +63,8 @@ export function LiveStatusWidget() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
         <span style={{
           width: 8, height: 8, borderRadius: '50%',
-          background: '#22C55E',
-          boxShadow: '0 0 8px rgba(34,197,94,0.6)',
+          background: 'var(--color-success)',
+          boxShadow: '0 0 8px var(--color-success-glow)',
           flexShrink: 0,
         }} />
         <span className="sv-mono" style={{ fontSize: 13, color: 'var(--fg)' }}>
