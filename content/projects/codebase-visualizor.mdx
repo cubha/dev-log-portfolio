@@ -1,8 +1,7 @@
-# 🔭 CodeSight — 코드베이스 아키텍처 시각화 VS Code Extension
+# 🔭 Codebase Architecture Visualizer — 코드베이스 아키텍처 시각화 VS Code Extension (구 CodeSight)
 
-> **13개 프레임워크를 정적 분석해 Mermaid 다이어그램으로 아키텍처를 자동 시각화하는 VS Code Extension**
-> API 키 없이 정적 분석만으로 동작하며, BYOK(Bring Your Own Key)로 LLM 강화 분석을 선택적으로 추가할 수 있습니다.
-
+> **13개 프레임워크를 정적 분석해 라우트 계층·컴포넌트 트리·DB 스키마·FE↔BE 교차 흐름을 Mermaid 다이어그램으로 자동 시각화하는 VS Code / Cursor Extension**
+> API 키 없이 정적 분석만으로 동작하며, 다이어그램 노드를 클릭하면 해당 소스의 file:line으로 바로 이동합니다. Spring Boot DI 체인 6단 추적, FE↔BE 페어 분석 시 Sequence 탭, BYOK(Anthropic · Gemini · OpenAI) LLM 강화 분석을 지원합니다. (마켓 ID `cubha.codebase-arch-viz` 유지 · 레포 `cubha/codesight` → `cubha/codebase-viz`)
 ---
 
 ## ✨ 핵심 구현 내용
@@ -22,13 +21,14 @@
 - **AST 파서**: TypeScript → ts-morph, Python/Java → tree-sitter (WASM 런타임, 네이티브 의존성 없음)
 - **스택 자동 감지**: `detectStack()` 함수로 `package.json` / `requirements.txt` / `pom.xml` 분석 후 어댑터 선택
 
-### 3. 📊 3-탭 Mermaid 다이어그램 뷰어
+### 3. 📊 멀티 탭 Mermaid 다이어그램 뷰어
 분석 결과를 세 가지 축으로 시각화하는 VS Code WebView 뷰어를 구현했습니다.
 - **Tab 1 — Rendering Architecture**: URL 계층 기반 라우트 트리 + SSR/CSR/ISR/SSG 레이블
 - **Tab 2 — Screen–Component**: 라우트 → 컴포넌트 임포트 그래프 (client/shared/server 런타임 태그)
-- **Tab 3 — DB–Screen**: ORM 테이블 스키마 ERD + 각 페이지가 쿼리하는 테이블 연결 화살표
+- **Tab 3 — Data Flow**: ORM 테이블 스키마 ERD + 각 페이지가 쿼리하는 테이블 연결 (v1.2.44에서 DB–Screen을 Data Flow로 격상)
+- **Tab 4 — Sequence**: FE↔BE 페어 분석 시 컴포넌트 → endpoint → Controller → Service → Table 시퀀스 (v1.2.66)
 - **로컬 Mermaid 번들**: CDN 없이 에어갭 환경에서도 동작, PNG/SVG/MD 내보내기 지원
-- **캐시 시스템**: `.codesight/cache.json` 으로 재실행 시 즉시 복원
+- **캐시 시스템**: `.codebase-viz/` 아래 분석 그래프(`cache-graph.json`)와 다이어그램(`cache-diagrams.json`)을 분리 캐시해 재실행 시 즉시 복원
 
 ### 4. 🔗 FE↔BE 크로스 엣지 멀티 프로젝트 분석
 프론트엔드와 백엔드를 동시에 분석해 API 호출 관계를 시각화합니다.
@@ -40,18 +40,42 @@
 ### 5. 🤖 선택적 LLM 강화 파이프라인 (BYOK)
 API 키 없이도 전체 기능이 동작하는 2-티어 아키텍처를 설계했습니다.
 - **Tier 1 (정적)**: 13개 어댑터 정적 파서 — API 키 불필요, 즉시 실행
-- **Tier 2 (LLM)**: Claude API 연동 — 동적 import 해석, 상수 URL 치환, 신뢰도 보강
+- **Tier 2 (LLM)**: Anthropic · Gemini(무료 티어) · OpenAI 중 선택(Vercel AI SDK) — 동적 import 해석, 상수 URL 치환, 신뢰도 보강
 - Activity Bar 사이드패널에서 API Key 설정 + LLM 토글 ON/OFF
 - 캐시 버전 관리로 분석기 업데이트 시 자동 무효화 후 재분석 트리거
+
+### 6. ☕ 백엔드(Spring Boot) DI 체인 분석 + BE 전용 렌더러
+- 13개 어댑터에 FE / BE / Fullstack 카테고리를 도입하고, tree-sitter Java로 필드·생성자·setter 3종 주입을 추출
+- 고정 2-hop 체인을 **N-ary 재귀 emitter**(깊이 가드 6)로 교체 — Lombok `@RequiredArgsConstructor` 인식, MyBatis mapper namespace ↔ 컴포넌트 FQN 정확 매칭으로 **Controller → Service → Impl → Repository → MyBatis XML → Statement 6단** 추적 (IR 타입 확장 0건)
+- `@FeignClient`를 외부 시스템 노드로, 컨트롤러 leaf에 도달 테이블 배지를 표시, MyBatis XML SQL에서 테이블 `queries` 엣지 복구
+- 대형 BE 대응: 비용 예산(1,500) 기반 서브패키지 재귀 분할(1.15MB 단일 도메인 → 5행, 에러 0), endpoint를 leaf 안에 collapse해 12-endpoint 컨트롤러 높이 약 2.7배 축소, 깊이 3,000 체인 메모이즈로 18.3초 → 1초 미만
+
+### 7. 🧭 FE 다이어그램 표준 수립 + 어댑터 재설계
+- React Tab1/2/3 전면 재설계: `api-call` 엣지 종류를 신설해 axios · fetch · react-query 호출을 정적 추출, file-based FE 어댑터 6종의 Tab2를 파일 경로 트리로 표준화
+- Vue SPA · Angular에도 Browser → Router → Engine 3단 래퍼 적용, **FE / BE 다이어그램 표준 문서** 수립
+- mermaid v11이 중첩 LR 방향을 보장하지 못한다는 것을 Playwright로 12개 후보 실측 후 확인 → 표준 자체를 "최상위만 X축 보장"으로 개정해 **라이브러리 능력을 표준의 상한**으로 삼음
+- 실 레포(516 라우트) 기준 Tab1을 폴더 개요로 재정의 — collapse 기준을 하위 재귀 라우트 수로 바꿔 `·1 route` 박스 141개 → 17개, 도메인 누락 0
+
+### 8. 🔀 Sequence 탭 · ERD ORM 클래스명 병기
+- **Sequence 탭**: 이미 매칭된 cross-edge만 입력으로 사용해 새 추정 없이 FE → BE → Table 흐름을 시퀀스로 표현, verified는 실선 / inferred는 점선
+- 청킹 없이 그리면 100 라우트(참가자 501명)에서 fit 배율이 1/60으로 떨어져 백지가 되는 문제 → 청크당 참가자 12명 이하로 제한, 20~1,200 cross-edge 스트레스 테스트로 강제
+- **ORM 클래스명 병기**: IR 확장 없이 `inferenceChain`에 센티넬(`orm-class:Name`)을 싣고 접두사 완전일치로만 소비. 규칙상 유도 가능한 이름은 숨겨 `@Entity` 36개 중 정보가 있는 9개만 표시(예: `DecoSheet ↔ TB_HODS401`)
+- classDiagram 원안은 ERD와 엔티티·필드·관계선이 완전히 같아 정보 증분 0으로 영구 폐기
+
+### 9. 🖱️ 딥링크 · 검색 UX · 대형 입력 성능 · 웹뷰 보안
+- **딥링크**: 렌더러가 노드 ID → 소스 위치 사이드채널(`nodeMap`)을 생성, 웹뷰는 정제된 ID만 전송하고 확장이 워크스페이스 루트 이탈을 검사한 뒤 파일을 엶. 14개 fixture 기준 362 / 363 노드 커버
+- **검색**: 연속 부분열 → 다중 term AND → camelCase 약어 3단 매처로 교체해 오탐 `order` 32 → 1, `deco` 44 → 11
+- **성능**: 노드 바운드 청킹(50) + 점진 주입 + `content-visibility`로 첫 행 표시 1,459ms → 333ms(−77%)
+- **보안**: nonce 기반 CSP, postMessage 화이트리스트, 외부 링크는 https만 허용, 사용되지 않던 ELK 번들 1.6MB 제거
 
 ---
 
 ## 🚨 트러블슈팅
 
-### 1️⃣ VS Code WebView CSP(Content Security Policy) + Mermaid CDN 차단
+### 1️⃣ VS Code WebView CSP + Mermaid CDN 차단
 * **문제 상황:** VS Code WebView는 기본적으로 외부 CDN 스크립트 로드를 CSP로 차단. Mermaid를 CDN에서 불러오면 렌더링이 완전히 실패함
-* **원인 분석:** VS Code Extension의 보안 정책상 외부 URL 스크립트는 `content-src` 화이트리스트 없이 실행 불가
-* **해결 방안:** Mermaid 라이브러리를 Extension 번들에 포함(`media/viewer.html` 로컬 번들)하고, WebView `localResourceRoots`에 `media/` 경로를 등록해 CSP 없이 동작하도록 수정
+* **원인 분석:** WebView의 CSP `script-src`가 허용하지 않은 외부 URL 스크립트는 실행되지 않음
+* **해결 방안:** Mermaid 라이브러리를 Extension 번들에 포함(`media/viewer.html` 로컬 번들)하고 WebView `localResourceRoots`에 `media/` 경로를 등록해 CDN 의존 제거. 이후 v1.2.58에서 CSP를 오히려 엄격화 — `unsafe-inline`·`unsafe-eval`을 제거하고 nonce 방식으로 전환(인라인 핸들러 33곳 → `addEventListener`)
 
 ### 2️⃣ ESM 모노레포 + tree-sitter WASM 파일 VS Code Extension 번들링
 * **문제 상황:** `pnpm workspace` + `"type": "module"` ESM 전용 모노레포에서 `tree-sitter-python.wasm` / `tree-sitter-java.wasm` 파일이 Extension 패키징 시 누락되어 런타임 오류 발생
@@ -61,7 +85,27 @@ API 키 없이도 전체 기능이 동작하는 2-티어 아키텍처를 설계�
 ### 3️⃣ 대규모 라우트(934개)에서 Mermaid `maximum text size exceeded` 크래시
 * **문제 상황:** 라우트 수가 100개를 초과하는 프로젝트에서 생성된 Mermaid 다이어그램이 렌더링 중 `maximum text size in diagram exceeded` 오류로 뷰어 전체가 블랭크 화면이 됨
 * **원인 분석:** Mermaid 기본 `maxTextSize` / `maxEdges` 제한이 대규모 다이어그램 수용 불가
-* **해결 방안:** `mermaid.initialize({ maxTextSize: 1000000, maxEdges: 2000 })`로 한도 상향 + `shouldChunk()` 함수에 `nodeCount > 100` 조건 추가해 자동 chunk 분할 트리거
+* **해결 방안:** `maxTextSize` / `maxEdges` 한도를 상향하고 라우트 100개 초과 시 자동 chunk 분할을 트리거. 이후 게이트 설계 결함이 드러나 노드 바운드 재귀 분할로 재설계(트러블슈팅 4번)
+
+### 4️⃣ "mermaid의 한계"라는 오진 — 실제로는 청킹 게이트 설계 결함
+* **문제 상황:** 1,031 라우트 프로젝트에서 웹뷰가 "렌더링 중…"에서 멈추고, 세로로 폭발하는 다이어그램이 반복됨
+* **원인 분석:** 5번의 빌드 사이클 동안 mermaid 자체의 한계로 오인했으나, 실제로는 청킹 게이트가 "분기 그룹 > 5 AND 라우트 > 100"을 요구해 소수 브랜치에 깊게 중첩된 대형 라우트가 게이트를 통과하지 못했고, 청크 단위도 브랜치라 400노드짜리 단일 청크가 생성되고 있었음
+* **해결 방안:** 게이트를 "라우트 > 100" 단독 조건으로 바꾸고 노드 50개 단위로 재귀 분할. 라이브러리 한계를 결론으로 삼기 전에 우리 쪽 게이트부터 의심해야 한다는 교훈
+
+### 5️⃣ 신기능이 조용히 사라지는 캐시 무효화 함정 — 같은 실수 3회
+* **문제 상황:** 딥링크를 배포했는데 전 노드가 클릭에 무반응, 수정 후에도 옛 좌표로 점프
+* **원인 분석:** 캐시 유효성 키인 분석기 버전이 **15개 릴리스 동안 올라가지 않아** 옛 캐시가 계속 쓰였고, 구조(shape)는 그대로 두고 내용만 바뀐 변경은 shape 가드를 구조적으로 통과. 별건으로 그래프 캐시와 다이어그램 캐시가 한 파일을 공유해 매번 전체 재분석이 도는 결함도 발견
+* **해결 방안:** 버전 범프 + 새 필드(`nodeMap`·`tab3Kind`) 기반 shape 가드 이중 적용, 36개 fixture 전체 스윕으로 검증, 캐시 파일을 그래프 / 다이어그램으로 분리
+
+### 6️⃣ React Router 라우트 누락 — 첫 가설이 완전히 틀린 사례
+* **문제 상황:** `appRoutes.map()`으로 선언한 라우트의 렌더 엣지가 누락
+* **원인 분석:** 초기 가설은 `React.lazy()` 미인식이었으나 틀렸음. 실제로는 상대경로만 허용하는 가드가 `@/` alias를 차단했고, import 맵이 원본명을 키로 써서 `as` rename을 놓쳤으며, `createBrowserRouter` 분기에 외부 import 추적이 없었음. 이후 240 라우트가 통째로 누락된 사건도 파서가 아니라 tsconfig `baseUrl`/`extends`/JSONC 해석 문제였음
+* **해결 방안:** 컴포넌트 해석기를 신설해 가드 7곳에 일괄 적용. fixture를 만들기 전에 **실제 레포의 케이스부터 1라운드 확인**하는 절차를 도입
+
+### 7️⃣ 텍스트 출력은 맞는데 화면은 15개 릴리스 동안 "(No data)"
+* **문제 상황:** React Router 프로젝트의 Tab3가 웹뷰에서 항상 "(No data)" — 그 사이 모든 게이트는 GREEN
+* **원인 분석:** 뷰어가 flowchart 텍스트를 ERD 파서로 다시 해석하고 있었음. CLI의 `.md` 출력은 정상이라 텍스트 기반 검증으로는 잡히지 않았음
+* **해결 방안:** 생산자가 탭 종류(`tab3Kind: erd | flow`)를 선언하도록 계약을 바꾸고, 렌더 하니스 + Playwright로 **실제 화면을 완료 조건**으로 설정. 이후 추가한 가드를 "수정을 되돌리면 실패하는가"로 실험해, 1차 가드가 허수였음을 발견하고 교체
 
 ---
 
@@ -69,6 +113,7 @@ API 키 없이도 전체 기능이 동작하는 2-티어 아키텍처를 설계�
 
 - **Claude Code (Controller + Implementer):** 요구사항 분석, IR 아키텍처 설계, 어댑터 구현, Phase 검증까지 전 과정 담당
 - **Gemini Deep Research (Researcher):** 프레임워크별 AST 파싱 패턴, tree-sitter 쿼리 문법, VS Code Extension API 스펙 리서치
+- **TDD 파이프라인 + 독립 검토:** `/sh-dev-loop --tdd`(RED → GREEN)에 SubTask별 scope-critic 게이트(웹뷰 보안 릴리스에서만 13라운드 — 죽은 ELK 번들·캐시 상시 미스 결함 발견), `/braintrust` 다관점 적대 검토, 릴리스 전 security-auditor(mermaid 라벨 이스케이프 누락 발견), `/verify-impl` 인수 검증을 결합
 
 ---
 
@@ -77,3 +122,5 @@ API 키 없이도 전체 기능이 동작하는 2-티어 아키텍처를 설계�
 "Less is More" — 분석 결과의 정확도보다 노이즈를 줄이는 게 더 중요하다는 설계 원칙을 처음으로 프로덕션에 적용한 프로젝트입니다. 고신뢰도 엣지만 방출하고 불확실한 추론은 `inferenceChain`으로 명시적으로 드러내는 Evidence-First 접근법 덕분에, 사용자가 다이어그램을 신뢰하고 실제 아키텍처 리뷰에 활용할 수 있는 도구가 될 수 있었습니다.
 
 13개 프레임워크를 단일 IR로 흡수하는 과정에서 "공통 추상화"와 "프레임워크 특수성 보존" 사이의 균형이 가장 어려운 설계 문제였습니다. `IAdapter` 인터페이스 하나로 TypeScript/Python/Java 세 언어의 AST 파서를 통합 관리하는 구조를 만들어낸 것이 이 프로젝트의 핵심 성취입니다.
+
+v1.2.x 이후 50여 개 릴리스를 거치며 반복해서 배운 것은 **"검증 게이트가 GREEN이라는 것은 기능이 동작한다는 뜻이 아니다"** 였습니다. 손으로 만든 하니스만 통과한 딥링크는 실제로 전 노드가 무반응이었고, 렌더러 텍스트는 맞았지만 뷰어가 재파싱해 죽인 탭이 있었으며, 방치된 캐시 버전이 신기능을 조용히 지웠습니다. 그래서 실제 산출물을 태우는 커버리지 스펙, 수정을 되돌려 게이트가 실패하는지 확인하는 실험, 생산자가 종류를 선언하는 계약을 원칙으로 정착시켰고 — 메모리와 분석 보고서의 주장조차 재실측 대상으로 다루게 되었습니다.
