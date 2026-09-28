@@ -1,8 +1,7 @@
 # 🚀 개인 포트폴리오 (Next.js 15 & Supabase)
 
-> **단순 소개 페이지를 넘어선 풀스택 포트폴리오**
-> 실시간 GitHub 활동, Spotify Now Playing, 방명록, 관리자 대시보드까지 완벽하게 통합한 프로젝트입니다.
-
+> **단순 소개 페이지를 넘어, 운영까지 거친 풀스택 포트폴리오**
+> 실시간 GitHub 활동, Spotify Now Playing, 방명록, TechBlog, 관리자 대시보드를 통합했습니다. 이후 Claude Design 시안 기반 **Silver V2 리디자인 + 디자인 토큰 시스템**을 적용하고, ISR · 서울 리전 · 폰트 self-host로 배포 성능을 다듬었으며, Supabase 무료 티어 pause 대응과 RLS 보안 보강까지 실제 운영 단계를 거쳤습니다.
 ---
 
 ## ✨ 핵심 구현 내용
@@ -31,10 +30,33 @@ REST API의 한계를 극복하고, Private 레포지토리 커밋까지 포함�
 - **UX 개선:** 페이지네이션 (10개/페이지) 및 Server Action 기반 CRUD 구현
 
 ### 5. 🎨 프로젝트 리스트 UI 고도화
-- **반응형 레이아웃:** X축 드래그 슬라이더에서 Y축 반응형 CSS Grid로 전환 (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3`)
+- **반응형 레이아웃:** X축 드래그 슬라이더에서 Y축 반응형 CSS Grid로 전환 — 현재는 1열 → 600px 2열 → 1024px 3열 + 첫 FEATURED 카드가 2행을 차지하는 비대칭 그리드
 - **인터랙션:** Framer Motion `whileInView` Fade-up 애니메이션 적용 (스크롤 진입 시 순차 노출)
 - **상태 관리:** Jotai `projectFilterAtom`을 활용한 카테고리 필터링
-- **라우팅:** 프로젝트 모달에서 MDX 기반 상세 페이지로 부드러운 전환
+- **상세 보기:** 프로젝트 모달 안에서 `/api/mdx/{slug}`로 MDX 본문을 불러와 인라인 렌더(Shiki 코드 하이라이트)
+
+### 6. ✍️ TechBlog
+- Tiptap 기반 에디터(GFM 테이블 지원) + 마크다운 미리보기, 블로그 리스트에서 바로 CRUD하는 인라인 관리
+- 페이지네이션 · 이전/다음 글 · 목차(TOC) · 읽기 진행바 · Giscus 댓글
+- 비발행 글은 관리자 외 404 처리
+
+### 7. 🪞 Silver V2 전면 리디자인 + 디자인 토큰 시스템
+- Claude Design으로 확정한 시안을 코드로 이식 — 첫 PR 한 건이 36개 파일(+3,300 / −2,899줄). 다크 `#0D0D0D` · 라이트 `#FAFAF8` · 실버 액센트, 메탈릭 그라디언트 헤딩, 커서를 따라가는 글로우
+- `DESIGN-TOKENS.md` · `UX-BRIEF.md`를 Ground Truth로 수립하고, 토큰을 hex 계열 / 채널삼중값 계열 **2계층**으로 문서화
+- 시맨틱 토큰 4종 신설로 브랜드 아이콘 색상표를 제외한 **하드코딩 hex 0건** 달성
+- `verify.sh`에 디자인 규약 게이트 3종 배선: 채널삼중값 raw 소비 · 하드코딩 hex · Tailwind arbitrary 값
+- 어드민 UI를 공개 사이트 표준 컴포넌트(`.btn` · `.card` · 라벨)로 통일 — 채택률 0%에서 CTA 8곳 · 라벨 40곳 이상 전환
+
+### 8. ⚡ 배포 성능 — ISR · 리전 · 폰트
+- Vercel 함수 리전을 `icn1`(서울)로 지정해 Supabase(`ap-northeast-2`)와 같은 지역에서 SSR
+- 쿠키를 쓰지 않는 공개용 Supabase 클라이언트를 분리해 홈 · About · Projects · Blog를 **Static + 1시간 ISR**로 전환(관리자 전용 초안 목록은 클라이언트에서 덧씌움)
+- 외부 폰트 `@import`(약 2.4MB)를 self-host로 바꿔 렌더 블로킹 요청 연쇄 제거, `/fonts/*`에 1년 immutable 캐시
+- 로딩 화면을 실제 레이아웃과 같은 shimmer 스켈레톤으로 교체 + 상단 진행바
+
+### 9. 🔤 SUIT 폰트 전환 · 모바일 반응형
+- 4개 한글 폰트 후보를 실제 사이트 문구로 비교해 SUIT(400~800, SIL OFL) 채택. `font-family` 이름을 유지하고 `src`만 교체해 기존 참조를 건드리지 않고 전체 반영, 코드 블록은 정렬을 위해 JetBrains Mono 유지
+- Galaxy S24 Ultra 실제 CSS 뷰포트(384×824, DPR 3.75)를 Playwright로 재현해 5개 공개 라우트 모두 가로 넘침 0 확인
+- 최소폭 합(412px)이 화면을 넘던 방명록 4열 그리드를 모바일 2행 `grid-template-areas`로, About 스킬 카드는 고정폭 가로 스와이프(`scroll-snap`)로 전환
 
 ---
 
@@ -55,6 +77,21 @@ REST API의 한계를 극복하고, Private 레포지토리 커밋까지 포함�
 * **원인 분석:** React 생명주기와 Framer Motion의 DOM 진입 감지 시점 불일치
 * **해결 방안:** 각 카드 컴포넌트에 `initial` / `whileInView`를 **명시적으로 직접 선언**하여 독립적으로 동작하도록 수정
 
+### 4️⃣ Supabase 무료 티어 pause 3회 재발 — HTTP 200을 받고도 멈춤
+* **문제 상황:** 무료 티어 프로젝트가 세 번 일시정지됨. 3차는 이틀 전 keep-alive 핑이 HTTP 200이었는데도 발생했고, 유일한 동적 페이지인 Contact만 깨짐
+* **원인 분석:** pause 기준은 "7일 무요청"이 아니라 **주간 DB 활동량 임계치**였고, 6일 간격 read 핑 1회로는 부족했음. GitHub Actions의 `*/3` 스케줄도 실제로는 6일 간격으로 돌고 있었음. 2차는 타입 에러로 **한 달간 빌드가 실패**해 대응 코드가 배포조차 되지 않은 것이 원인
+* **해결 방안:** write 핑으로 전환(`keep_alive` 테이블 + SECURITY DEFINER RPC), GitHub Actions 매일 + Vercel Cron 매일 이중화로 하루 4회 요청. 핑이 2xx가 아니면 워크플로가 실패해 메일 경보가 오도록 하고, **일부러 pause시키는 chaos test**로 경보를 실측 확인
+
+### 5️⃣ 어드민 배경 선언 70개가 조용히 무시되고 있었음 — 3.5개월
+* **문제 상황:** 어드민 화면의 배경색 선언들이 실제로는 렌더되지 않았지만 tsc · eslint · build 어디서도 에러가 없었음
+* **원인 분석:** `bg-[var(--surface)]`처럼 채널삼중값 토큰(`50 13% 96%`)을 그대로 소비하면 유효한 색이 아니라 브라우저가 선언을 **조용히 폐기**함. 이 토큰 계열은 문서에 한 건도 없었고, 기존 검사 스크립트의 주석 제외 필터는 `grep -n`이 앞에 줄번호를 붙이는 탓에 아무것도 거르지 못하고 있었음
+* **해결 방안:** 12개 파일 64줄을 `hsl(var(--x))` 또는 Tailwind 유틸로 치환하고 누락된 다크 테마 토큰 3종 추가. 채널삼중값 raw 소비를 `:root`에서 토큰명을 자동 수집해 잡는 게이트를 신설하고 필터 결함도 수정
+
+### 6️⃣ RLS 권한상승 취약점 — 로그인만 하면 누구나 쓰기 가능
+* **문제 상황:** skills 테이블 쓰기 정책이 `authenticated`만 확인해, 방명록용 GitHub OAuth로 로그인한 누구나 스킬 데이터를 수정·삭제할 수 있었음. 배포 전 보안 검토에서 방명록 좋아요 INSERT가 `user_id`를 검증하지 않아 타인 UUID로 위조 가능한 결함(Critical)도 추가 발견
+* **원인 분석:** "로그인한 사용자 = 관리자"라는 암묵 전제 — 방명록에 소셜 로그인을 붙이는 순간 그 전제가 깨졌음
+* **해결 방안:** 쓰기 정책을 `profiles.role = 'admin'` 조건으로 강화하고, 방명록 INSERT는 `user_id is null or user_id = auth.uid()`로 제한. Supabase advisor 경고 해소를 확인. keep-alive RPC도 호출 출처 파라미터를 검증하지 않아 **공개 키로 핑을 위장해 장애 기록을 가릴 수 있음**을 발견해 허용값 검증 추가
+
 ---
 
 ## 🤖 3-AI 협업 개발 구조
@@ -63,6 +100,7 @@ REST API의 한계를 극복하고, Private 레포지토리 커밋까지 포함�
 - **Claude Code (Controller):** 요구사항 분석, 아키텍처 설계, 프롬프트 작성, 코드 검증
 - **Cursor (Implementer):** 실질적인 코드 구현 전담
 - **Gemini (Researcher):** 외부 리서치 (라이브러리 비교, 최신 기술 트렌드 조사)
+- **이후 운영 단계 (Claude Code 스킬 파이프라인):** `/analyze` → `/braintrust`(다관점 검토) → 구현 → `/ship` 흐름으로 진행. 머지 전 security-auditor · db-schema-reviewer · scope-critic 서브에이전트가 병렬 검토해 실제 Critical 취약점 2건을 잡아냄. 디자인은 Claude Design 시안을 기준 문서로, 검증은 Playwright로 수행
 
 ---
 
@@ -70,4 +108,6 @@ REST API의 한계를 극복하고, Private 레포지토리 커밋까지 포함�
 
 3-AI 협업 구조를 처음 도입하며 역할 분리가 명확해질수록 개발 속도와 품질이 극대화되는 것을 체감했습니다. 특히, 프롬프트 설계 능력이 전체 개발 생산성에 직결된다는 점을 깊이 배웠습니다.
 
-Next.js 15의 RSC(React Server Components), Server Action, Middleware 레이어를 실전에서 다루며 서버와 클라이언트 간의 경계 설계의 중요성을 재확인했습니다. 
+Next.js 15의 RSC(React Server Components), Server Action, Middleware 레이어를 실전에서 다루며 서버와 클라이언트 간의 경계 설계의 중요성을 재확인했습니다.
+
+운영 단계에서 가장 오래 살아남은 결함은 모두 **에러 없이 조용히 실패하는 것들**이었습니다. 3.5개월간 무시된 CSS 선언, 한 달간 실패한 빌드, HTTP 200을 받고도 멈춘 데이터베이스가 그랬습니다. 이를 막은 것은 문서에 적은 금지 조항이 아니라 **기계가 돌리는 검사**였습니다 — 토큰 소비 게이트, 실패를 크게 알리는 워크플로, 일부러 장애를 일으켜 보는 실측. 또 "어드민은 디자인 범위 밖"이라는 예외 선언이 결함이 쌓이는 자리가 되고, 입력 검증 없는 모니터링은 위장 가능한 거짓 안전 신호가 된다는 것도 배웠습니다.
